@@ -1,7 +1,7 @@
 import sys
 import os
 
-from container_workflow_tool.main import ImageRebuilder
+from container_workflow_tool.main import ImageRebuilder, RebuilderError
 from container_workflow_tool.constants import action_map
 from container_workflow_tool.cli_common import CliCommon
 
@@ -35,3 +35,12 @@ class Cli(CliCommon):
             method_name = action_map[self.args.command][self.args.action]
         run_function = getattr(self.rebuilder, method_name)
         run_function()
+
+
+def run():
+    try:
+        cli = Cli(sys.argv[1:])
+        cli.run()
+    except RebuilderError as e:
+        print("ERROR: {}".format(e))
+        sys.exit(1)

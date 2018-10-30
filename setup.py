@@ -86,7 +86,7 @@ setup(
     scripts=[],
     entry_points={
         'console_scripts': [
-            'cwt = container_workflow_tool.cli.Cli:run',
+            'cwt = container_workflow_tool.cli:run',
         ]
     },
     setup_requires=[],

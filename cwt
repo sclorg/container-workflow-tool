@@ -5,15 +5,8 @@
 # notes           : Rewritten from a shell script originally created by hhorak@redhat.com.
 # python_version  : 3.x
 
-import sys
+from container_workflow_tool.cli import run as run_cwt
 
-from container_workflow_tool.cli import Cli
-from container_workflow_tool.main import RebuilderError
 
 if __name__ == "__main__":
-    try:
-        cli = Cli(sys.argv[1:])
-        cli.run()
-    except RebuilderError as e:
-        print("ERROR: {}".format(e))
-        sys.exit(1)
+    run_cwt()
