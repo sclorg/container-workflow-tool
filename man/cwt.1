@@ -1,0 +1,53 @@
+.\" Copyright Petr Kubat, 2018
+.\"
+.\" This page is distributed under MIT license.
+.\"
+.TH CWT 1 2018-01-03 "" "Linux User's Manual"
+.SH NAME
+cwt \- A python3 tool to make rebuilding Docker images easier by automating several steps.
+
+.SH SYNOPSIS
+.B cwt
+\fIkoji\/\fR
+
+.B cwt
+\fIbuild\/\fR
+
+.B cwt
+\fIdockerhub\/\fR
+
+.B cwt
+\fIgit\/\fR
+
+.B cwt
+\fIutils\/\fR
+
+
+.SH DESCRIPTION
+.PP
+\fBcwt\fP is a binary file to make rebuilding Docker images easier.
+
+.PP
+\fIkoji\/\fR It lists builds, base images, hash ids.
+
+.PP
+\fIbuild\/\fR It builds images.
+
+.PP
+\fIdockerbug\/\fR It manipulates with DockerHub repo/registry.
+
+.PP
+\fIgit\/\fR It works with upstream/downstream git repositories.
+
+.PP
+\fIutils\/\fR Other actions tied to the rebuild (communication, repository preparation etc).
+
+
+.SH NOTES
+\fBcwt\fP should help a bit with the image rebuild workflow..
+
+.SH AUTHORS
+Petr Kubat, <pkubat@redhat.com> (man page)
+
+.SH "SEE ALSO"
+Full documentation at: <TBD>

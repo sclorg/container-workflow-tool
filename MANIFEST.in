@@ -1,0 +1,9 @@
+include MANIFEST.in
+include Makefile
+include LICENSE
+include README.md
+include requirements.txt
+recursive-include container_workflow_tool *
+recursive-include config *
+recursive-include test *.py
+recursive-include man *
