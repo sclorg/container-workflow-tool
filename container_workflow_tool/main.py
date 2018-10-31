@@ -298,6 +298,15 @@ class ImageRebuilder:
                     self.logger.error(err)
                 procs.remove((proc, image))
 
+    def _get_config_path(self, config):
+        if not os.path.isabs(config):
+            base_path = os.path.abspath(__file__)
+            dir_path = os.path.dirname(base_path)
+            path = os.path.join(dir_path, "config/", config)
+        else:
+            path = config
+        return path
+
     def _not_yet_implemented(self):
         print("Method not yet implemented.")
 
@@ -347,9 +356,7 @@ class ImageRebuilder:
             config(str): Name of the configuration file (filename)
             release(str, optional): ID of the release to be used inside the config
         """
-        curr_file = os.path.abspath(__file__)
-        dir_path = os.path.dirname(curr_file)
-        path = os.path.join(dir_path, "config/", conf_name)
+        path = self._get_config_path(conf_name)
         self.logger.debug("Setting config to {}", path)
         with open(path) as f:
             newconf = Config(f, release)
