@@ -347,7 +347,9 @@ class ImageRebuilder:
             config(str): Name of the configuration file (filename)
             release(str, optional): ID of the release to be used inside the config
         """
-        path = "config/" + conf_name
+        curr_file = os.path.abspath(__file__)
+        dir_path = os.path.dirname(curr_file)
+        path = os.path.join(dir_path, "config/", conf_name)
         self.logger.debug("Setting config to {}", path)
         with open(path) as f:
             newconf = Config(f, release)

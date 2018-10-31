@@ -80,7 +80,7 @@ setup(
     author_email='pkubat@redhat.com',
     url='https://github.com/sclorg/container-workflow-tool',
     license='MIT',
-    packages=find_packages(exclude=['config', 'man', 'test']),
+    packages=find_packages(exclude=['man', 'test']),
     include_package_data=True,
     data_files=data_files.items(),
     scripts=[],
