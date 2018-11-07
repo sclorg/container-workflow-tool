@@ -353,7 +353,11 @@ class DistgitAPI(object):
         cp_path = os.path.join(ups_path, path)
 
         for f in repo.git.ls_files().split('\n'):
-            os.remove(os.path.join(component, f))
+            file = os.path.join(component, f)
+            if os.path.isdir(file) and not os.path.islink(file):
+                shutil.rmtree(file)
+            else:
+                os.remove(file)
         self._clone_upstream(url, ups_path, commands=commands)
         # First check if there is a version upstream
         # If not we just skip the whole copy action
@@ -391,6 +395,19 @@ class DistgitAPI(object):
             repo.git.mv("Dockerfile" + df_ext, "Dockerfile")
             os.symlink("Dockerfile", df_path + df_ext)
             repo.git.add("Dockerfile", "Dockerfile" + df_ext)
+
+        # Make sure a $VERSION symlink exists
+        repo = Repo(component)
+        version = os.path.basename(cp_path)
+        link_name = os.path.join(component, version)
+        if not os.path.islink(link_name):
+            try:
+                os.symlink(".", link_name)
+                repo.git.add(version)
+            except FileExistsError:  # noqa: F821 - Doesnt see built-ins?
+                t = "Failed creating symlink '{}' -> '.', file already exists."
+                raise u.RebuilderError(t.format(link_name))
+
         # Run post upstream pull hook
         self._post_upstream_pull(cp_path, component)
 
