@@ -1,5 +1,5 @@
 ---
-name: Default configuration files for Fedora
+name: Default configuration files for Fedora 29
 distros:
   - fedora
   - centos
@@ -11,7 +11,7 @@ layer_ordering:
   3: s2i
 
 packager_utils: "fedpkg"
-rebuild_reason: "rebuild for latest {base_image}"
+rebuild_reason: "latest Fedora base image"
 product: "Fedora Container Images"
 image_names: ""
 bugzilla_url: "bugzilla.redhat.com"
@@ -48,7 +48,7 @@ fedora27: &f29
       current: "29"
       future:
         - "30"
-  build_tag: "fFEDORA-container"
+  build_tag: "fFEDORA-container-updates-candidate"
   image_sets:
     base:
       - s2i-core
@@ -100,6 +100,10 @@ urls:
   toolchain: "https://github.com/sclorg/devtoolset-container.git"
   varnish: "https://github.com/sclorg/varnish-container.git"
 
+commands:
+  2: "for ver in */; do make $ver/root/help.1; done"
+  3: "sed -i 's|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/|' */Dockerfile.fedora"
+
 # format:
 # - image_name
 # - bz_version
@@ -120,9 +124,6 @@ images:
     git_path: "3.11"
     git_branch: "fFEDORA"
     user: "mskalick"
-    commands:
-      2: "make 3.11/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 3.11/Dockerfile.fedora"
   golang:
     bz_version: "FEDORA"
     component: "golang"
@@ -130,9 +131,6 @@ images:
     git_path: "1.11"
     git_branch: "fFEDORA"
     user: "jcajka"
-    commands:
-      2: "make 1.11/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 1.11/Dockerfile.fedora"
   httpd:
     bz_version: "FEDORA"
     component: "httpd"
@@ -140,9 +138,6 @@ images:
     git_path: "2.4"
     git_branch: "fFEDORA"
     user: "luhliari"
-    commands:
-      2: "make 2.4/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 2.4/Dockerfile.fedora"
   llvm:
     bz_version: "FEDORA"
     component: "llvm"
@@ -150,9 +145,6 @@ images:
     git_path: "7.0"
     git_branch: "fFEDORA"
     user: "tstellar"
-    commands:
-      2: "make 7.0/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 7.0/Dockerfile.fedora"
   mariadb:
     bz_version: "FEDORA"
     component: "mariadb"
@@ -160,9 +152,6 @@ images:
     git_path: "10.3"
     git_branch: "fFEDORA"
     user: "hhorak"
-    commands:
-      2: "make 10.3/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 10.3/Dockerfile.fedora"
   mongodb:
     bz_version: "FEDORA"
     component: "mongodb"
@@ -170,9 +159,6 @@ images:
     git_path: "4.0"
     git_branch: "fFEDORA"
     user: "mskalick"
-    commands:
-      2: "make 4.0/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 4.0/Dockerfile.fedora"
   mysql:
     bz_version: "FEDORA"
     component: "mysql"
@@ -180,9 +166,6 @@ images:
     git_path: "8.0"
     git_branch: "fFEDORA"
     user: "hhorak"
-    commands:
-      2: "make 8.0/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 8.0/Dockerfile.fedora"
   nginx:
     bz_version: "FEDORA"
     component: "nginx"
@@ -190,9 +173,6 @@ images:
     git_path: "1.12"
     git_branch: "fFEDORA"
     user: "luhliari"
-    commands:
-      2: "make 1.12/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 1.12/Dockerfile.fedora"
   nodejs:
     bz_version: "FEDORA"
     component: "nodejs"
@@ -200,9 +180,6 @@ images:
     git_path: "10"
     git_branch: "fFEDORA"
     user: "zsvetlik"
-    commands:
-      2: "make 10/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 10/Dockerfile.fedora"
   passenger:
     bz_version: "FEDORA"
     component: "passenger"
@@ -210,9 +187,6 @@ images:
     git_path: "5.0"
     git_branch: "fFEDORA"
     user: "luhliari"
-    commands:
-      2: "make 5.0/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 5.0/Dockerfile.fedora"
   perl:
     bz_version: "FEDORA"
     component: "perl"
@@ -220,9 +194,6 @@ images:
     git_path: "5.28"
     git_branch: "fFEDORA"
     user: "ppisar"
-    commands:
-      2: "make 5.28/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 5.28/Dockerfile.fedora"
   php:
     bz_version: "FEDORA"
     component: "php"
@@ -230,9 +201,6 @@ images:
     git_path: "7.2"
     git_branch: "fFEDORA"
     user: "luhliari"
-    commands:
-      2: "make 7.2/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 7.2/Dockerfile.fedora"
   python3:
     bz_version: "FEDORA"
     component: "python3"
@@ -242,8 +210,6 @@ images:
     user: "torsava"
     commands:
       1: "make generate-all"
-      2: "make 3.7/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 3.7/Dockerfile.fedora"
   postgresql:
     bz_version: "FEDORA"
     component: "postgresql"
@@ -253,8 +219,6 @@ images:
     user: "pkubat"
     commands:
       1: "make generate-all"
-      2: "make 10/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 10/Dockerfile.fedora"
   redis:
     bz_version: "FEDORA"
     component: "redis"
@@ -262,9 +226,6 @@ images:
     git_path: "5.0"
     git_branch: "fFEDORA"
     user: "remi"
-    commands:
-      2: "make 5.0/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 5.0/Dockerfile.fedora"
   ruby:
     bz_version: "FEDORA"
     component: "ruby"
@@ -272,9 +233,6 @@ images:
     git_path: "2.5"
     git_branch: "fFEDORA"
     user: "remi"
-    commands:
-      2: "make 2.5/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 2.5/Dockerfile.fedora"
   rust:
     bz_version: "FEDORA"
     component: "rust"
@@ -282,9 +240,6 @@ images:
     git_path: "1.29"
     git_branch: "fFEDORA"
     user: "remi"
-    commands:
-      2: "make 1.29/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 1.29/Dockerfile.fedora"
   s2i-base:
     bz_version: "FEDORA"
     component: "s2i-base"
@@ -292,9 +247,6 @@ images:
     git_path: "base"
     git_branch: "fFEDORA"
     user: "pkubat"
-    commands:
-      2: "make base/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| base/Dockerfile.fedora"
   s2i-core:
     bz_version: "FEDORA"
     component: "s2i-core"
@@ -303,10 +255,7 @@ images:
     git_branch: "fFEDORA"
     user: "pkubat"
     commands:
-      2: "make core/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/fedora:[0-9]*|registry.fedoraproject.org/fedora:29| core/Dockerfile.fedora"
-      4: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| base/Dockerfile.fedora"
-      5: "cat core/Dockerfile.fedora"
+      4: "sed -i 's|registry.fedoraproject.org/fedora:[0-9]*|registry.fedoraproject.org/fedora:29|' */Dockerfile.fedora"
   toolchain:
     bz_version: "FEDORA"
     component: "toolchain"
@@ -314,9 +263,6 @@ images:
     git_path: "8-toolchain"
     git_branch: "fFEDORA"
     user: "mpolacek"
-    commands:
-      2: "make 8-toolchain/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 8-toolchain/Dockerfile.fedora"
   varnish:
     bz_version: "FEDORA"
     component: "varnish"
@@ -326,5 +272,3 @@ images:
     user: "luhliari"
     commands:
       1: "make generate-all"
-      2: "make 6/root/help.1"
-      3: "sed -i s|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/| 6/Dockerfile.fedora"
