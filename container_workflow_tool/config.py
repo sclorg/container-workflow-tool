@@ -94,7 +94,9 @@ class Config(dict):
                 # Use the release branch if no future branches provided
                 fb = image["git_future"] if "git_future" in image else b
                 # Use global commands, if does not exist per image
-                image["commands"] = image.get("commands", commands)
+                image_commands = image.get("commands", {})
+                image["commands"] = commands.copy()
+                image["commands"].update(image_commands)
                 # Use global build tag if no image specific is provided
                 tag = image[t] if t in image else self[t]
                 if "releases" in self:

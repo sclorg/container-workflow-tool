@@ -264,8 +264,8 @@ class DistgitAPI(object):
                 cmd = commands[order]
                 self.logger.debug("Running '{o}' command '{c}'".format(o=order,
                                                                        c=cmd))
-                ret = subprocess.run(cmd.split(), stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE)
+                ret = subprocess.run(cmd, stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE, shell=True, executable='/bin/bash')
                 if ret.returncode != 0:
                     msg = "'{c}' failed".format(c=cmd.split(" "))
                     self.logger.error(ret.stderr)
