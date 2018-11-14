@@ -1,4 +1,41 @@
+# Loader class and construct_include function based on
+# code by Josh Bode, shared under the MIT license:
+# https://gist.github.com/joshbode/569627ced3076931b02f
+
+import os
+
 import yaml
+from typing import IO
+
+
+class Loader(yaml.SafeLoader):
+    """YAML Loader with `!include` constructor."""
+
+    def __init__(self, stream):
+        """Initialise Loader."""
+
+        try:
+            self._root = os.path.split(stream.name)[0]
+        except AttributeError:
+            self._root = os.path.curdir
+
+        super().__init__(stream)
+
+
+def construct_include(loader, node):
+    """Include file referenced at node."""
+
+    arg = os.path.abspath(os.path.join(loader._root,
+                                       loader.construct_scalar(node)))
+    # filename[:key]
+    arg_list = arg.split(':')
+    filename = arg_list[0]
+    with open(filename, 'r') as f:
+        yaml_config = yaml.load(f, Loader)
+    if len(arg_list) == 2:
+        # Key argument present, return only the key value from included file
+        yaml_config = yaml_config[arg_list[1]]
+    return yaml_config
 
 
 class Config(dict):
@@ -13,7 +50,17 @@ class Config(dict):
 
     # TODO: Maybe use the config as base and remove unneeded releases?
     def __init__(self, yaml_file, release="current"):
-        config = yaml.load(yaml_file)
+        # First add the include constructor to be able to share config values
+        yaml.add_constructor('!include', construct_include, Loader)
+        yaml_config = yaml.load(yaml_file, Loader)
+        if "v1" in yaml_config:
+            # v1 config
+            config = yaml_config["v1"]
+            for key in config["cwt"]:
+                config[key] = config["cwt"][key]
+        else:
+            # v0 config, no changes needed
+            config = yaml_config
         for key in config[release]:
             self[key] = config[release][key]
 

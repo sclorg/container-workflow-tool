@@ -1,159 +1,133 @@
 ---
-name: Default configuration files for Fedora
-distros:
-  - fedora
-  - centos
+v1:
+  name: Default configuration files for Fedora
+  cwt: !include share/cwt_config.yaml
 
-# Defines in which order we build images
-layer_ordering:
-  1: base
-  2: core
-  3: s2i
+  fedora26:
+    releases:
+      fedora:
+        id: "FEDORA"
+        current: "26"
+        future:
+          - "27"
+    build_tag: "fFEDORA-container"
+    image_sets:
+      base:
+        - s2i-core
+        - postgresql
+        - redis
+      core:
+        - s2i-base
+        - mongodb
+        - mariadb
+        - httpd
+        - nginx
+      s2i:
+        - python3
 
-packager_utils: "fedpkg"
-rebuild_reason: "rebuild for latest {base_image}"
-product: "Fedora Container Images"
-image_names: ""
-bugzilla_url: "bugzilla.redhat.com"
+  fedora27: &f27
+    releases:
+      fedora:
+        id: "FEDORA"
+        current: "27"
+        future:
+          - "28"
+    build_tag: "fFEDORA-container"
+    image_sets:
+      base:
+        - s2i-core
+        - postgresql
+        - redis
+      core:
+        - s2i-base
+        - mongodb
+        - mariadb
+        - httpd
+        - nginx
+      s2i:
+        - python3
 
-ignore_files:
-  - "Dockerfile.rhel7"
-  - ".osbs-repo-config"
+  current: *f27
 
-fedora26:
-  releases:
-    fedora:
-      id: "FEDORA"
-      current: "26"
-      future:
-        - "27"
-  build_tag: "fFEDORA-container"
-  image_sets:
-    base:
-      - s2i-core
-      - postgresql
-      - redis
-    core:
-      - s2i-base
-      - mongodb
-      - mariadb
-      - httpd
-      - nginx
-    s2i:
-      - python3
+  urls: !include share/urls.yaml
 
-fedora27: &f27
-  releases:
-    fedora:
-      id: "FEDORA"
-      current: "27"
-      future:
-        - "28"
-  build_tag: "fFEDORA-container"
-  image_sets:
-    base:
-      - s2i-core
-      - postgresql
-      - redis
-    core:
-      - s2i-base
-      - mongodb
-      - mariadb
-      - httpd
-      - nginx
-    s2i:
-      - python3
-
-current: *f27
-
-urls:
-  s2i-core: "https://github.com/sclorg/s2i-base-container.git"
-  postgresql: "https://github.com/sclorg/postgresql-container.git"
-  redis: "https://github.com/sclorg/redis-container.git"
-  s2i-base: "https://github.com/sclorg/s2i-base-container.git"
-  mongodb: "https://github.com/sclorg/mongodb-container.git"
-  mariadb: "https://github.com/sclorg/mariadb-container.git"
-  httpd: "https://github.com/sclorg/httpd-container.git"
-  nginx: "https://github.com/sclorg/nginx-container.git"
-  python3: "https://github.com/sclorg/s2i-python-container.git"
-
-# format:
-# - image_name
-# - bz_version
-# - component
-# - build_tag (global used if not set): build tag used in koji look-ups
-# - git_url: ID of the entry in urls above
-# - git_branch
-# - git_future (git_branch used if not set): future branch for merging changes
-# - git_path: GitHub upstream Path
-# - user: Owner of the image
-# - pull_upstream: Default is True
-# images that are built directly on top of the base image
-images:
-  s2i-core:
-    bz_version: "rawhide"
-    component: "s2i-core"
-    git_url: "s2i-core"
-    git_path: "core"
-    git_branch: "fFEDORA"
-    user: "pkubat"
-  postgresql:
-    bz_version: "rawhide"
-    component: "postgresql"
-    git_url: "postgresql"
-    git_path: "10"
-    git_branch: "fFEDORA"
-    user: "pkubat"
-    commands:
-      1: "make generate-all"
-  redis:
-    bz_version: "rawhide"
-    component: "redis"
-    git_url: "redis"
-    git_path: "3.2"
-    git_branch: "fFEDORA"
-    user: "mskalick"
-  s2i-base:
-    bz_version: "rawhide"
-    component: "s2i-base"
-    git_url: "s2i-base"
-    git_path: "base"
-    git_branch: "fFEDORA"
-    user: "jkaluza"
-  mongodb:
-    bz_version: "rawhide"
-    component: "mongodb"
-    git_url: "mongodb"
-    git_path: "latest"
-    git_branch: "fFEDORA"
-    user: "mskalick"
-  mariadb:
-    bz_version: "rawhide"
-    component: "mariadb"
-    git_url: "mariadb"
-    git_path: "10.2"
-    git_branch: "fFEDORA"
-    user: "hhorak"
-  httpd:
-    bz_version: "rawhide"
-    component: "httpd"
-    git_url: "httpd"
-    git_path: "2.4"
-    git_branch: "fFEDORA"
-    user: "jkaluza"
-  nginx:
-    bz_version: "rawhide"
-    component: "nginx"
-    git_url: "nginx"
-    git_path: "1.12"
-    git_branch: "fFEDORA"
-    user: "luhliari"
-  python3:
-    bz_version: "rawhide"
-    component: "python3"
-    git_url: "python3"
-    git_path: "3.6"
-    git_branch: "fFEDORA"
-    user: "torsava"
-    commands:
-      1: "make generate-all"
+  # format:
+  # - image_name
+  # - bz_version
+  # - component
+  # - build_tag (global used if not set): build tag used in koji look-ups
+  # - git_url: ID of the entry in urls above
+  # - git_branch
+  # - git_future (git_branch used if not set): future branch for merging changes
+  # - git_path: GitHub upstream Path
+  # - user: Owner of the image
+  # - pull_upstream: Default is True
+  # images that are built directly on top of the base image
+  images:
+    s2i-core:
+      bz_version: "rawhide"
+      component: "s2i-core"
+      git_url: "s2i-core"
+      git_path: "core"
+      git_branch: "fFEDORA"
+      user: "pkubat"
+    postgresql:
+      bz_version: "rawhide"
+      component: "postgresql"
+      git_url: "postgresql"
+      git_path: "10"
+      git_branch: "fFEDORA"
+      user: "pkubat"
+      commands:
+        1: "make generate-all"
+    redis:
+      bz_version: "rawhide"
+      component: "redis"
+      git_url: "redis"
+      git_path: "3.2"
+      git_branch: "fFEDORA"
+      user: "mskalick"
+    s2i-base:
+      bz_version: "rawhide"
+      component: "s2i-base"
+      git_url: "s2i-base"
+      git_path: "base"
+      git_branch: "fFEDORA"
+      user: "jkaluza"
+    mongodb:
+      bz_version: "rawhide"
+      component: "mongodb"
+      git_url: "mongodb"
+      git_path: "latest"
+      git_branch: "fFEDORA"
+      user: "mskalick"
+    mariadb:
+      bz_version: "rawhide"
+      component: "mariadb"
+      git_url: "mariadb"
+      git_path: "10.2"
+      git_branch: "fFEDORA"
+      user: "hhorak"
+    httpd:
+      bz_version: "rawhide"
+      component: "httpd"
+      git_url: "httpd"
+      git_path: "2.4"
+      git_branch: "fFEDORA"
+      user: "jkaluza"
+    nginx:
+      bz_version: "rawhide"
+      component: "nginx"
+      git_url: "nginx"
+      git_path: "1.12"
+      git_branch: "fFEDORA"
+      user: "luhliari"
+    python3:
+      bz_version: "rawhide"
+      component: "python3"
+      git_url: "python3"
+      git_path: "3.6"
+      git_branch: "fFEDORA"
+      user: "torsava"
+      commands:
+        1: "make generate-all"

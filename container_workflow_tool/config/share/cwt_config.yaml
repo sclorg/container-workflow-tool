@@ -1,0 +1,19 @@
+distros:
+  - fedora
+  - centos
+
+# Defines in which order we build images
+layer_ordering:
+  1: base
+  2: core
+  3: s2i
+
+packager_utils: "fedpkg"
+rebuild_reason: "rebuild for latest {base_image}"
+product: "Fedora Container Images"
+image_names: ""
+bugzilla_url: "bugzilla.redhat.com"
+
+ignore_files:
+  - "Dockerfile.rhel7"
+  - ".osbs-repo-config"
