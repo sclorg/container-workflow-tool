@@ -506,9 +506,16 @@ class DistgitAPI(object):
             self.logger.warn("No git repositories found in directory " + tmp)
         # Walk through the repositories and show changes made in the last commit
         for path in files:
-            # Clears the screen
-            print(chr(27) + "[2J")
-            # Force pager for short git diffs
-            subprocess.run("git config core.pager 'less -+F' --replace-all", cwd=path, shell=True)
-            # Not using GitPython as its git.show seems to have some problems with encoding
-            subprocess.run(['git', command], cwd=path)
+            repo = Repo(path)
+            branch = repo.active_branch.name
+            # Get a list of commits that have not been pushed to remote
+            select = "origin/" + branch + ".." + branch
+            commits = [i for i in repo.iter_commits(select)]
+            # Only show changes if there are unpushed changes to show
+            if commits:
+                # Clears the screen
+                print(chr(27) + "[2J")
+                # Force pager for short git diffs
+                subprocess.run("git config core.pager 'less -+F' --replace-all", cwd=path, shell=True)
+                # Not using GitPython as its git.show seems to have some problems with encoding
+                subprocess.run(['git', command], cwd=path)
