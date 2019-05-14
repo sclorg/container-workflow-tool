@@ -528,8 +528,9 @@ class DistgitAPI(object):
             # Get a list of commits that have not been pushed to remote
             select = "origin/" + branch + ".." + branch
             commits = [i for i in repo.iter_commits(select)]
-            # Only show changes if there are unpushed changes to show
-            if commits:
+            # Only show changes if there are unpushed commits to show
+            # or we only want the diff of unstaged changes
+            if commits or diff:
                 # Clears the screen
                 print(chr(27) + "[2J")
                 # Force pager for short git diffs
