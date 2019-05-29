@@ -113,6 +113,8 @@ class Config(dict):
 
                 image["git_branch"] = b
                 image["git_future"] = fb
+                if "namespace" not in image:
+                    image["namespace"] = self.get("namespace", "")
                 result.append(image)
 
             self[layer_id] = result
