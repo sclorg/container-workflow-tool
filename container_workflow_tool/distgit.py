@@ -174,8 +174,13 @@ class DistgitAPI(object):
         # One file at a time to make sure all files get reset even on error
         for f in file_list[1:]:
             repo.git.checkout('--', f, with_exceptions=False)
-        # Remove all untracked files
-        repo.git.clean('-xdf')
+            self.logger.debug("Removing changes for: " + f)
+            # Remove all ignored files that are also untracked
+            untracked = repo.git.ls_files('-o').split('\n')
+            if f in untracked:
+                repo.git.clean('-xfd', f)
+                self.logger.debug("Removing untracked ignored file: " + f)
+
 
     def get_commit_msg(self, rebase, image=None):
         """Method to create a commit message to be used in git operations
