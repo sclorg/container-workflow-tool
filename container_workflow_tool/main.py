@@ -154,7 +154,7 @@ class ImageRebuilder:
         if user_logger and isinstance(user_logger, logging.Logger):
             logger = user_logger
         else:
-            logger = u.setup_logger("main", level)
+            logger = u.setup_logger(__name__, level)
 
         self.logger = logger
         return logger
