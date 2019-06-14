@@ -149,12 +149,15 @@ class ImageRebuilder:
 
             self.dhapi = DockerHubWebAPI(username, password)
 
-    def _setup_logger(self, level=logging.INFO, user_logger=None):
+    def _setup_logger(self, level=logging.INFO, user_logger=None, name=__name__):
+        # If a logger is already set up, do not setup a new one
+        if hasattr(self, "logger") and self.logger:
+            return self.logger
         # If a logger has been provided, do not setup own
         if user_logger and isinstance(user_logger, logging.Logger):
             logger = user_logger
         else:
-            logger = u.setup_logger(__name__, level)
+            logger = u.setup_logger(name, level)
 
         self.logger = logger
         return logger
