@@ -13,7 +13,6 @@ class KojiAPI:
         self.buildinfo = {}
         self.conf = conf
         self.logger = logger if logger else u.setup_logger("koji")
-        self.logger.name = "koji"
         self.latest_by_nvr = latest
 
     def clear_cache(self):

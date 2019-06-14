@@ -11,7 +11,6 @@ import tempfile
 import pprint
 import getpass
 import logging
-from copy import copy
 
 from git import Repo
 
@@ -118,11 +117,12 @@ class ImageRebuilder:
     def _setup_distgit(self):
         if not self.distgit:
             self.distgit = DistgitAPI(self.base_image, self.conf,
-                                      self.rebuild_reason, copy(self.logger))
+                                      self.rebuild_reason,
+                                      self.logger.getChild("dist-git"))
 
     def _setup_brewapi(self):
         if not self.brewapi:
-            self.brewapi = KojiAPI(self.conf, copy(self.logger),
+            self.brewapi = KojiAPI(self.conf, self.logger.getChild("koji"),
                                    self.latest_release)
 
     def _setup_dhapi(self):

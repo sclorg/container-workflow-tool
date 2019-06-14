@@ -20,7 +20,6 @@ class DistgitAPI(object):
             rebuild_reason = self.conf.rebuild_reason
         self.rebuild_reason = rebuild_reason.format(base_image=base_image)
         self.logger = logger if logger else u.setup_logger("dist-git")
-        self.logger.name = "dist-git"
         self.df_ext = self.conf.df_ext
 
         self.commit_msg = None
