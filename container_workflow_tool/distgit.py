@@ -358,12 +358,6 @@ class DistgitAPI(object):
         ups_path = os.path.join('upstreams/', ups_name)
         cp_path = os.path.join(ups_path, path)
 
-        for f in repo.git.ls_files().split('\n'):
-            file = os.path.join(component, f)
-            if os.path.isdir(file) and not os.path.islink(file):
-                shutil.rmtree(file)
-            else:
-                os.remove(file)
         self._clone_upstream(url, ups_path, commands=commands)
         # First check if there is a version upstream
         # If not we just skip the whole copy action
@@ -371,6 +365,13 @@ class DistgitAPI(object):
             msg = "Source {} does not exist, skipping copy upstream."
             self.logger.warning(msg.format(cp_path))
             return
+
+        for f in repo.git.ls_files().split('\n'):
+            file = os.path.join(component, f)
+            if os.path.isdir(file) and not os.path.islink(file):
+                shutil.rmtree(file)
+            else:
+                os.remove(file)
 
         # No need for upstream .git files so we remove them
         shutil.rmtree(os.path.join(ups_path, path, '.git'), ignore_errors=True)
