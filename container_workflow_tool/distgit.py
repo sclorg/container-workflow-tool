@@ -181,7 +181,7 @@ class DistgitAPI(object):
                 self.logger.debug("Removing untracked ignored file: " + f)
 
 
-    def get_commit_msg(self, rebase, image=None):
+    def get_commit_msg(self, rebase, image=None, ups_hash=None):
         """Method to create a commit message to be used in git operations
 
         Returns a general commit message depending on the value of the rebase
@@ -204,6 +204,8 @@ class DistgitAPI(object):
         else:
             t = "Unknown rebase argument provided: {}"
             raise RebuilderError(t.format(str(rebase)))
+        if ups_hash:
+            commit += "\n created from upstream commit: " + ups_hash
         return commit
 
     def dist_git_changes(self, images, rebase=False):
@@ -239,12 +241,17 @@ class DistgitAPI(object):
                             self.logger.info(msg + component)
                 else:
                     ups_name = name.split('-')[0]
+                    # Clone upstream repository
+                    ups_path = os.path.join('upstreams/', ups_name)
+                    self._clone_upstream(url, ups_path, commands=commands)
+                    # Save the upstream commit hash
+                    ups_hash = Repo(ups_path).commit().hexsha
                     self._pull_upstream(component, path, url, repo, ups_name, commands)
                     self.update_dockerfile(df_path, release, self.base_image)
                     repo.git.add("Dockerfile")
                     # It is possible for the git repository to have no changes
                     if repo.is_dirty():
-                        commit = self.get_commit_msg(rebase, image)
+                        commit = self.get_commit_msg(rebase, image, ups_hash)
                         if commit:
                             repo.git.commit("-m", commit)
                         else:
@@ -358,7 +365,6 @@ class DistgitAPI(object):
         ups_path = os.path.join('upstreams/', ups_name)
         cp_path = os.path.join(ups_path, path)
 
-        self._clone_upstream(url, ups_path, commands=commands)
         # First check if there is a version upstream
         # If not we just skip the whole copy action
         if not os.path.exists(cp_path):
