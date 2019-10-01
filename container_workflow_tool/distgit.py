@@ -190,6 +190,7 @@ class DistgitAPI(object):
         Args:
             rebase (bool): Specify if the rebase message is created
             image (dict, optional): Metadata about the image being processed
+            ups_hash (str, optional): Upstream commit hash sources were synced from
 
         Returns:
             str: Resulting commit message text
