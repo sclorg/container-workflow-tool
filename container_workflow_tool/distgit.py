@@ -562,5 +562,3 @@ class DistgitAPI(object):
                 subprocess.run("git config core.pager 'less -+F' --replace-all", cwd=path, shell=True)
                 # Not using GitPython as its git.show seems to have some problems with encoding
                 subprocess.run(['git', command], cwd=path)
-            else:
-                self.logger.info(f"There are no unpushed commits for `git {command}`.")
