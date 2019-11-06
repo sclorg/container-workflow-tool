@@ -1,0 +1,17 @@
+---
+- name: Install dependencies for CWT
+  hosts: all
+  tasks:
+    - dnf:
+        name:
+          - python3-pip
+          - python3-devel
+          - gcc
+          - make
+          - git
+          - go-md2man
+          - krb5-devel
+          - krb5-workstation
+          - golang-github-cpuguy83-go-md2man
+          - fedpkg
+      become: true

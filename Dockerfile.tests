@@ -1,0 +1,8 @@
+FROM fedora:30
+
+RUN dnf install -y ansible
+
+COPY files/*.yaml /files/
+RUN ansible-playbook -v -c local -i localhost, files/install-requirements.yaml
+
+WORKDIR /cwt
