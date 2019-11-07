@@ -180,7 +180,6 @@ class DistgitAPI(object):
                 repo.git.clean('-xfd', f)
                 self.logger.debug("Removing untracked ignored file: " + f)
 
-
     def get_commit_msg(self, rebase, image=None, ups_hash=None):
         """Method to create a commit message to be used in git operations
 
@@ -456,6 +455,18 @@ class DistgitAPI(object):
             repo.git.checkout(branch)
         return repo
 
+    def _get_unpushed_commits(self, repo):
+        """
+        Get unpushed commits
+        :param repo: repo name to check for unpushed commits
+        :return: List of commits or empty array
+        """
+        branch = repo.active_branch.name
+        # Get a list of commits that have not been pushed to remote
+        select = "origin/" + branch + ".." + branch
+        commits = [i for i in repo.iter_commits(select)]
+        return commits
+
     def push_changes(self, tmp, images):
         """Pushes changes for components into downstream dist-git repository"""
         # Check for kerberos ticket
@@ -464,13 +475,17 @@ class DistgitAPI(object):
             component = image["component"]
             try:
                 repo = Repo(component)
-                self.logger.info("Pushing: " + component)
-                # If a commit message is provided do a commit first
-                if self.commit_msg and repo.is_dirty():
-                    # commit_msg is set so it is always returned
-                    commit = self.get_commit_msg(None, image)
-                    repo.git.commit("-am", commit)
-                repo.git.push()
+                if self._get_unpushed_commits(repo):
+                    self.logger.info("Pushing: " + component)
+                    # If a commit message is provided do a commit first
+                    if self.commit_msg and repo.is_dirty():
+                        # commit_msg is set so it is always returned
+                        commit = self.get_commit_msg(None, image)
+                        repo.git.commit("-am", commit)
+                    repo.git.push()
+                else:
+                    self.logger.info(f"There are no unpushed commits."
+                                     f"Push skipped for {image}.")
             except GitCommandError as e:
                 failed.append(image)
                 self.logger.error(e)
@@ -538,13 +553,9 @@ class DistgitAPI(object):
         # Walk through the repositories and show changes made in the last commit
         for path in files:
             repo = Repo(path)
-            branch = repo.active_branch.name
-            # Get a list of commits that have not been pushed to remote
-            select = "origin/" + branch + ".." + branch
-            commits = [i for i in repo.iter_commits(select)]
             # Only show changes if there are unpushed commits to show
             # or we only want the diff of unstaged changes
-            if commits or diff:
+            if self._get_unpushed_commits(repo) or diff:
                 # Clears the screen
                 print(chr(27) + "[2J")
                 # Force pager for short git diffs
