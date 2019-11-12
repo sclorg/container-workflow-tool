@@ -2,7 +2,10 @@ FROM fedora:30
 
 RUN dnf install -y ansible
 
-COPY files/*.yaml /files/
+COPY files/* /files/
 RUN ansible-playbook -v -c local -i localhost, files/install-requirements.yaml
+
+RUN git config --global user.email "foo@bar.com"
+RUN git config --global user.name "foobar"
 
 WORKDIR /cwt

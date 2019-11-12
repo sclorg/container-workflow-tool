@@ -9,6 +9,7 @@ layer_ordering:
   3: s2i
 
 packager_utils: "fedpkg"
+hostname_url: "https://src.fedoraproject.org"
 rebuild_reason: "rebuild for latest {base_image}"
 product: "Fedora Container Images"
 image_names: ""

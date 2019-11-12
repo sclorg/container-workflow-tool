@@ -13,5 +13,4 @@
           - krb5-devel
           - krb5-workstation
           - golang-github-cpuguy83-go-md2man
-          - fedpkg
       become: true

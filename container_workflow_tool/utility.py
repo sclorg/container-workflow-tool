@@ -55,6 +55,13 @@ def _get_packager(config):
     return packager
 
 
+def _get_hostname_url(config):
+    # Try to read which packager to use from the config file
+    # default to "https://src.fedoraproject.org"
+    git_url = getattr(config, "hostname_url", "https://src.fedoraproject.org")
+    return git_url
+
+
 def setup_logger(logger_id, level=logging.INFO):
     logger = logging.getLogger(logger_id)
     logger.setLevel(level)

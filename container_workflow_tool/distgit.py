@@ -439,21 +439,21 @@ class DistgitAPI(object):
             self.logger.info("Using existing downstream repo: " + component)
             repo = Repo(component)
         else:
-            ccomponent = "container/" + component
+            hostname_url = u._get_hostname_url(self.conf)
+            ccomponent = f"{hostname_url}/container/{component}.git"
             self.logger.info("Cloning into: " + ccomponent)
-            packager = u._get_packager(self.conf)
-            ret = subprocess.run([packager, "clone", ccomponent],
+            ret = subprocess.run(["git", "clone", ccomponent],
                                  stdout=subprocess.DEVNULL,
                                  stderr=subprocess.DEVNULL)
             # If the clone failed, try once again with the containers prefix
             if ret.returncode != 0:
-                ccomponent = "containers/" + component
-                ret = subprocess.run([packager, "clone", ccomponent],
+                ccomponent = f"{hostname_url}/containers/{component}.git"
+                ret = subprocess.run(["git", "clone", ccomponent],
                                      stdout=subprocess.DEVNULL,
                                      stderr=subprocess.DEVNULL)
                 if ret.returncode != 0:
                     template = "{} failed to clone {} with return value {}."
-                    raise RebuilderError(template.format(packager, component,
+                    raise RebuilderError(template.format("git", component,
                                                          ret.returncode))
             repo = Repo(component)
             repo.git.checkout(branch)
