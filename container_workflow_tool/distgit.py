@@ -270,26 +270,30 @@ class DistgitAPI(object):
             self.logger.info("Cloned into: " + url)
             for submodule in repo.submodules:
                 submodule.update(init=True)
-            self.logger.debug("Running commands in upstream repo.")
-            # Need to be in the upstream git root, so change cwd
-            oldcwd = os.getcwd()
-            os.chdir(ups_path)
-            for order in sorted(commands):
-                cmd = commands[order]
-                self.logger.debug("Running '{o}' command '{c}'".format(o=order,
-                                                                       c=cmd))
-                ret = subprocess.run(cmd, stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE, shell=True, executable='/bin/bash')
-                if ret.returncode != 0:
-                    msg = "'{c}' failed".format(c=cmd.split(" "))
-                    self.logger.error(ret.stderr)
-                    raise RebuilderError(msg)
-            os.chdir(oldcwd)
+
         except GitCommandError:
             # Generally the directory already exists, try to open as a repo instead
             # Throws InvalidGitRepositoryError if it is not a git repo
             repo = Repo(ups_path)
             self.logger.info("Using existing repository.")
+
+        # Run the commands either way
+        self.logger.debug("Running commands in upstream repo.")
+        # Need to be in the upstream git root, so change cwd
+        oldcwd = os.getcwd()
+        os.chdir(ups_path)
+        for order in sorted(commands):
+            cmd = commands[order]
+            self.logger.debug("Running '{o}' command '{c}'".format(o=order,
+                                                                   c=cmd))
+            ret = subprocess.run(cmd, stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE, shell=True,
+                                 executable='/bin/bash')
+            if ret.returncode != 0:
+                msg = "'{c}' failed".format(c=cmd.split(" "))
+                self.logger.error(ret.stderr)
+                raise RebuilderError(msg)
+        os.chdir(oldcwd)
         return repo
 
     def _copy_upstream2downstream(self, src_parent, dest_parent):
