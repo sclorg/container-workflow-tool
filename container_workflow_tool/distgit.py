@@ -489,7 +489,7 @@ class DistgitAPI(object):
                     repo.git.push()
                 else:
                     self.logger.info(f"There are no unpushed commits."
-                                     f"Push skipped for {image}.")
+                                     f" Push skipped for {component}.")
             except GitCommandError as e:
                 failed.append(image)
                 self.logger.error(e)
