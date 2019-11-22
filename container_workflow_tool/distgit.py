@@ -479,13 +479,14 @@ class DistgitAPI(object):
             component = image["component"]
             try:
                 repo = Repo(component)
+                # If a commit message is provided do a commit first
+                if self.commit_msg and repo.is_dirty():
+                    # commit_msg is set so it is always returned
+                    commit = self.get_commit_msg(None, image)
+                    repo.git.commit("-am", commit)
                 if self._get_unpushed_commits(repo):
                     self.logger.info("Pushing: " + component)
-                    # If a commit message is provided do a commit first
-                    if self.commit_msg and repo.is_dirty():
-                        # commit_msg is set so it is always returned
-                        commit = self.get_commit_msg(None, image)
-                        repo.git.commit("-am", commit)
+
                     repo.git.push()
                 else:
                     self.logger.info(f"There are no unpushed commits."
