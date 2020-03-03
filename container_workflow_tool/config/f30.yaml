@@ -1,0 +1,215 @@
+---
+v1:
+  name: Configuration files for Fedora 30
+  cwt: !include share/cwt_config.yaml
+
+  fedora30: &f30
+    releases:
+      fedora:
+        id: "FEDORA"
+        current: "30"
+        future:
+          - "31"
+    build_tag: "fFEDORA-container-updates-candidate"
+    image_sets:
+      base:
+        - s2i-core
+##-1.30       - rust
+      core:
+        - cassandra
+        - httpd
+##-10.3      - mariadb
+##-4.0      - mongodb
+##-8.0      - mysql
+        - nginx
+        - postgresql
+        - s2i-base
+##-8      - toolchain
+##-5.0      - redis
+##-6      - varnish
+      s2i:
+        - golang
+##-7.0      - llvm
+##-10      - nodejs
+##-5.0      - passenger
+##-5.28      - perl
+##-7.2      - php
+##-3.7      - python3
+        - ruby
+
+  current: *f30
+
+  urls: !include share/urls.yaml
+
+  commands:
+    2: "for ver in */; do make $ver/root/help.1; done"
+    3: "sed -i 's|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f30/|' */Dockerfile.fedora"
+
+  # format:
+  # - image_name
+  # - bz_version
+  # - component
+  # - build_tag (global used if not set): build tag used in koji look-ups
+  # - git_url: ID of the entry in urls above
+  # - git_branch
+  # - git_future (git_branch used if not set): future branch for merging changes
+  # - git_path: GitHub upstream Path
+  # - user: Owner of the image
+  # - pull_upstream: Default is True
+  # images that are built directly on top of the base image
+  images:
+    cassandra:
+      bz_version: "FEDORA"
+      component: "cassandra"
+      git_url: "cassandra"
+      git_path: "3.11"
+      git_branch: "fFEDORA"
+      user: "mskalick"
+    golang:
+      bz_version: "FEDORA"
+      component: "golang"
+      git_url: "golang"
+      git_path: "1.11"
+      git_branch: "fFEDORA"
+      user: "jcajka"
+    httpd:
+      bz_version: "FEDORA"
+      component: "httpd"
+      git_url: "httpd"
+      git_path: "2.4"
+      git_branch: "fFEDORA"
+      user: "luhliari"
+    llvm:
+      bz_version: "FEDORA"
+      component: "llvm"
+      git_url: "llvm"
+      git_path: "7.0"
+      git_branch: "fFEDORA"
+      user: "tstellar"
+    mariadb:
+      bz_version: "FEDORA"
+      component: "mariadb"
+      git_url: "mariadb"
+      git_path: "10.3"
+      git_branch: "fFEDORA"
+      user: "hhorak"
+    mongodb:
+      bz_version: "FEDORA"
+      component: "mongodb"
+      git_url: "mongodb"
+      git_path: "4.0"
+      git_branch: "fFEDORA"
+      user: "mskalick"
+    mysql:
+      bz_version: "FEDORA"
+      component: "mysql"
+      git_url: "mysql"
+      git_path: "8.0"
+      git_branch: "fFEDORA"
+      user: "hhorak"
+    nginx:
+      bz_version: "FEDORA"
+      component: "nginx"
+      git_url: "nginx"
+      git_path: "1.12"
+      git_branch: "fFEDORA"
+      user: "luhliari"
+    nodejs:
+      bz_version: "FEDORA"
+      component: "nodejs"
+      git_url: "nodejs"
+      git_path: "10"
+      git_branch: "fFEDORA"
+      user: "zsvetlik"
+    passenger:
+      bz_version: "FEDORA"
+      component: "passenger"
+      git_url: "passenger"
+      git_path: "5.0"
+      git_branch: "fFEDORA"
+      user: "luhliari"
+    perl:
+      bz_version: "FEDORA"
+      component: "perl"
+      git_url: "perl"
+      git_path: "5.28"
+      git_branch: "fFEDORA"
+      user: "ppisar"
+    php:
+      bz_version: "FEDORA"
+      component: "php"
+      git_url: "php"
+      git_path: "7.2"
+      git_branch: "fFEDORA"
+      user: "luhliari"
+    python3:
+      bz_version: "FEDORA"
+      component: "python3"
+      git_url: "python3"
+      git_path: "3.7"
+      git_branch: "fFEDORA"
+      user: "torsava"
+      commands:
+        1: "make generate-all"
+    postgresql:
+      bz_version: "FEDORA"
+      component: "postgresql"
+      git_url: "postgresql"
+      git_path: "10"
+      git_branch: "fFEDORA"
+      user: "pkubat"
+      commands:
+        1: "make generate-all"
+    redis:
+      bz_version: "FEDORA"
+      component: "redis"
+      git_url: "redis"
+      git_path: "5.0"
+      git_branch: "fFEDORA"
+      user: "remi"
+    ruby:
+      bz_version: "FEDORA"
+      component: "ruby"
+      git_url: "ruby"
+      git_path: "2.5"
+      git_branch: "fFEDORA"
+      user: "remi"
+    rust:
+      bz_version: "FEDORA"
+      component: "rust"
+      git_url: "rust"
+      git_path: "1.29"
+      git_branch: "fFEDORA"
+      user: "remi"
+    s2i-base:
+      bz_version: "FEDORA"
+      component: "s2i-base"
+      git_url: "s2i-base"
+      git_path: "base"
+      git_branch: "fFEDORA"
+      user: "pkubat"
+    s2i-core:
+      bz_version: "FEDORA"
+      component: "s2i-core"
+      git_url: "s2i-core"
+      git_path: "core"
+      git_branch: "fFEDORA"
+      user: "pkubat"
+      commands:
+        4: "sed -i 's|registry.fedoraproject.org/fedora:[0-9]*|registry.fedoraproject.org/fedora:30|' */Dockerfile.fedora"
+    toolchain:
+      bz_version: "FEDORA"
+      component: "toolchain"
+      git_url: "toolchain"
+      git_path: "8-toolchain"
+      git_branch: "fFEDORA"
+      user: "mpolacek"
+    varnish:
+      bz_version: "FEDORA"
+      component: "varnish"
+      git_url: "varnish"
+      git_path: "6"
+      git_branch: "fFEDORA"
+      user: "luhliari"
+      commands:
+        1: "make generate-all"
