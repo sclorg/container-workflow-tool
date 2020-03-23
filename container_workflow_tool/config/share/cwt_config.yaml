@@ -16,6 +16,7 @@ bugzilla_url: "bugzilla.redhat.com"
 
 ignore_files:
   - "Dockerfile.rhel7"
+  - "Dockerfile.rhel8"
   - ".osbs-repo-config"
   - ".cccp.yml"
   - "cccp.yml"
