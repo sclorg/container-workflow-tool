@@ -42,7 +42,7 @@ v1:
   urls: !include share/urls.yaml
 
   commands:
-    2: "for ver in */; do make $ver/root/help.1; done"
+    2: "make generate"
     3: "sed -i 's|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f30/|' */Dockerfile.fedora"
 
   # format:
