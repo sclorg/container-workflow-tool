@@ -58,7 +58,7 @@ def _get_packager(config):
 def _get_hostname_url(config):
     # Try to read which packager to use from the config file
     # default to "https://src.fedoraproject.org"
-    git_url = getattr(config, "hostname_url", "https://src.fedoraproject.org")
+    git_url = getattr(config, "hostname_url", None)
     return git_url
 
 

@@ -440,21 +440,24 @@ class DistgitAPI(object):
             repo = Repo(component)
         else:
             hostname_url = u._get_hostname_url(self.conf)
-            ccomponent = f"{hostname_url}/container/{component}.git"
+            packager = u._get_packager(self.conf)
+            # if packager is fedpkg then namespace is `container` else `containers`
+            namespace = "container" if packager == "fedpkg" else "containers"
+            # If hostname_url is specified use `git` otherwise `fedpkg|rhpkg` command.
+            cmd = "git" if hostname_url else packager
+            component_path = f"{namespace}/{component}"
+            ccomponent = f"{hostname_url}/{component_path}.git" if hostname_url else component_path
+
             self.logger.info("Cloning into: " + ccomponent)
-            ret = subprocess.run(["git", "clone", ccomponent],
+            ret = subprocess.run([cmd, "clone", ccomponent],
                                  stdout=subprocess.DEVNULL,
                                  stderr=subprocess.DEVNULL)
             # If the clone failed, try once again with the containers prefix
             if ret.returncode != 0:
-                ccomponent = f"{hostname_url}/containers/{component}.git"
-                ret = subprocess.run(["git", "clone", ccomponent],
-                                     stdout=subprocess.DEVNULL,
-                                     stderr=subprocess.DEVNULL)
-                if ret.returncode != 0:
-                    template = "{} failed to clone {} with return value {}."
-                    raise RebuilderError(template.format("git", component,
-                                                         ret.returncode))
+                template = "{} failed to clone {} with return value {}."
+                raise RebuilderError(template.format(cmd, component,
+                                                     ret.returncode))
+
             repo = Repo(component)
             repo.git.checkout(branch)
         return repo
