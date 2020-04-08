@@ -12,5 +12,5 @@
           - go-md2man
           - krb5-devel
           - krb5-workstation
-          - golang-github-cpuguy83-go-md2man
+          - golang-github-cpuguy83-md2man
       become: true

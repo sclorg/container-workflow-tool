@@ -3,7 +3,7 @@
 TEST_IMAGE=cwt-tests
 TEST_DIR=test/$(TARGET)
 TESTS=$(shell cd test/ && ls test_*.py)
-TEST_CONTAINER_RUN=docker run --rm -it -v $(CURDIR):/cwt $(TEST_IMAGE)
+TEST_CONTAINER_RUN=docker run --rm -it $(TEST_IMAGE)
 
 .PHONY: test
 test: $(TESTS)

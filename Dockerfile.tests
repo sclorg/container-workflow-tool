@@ -1,4 +1,4 @@
-FROM fedora:30
+FROM fedora:rawhide
 
 RUN dnf install -y ansible
 
@@ -9,3 +9,5 @@ RUN git config --global user.email "foo@bar.com"
 RUN git config --global user.name "foobar"
 
 WORKDIR /cwt
+
+COPY ./ /cwt
