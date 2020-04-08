@@ -2,8 +2,8 @@ FROM fedora:rawhide
 
 RUN dnf install -y ansible
 
-COPY files/* /files/
-RUN ansible-playbook -v -c local -i localhost, files/install-requirements.yaml
+COPY image-requirements/* /image-requirements/
+RUN ansible-playbook -v -c local -i localhost, image-requirements/install-requirements.yaml
 
 RUN git config --global user.email "foo@bar.com"
 RUN git config --global user.name "foobar"
