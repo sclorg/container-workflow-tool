@@ -439,22 +439,29 @@ class DistgitAPI(object):
             self.logger.info("Using existing downstream repo: " + component)
             repo = Repo(component)
         else:
-            ccomponent = "container/" + component
-            self.logger.info("Cloning into: " + ccomponent)
+            hostname_url = u._get_hostname_url(self.conf)
             packager = u._get_packager(self.conf)
-            ret = subprocess.run([packager, "clone", ccomponent],
+            # if packager is fedpkg then namespace is `container` else `containers`
+            namespace = "container" if packager == "fedpkg" else "containers"
+            component_path = f"{namespace}/{component}"
+            # If hostname_url is specified use `git` otherwise `packager` command.
+            if hostname_url:
+                cmd = "git"
+                ccomponent = f"{hostname_url}/{component_path}.git"
+            else:
+                cmd = packager
+                ccomponent = component_path
+
+            self.logger.info("Cloning into: " + ccomponent)
+            ret = subprocess.run([cmd, "clone", ccomponent],
                                  stdout=subprocess.DEVNULL,
                                  stderr=subprocess.DEVNULL)
             # If the clone failed, try once again with the containers prefix
             if ret.returncode != 0:
-                ccomponent = "containers/" + component
-                ret = subprocess.run([packager, "clone", ccomponent],
-                                     stdout=subprocess.DEVNULL,
-                                     stderr=subprocess.DEVNULL)
-                if ret.returncode != 0:
-                    template = "{} failed to clone {} with return value {}."
-                    raise RebuilderError(template.format(packager, component,
-                                                         ret.returncode))
+                template = "{} failed to clone {} with return value {}."
+                raise RebuilderError(template.format(cmd, component,
+                                                     ret.returncode))
+
             repo = Repo(component)
             repo.git.checkout(branch)
         return repo

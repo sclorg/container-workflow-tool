@@ -26,9 +26,11 @@ class TestCaseBase(unittest.TestCase):
         self.cwd = os.getcwd()
         self.component = 's2i-base'
         self.ir = ImageRebuilder('Testing')
-        self.ir.set_config('default.yaml', release="fedora26")
+
+        self.ir.set_config('default.yaml', release="rawhide")
         # Partner BZ testing
         self.ir.rebuild_reason = "Unit testing"
+        self.ir.disable_klist = True
         self.ir.set_do_images([self.component])
         # Setup logger - we do not care about output, only errors
         logger = c_logger if c_logger else create_logger(sys.stderr,

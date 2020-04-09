@@ -7,7 +7,7 @@ from test.common import TestCaseBase
 class RebuilderTestCase(TestCaseBase):
 
     def test_set_config(self):
-        self.ir.set_config('default.yaml', release='fedora27')
+        self.ir.set_config('f27.yaml', release='fedora27')
         self.assertEqual(self.ir.conf.releases["fedora"]["current"], '27')
 
     def test_do_images(self):
