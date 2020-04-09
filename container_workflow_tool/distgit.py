@@ -443,10 +443,14 @@ class DistgitAPI(object):
             packager = u._get_packager(self.conf)
             # if packager is fedpkg then namespace is `container` else `containers`
             namespace = "container" if packager == "fedpkg" else "containers"
-            # If hostname_url is specified use `git` otherwise `fedpkg|rhpkg` command.
-            cmd = "git" if hostname_url else packager
             component_path = f"{namespace}/{component}"
-            ccomponent = f"{hostname_url}/{component_path}.git" if hostname_url else component_path
+            # If hostname_url is specified use `git` otherwise `packager` command.
+            if hostname_url:
+                cmd = "git"
+                ccomponent = f"{hostname_url}/{component_path}.git"
+            else:
+                cmd = packager
+                ccomponent = component_path
 
             self.logger.info("Cloning into: " + ccomponent)
             ret = subprocess.run([cmd, "clone", ccomponent],
