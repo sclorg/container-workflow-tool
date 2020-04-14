@@ -1,0 +1,15 @@
+FROM fedora:rawhide
+ENV CWT_DIR=/tmp/container-workflow-tool
+RUN dnf install -y go-md2man \
+    make git python3-PyYAML \
+    python3-GitPython \
+    python3-requests-kerberos \
+    python3-pip \
+    distgen
+
+COPY ./ ${CWT_DIR}/
+RUN cd ${CWT_DIR} \
+    && pip3 install .
+COPY files/run.sh /tmp
+CMD /tmp/run.sh
+
