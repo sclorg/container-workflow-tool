@@ -1,5 +1,7 @@
 Container Workflow Tool
 =====================
+[![Travis CI build status](https://travis-ci.org/sclorg/container-workflow-tool.svg?branch=master)](https://travis-ci.org/sclorg/container-workflow-tool)
+
 
 A python3 tool to make rebuilding container images easier by automating several steps of the process.
 
