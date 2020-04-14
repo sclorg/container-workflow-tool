@@ -55,6 +55,12 @@ To get the usage of a specific command, you can run:
 
     cwt command --help
 
+container-workflow-tool in the quay.io registry
+--------------
+`container-workflow-tool` is automatically built and pushed in
+[quay.io/rhscl/cwt-generator](https://quay.io/repository/rhscl/cwt-generator) as soon as changes
+are merged into `master` branch.
+
 Test
 -------
 This repository also contains test suites for python's `unittest` framework that check the basic functionality of cwt.
@@ -66,3 +72,8 @@ If you do not need to run all of the test cases provided you can run a module-sp
 
     make test_distgit
 
+If you want to run all the test cases in container, run it like this:
+
+```bash
+make test-in-container
+```

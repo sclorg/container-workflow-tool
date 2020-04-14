@@ -4,7 +4,7 @@ TEST_IMAGE=cwt-tests
 TEST_DIR=test/$(TARGET)
 TESTS=$(shell cd test/ && ls test_*.py)
 TEST_CONTAINER_RUN=docker run --rm -it $(TEST_IMAGE)
-GENERATOR_IMAGE=docker.io/rhscl/cwt-generator
+GENERATOR_IMAGE=quay.io/rhscl/cwt-generator
 
 .PHONY: test
 test: $(TESTS)
