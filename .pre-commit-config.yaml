@@ -3,11 +3,6 @@
 # pre-commit install
 
 repos:
--   repo: https://github.com/ambv/black
-    rev: 19.3b0
-    hooks:
-    - id: black
-      language_version: python3.6
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.2.3
     hooks:
@@ -16,7 +11,6 @@ repos:
     - id: check-merge-conflict
     - id: check-yaml
     - id: detect-private-key
-      exclude: tests/integration/conftest.py
     - id: end-of-file-fixer
     - id: trailing-whitespace
     - id: flake8
