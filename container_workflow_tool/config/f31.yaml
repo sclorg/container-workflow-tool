@@ -34,7 +34,7 @@ v1:
 ##-5.0      - passenger
 ##-5.28      - perl
 ##-7.2      - php
-##-3.7      - python3
+        - python3
         - ruby
 
   current: *f31
