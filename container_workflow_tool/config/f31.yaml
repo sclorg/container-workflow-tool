@@ -188,7 +188,7 @@ v1:
       git_branch: "fFEDORA"
       user: "pkubat"
       commands:
-        4: "sed -i 's|registry.fedoraproject.org/fedora:[0-9]*|registry.fedoraproject.org/fedora:29|' */Dockerfile.fedora"
+        4: "sed -i 's|registry.fedoraproject.org/fedora:[0-9]*|registry.fedoraproject.org/fedora:31|' */Dockerfile.fedora"
     toolchain:
       bz_version: "FEDORA"
       component: "toolchain"
