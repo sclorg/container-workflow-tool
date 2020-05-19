@@ -42,8 +42,7 @@ v1:
   urls: !include share/urls.yaml
 
   commands:
-    2: "for ver in */; do make $ver/root/help.1; done"
-    3: "sed -i 's|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f29/|' */Dockerfile.fedora"
+    2: "sed -i 's|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f31/|' */Dockerfile.fedora"
 
   # format:
   # - image_name
@@ -189,7 +188,7 @@ v1:
       git_branch: "fFEDORA"
       user: "pkubat"
       commands:
-        4: "sed -i 's|registry.fedoraproject.org/fedora:[0-9]*|registry.fedoraproject.org/fedora:29|' */Dockerfile.fedora"
+        4: "sed -i 's|registry.fedoraproject.org/fedora:[0-9]*|registry.fedoraproject.org/fedora:31|' */Dockerfile.fedora"
     toolchain:
       bz_version: "FEDORA"
       component: "toolchain"
