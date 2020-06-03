@@ -30,7 +30,7 @@ v1:
       s2i:
         - golang
 ##-7.0      - llvm
-##-10      - nodejs
+        - nodejs
 ##-5.0      - passenger
 ##-5.28      - perl
 ##-7.2      - php
@@ -103,14 +103,14 @@ v1:
       bz_version: "FEDORA"
       component: "nginx"
       git_url: "nginx"
-      git_path: "1.12"
+      git_path: "1.18"
       git_branch: "fFEDORA"
       user: "luhliari"
     nodejs:
       bz_version: "FEDORA"
       component: "nodejs"
       git_url: "nodejs"
-      git_path: "10"
+      git_path: "12"
       git_branch: "fFEDORA"
       user: "zsvetlik"
     passenger:
