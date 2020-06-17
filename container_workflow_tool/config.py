@@ -68,7 +68,7 @@ class Config(dict):
         images = config["images"]
         self["layers"] = config["layer_ordering"]
         self["packager_util"] = config["packager_utils"]
-        self["hostname_url"] = config["hostname_url"]
+        self["hostname_url"] = config.get("hostname_url", "")
         self["product"] = config.get("product", "")
         self["image_names"] = config.get("image_names", "")
         self["rebuild_reason"] = config.get("rebuild_reason", "")

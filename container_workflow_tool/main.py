@@ -262,10 +262,11 @@ class ImageRebuilder:
                                     stderr=subprocess.PIPE,
                                     universal_newlines=True)
             # Append the process and component information for later use
-            procs.append((proc, component))
+            procs.append((proc, image))
 
         self.logger.info("Fetching tasks...")
-        for proc, component in procs:
+        for proc, image in procs:
+            component = image["component"]
             self.logger.debug("Query component: {}".format(component))
             # Iterate until a taskID is found
             for stdout in iter(proc.stdout.readline, ""):
@@ -285,20 +286,29 @@ class ImageRebuilder:
             self.logger.debug("Looping over all running builds")
             for proc, image in procs:
                 out = err = None
+                component = image["component"]
                 try:
                     self.logger.debug("Waiting {} seconds for {}".format(timeout,
-                                                                         image))
+                                                                         component))
                     out, err = proc.communicate(timeout=timeout)
                 except subprocess.TimeoutExpired:
                     msg = "{} not yet finished, checking next build"
-                    self.logger.debug(msg.format(image))
+                    self.logger.debug(msg.format(component))
                     continue
-
-                self.logger.info("{} build has finished".format(image))
+                if proc.returncode != 0:
+                    self.logger.error("{} build has failed".format(component))
+                else:
+                    self.logger.info("{} build has finished".format(component))
+                    # If this image triggers a new layer, build it
+                    if "trigger" in image:
+                        msg = "Triggering layered builds on image {}..."
+                        self.logger.info(msg.format(component))
+                        self.build_images(image["trigger"])
                 if err:
                     # Write out stderr if we encounter an error
                     err = u._4sp(err)
                     self.logger.error(err)
+
                 procs.remove((proc, image))
 
     def _get_config_path(self, config):
