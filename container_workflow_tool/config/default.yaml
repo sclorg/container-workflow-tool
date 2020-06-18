@@ -184,7 +184,6 @@ v1:
       git_path: "base"
       git_branch: "master"
       user: "pkubat"
-      trigger: "s2i"
     s2i-core:
       bz_version: "FEDORA"
       component: "s2i-core"
@@ -192,7 +191,6 @@ v1:
       git_path: "core"
       git_branch: "master"
       user: "pkubat"
-      trigger: "core"
       commands:
         4: "sed -i 's|registry.fedoraproject.org/fedora:[0-9]*|registry.fedoraproject.org/fedora:rawhide|' */Dockerfile.fedora"
     toolchain:
