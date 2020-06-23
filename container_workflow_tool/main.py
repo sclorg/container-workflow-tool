@@ -119,12 +119,14 @@ class ImageRebuilder:
             raise RebuilderError(err_msg)
         return i
 
+    # TODO Switch to using @property
     def _setup_distgit(self):
         if not self.distgit:
             self.distgit = DistgitAPI(self.base_image, self.conf,
                                       self.rebuild_reason,
                                       self.logger.getChild("dist-git"))
 
+    # TODO Switch to using @property
     def _setup_brewapi(self):
         if not self.brewapi:
             self.brewapi = KojiAPI(self.conf, self.logger.getChild("koji"),
@@ -448,7 +450,7 @@ class ImageRebuilder:
     def print_upstream(self):
         """Prints the upstream name and url for images used in config"""
         for i in self._get_images():
-            ups_name = re.search(".*\/([a-zA-Z0-9-]+).git",
+            ups_name = re.search(r".*\/([a-zA-Z0-9-]+).git",
                                  i["git_url"]).group(1)
             print(f'{i["component"]} {i["name"]} {ups_name} {i["git_url"]}')
 
@@ -576,7 +578,7 @@ class ImageRebuilder:
         if self.args:
             self.logger.info(
                 "To push and build run:"
-                "cwt git push && cwt|rh_cwt build"
+                "cwt git push && cwt build"
                 "[base/core/s2i] --repo-url link-to-repo-file")
 
     @needs_distgit

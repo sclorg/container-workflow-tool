@@ -12,4 +12,3 @@ RUN cd ${CWT_DIR} \
     && pip3 install .
 COPY files/run.sh /tmp
 CMD /tmp/run.sh
-
