@@ -12,7 +12,8 @@ import pprint
 import getpass
 import logging
 
-from git import Repo
+from git import Repo, GitError
+from typing import List, Any
 
 import container_workflow_tool.utility as u
 from container_workflow_tool.koji import KojiAPI
@@ -26,7 +27,11 @@ from container_workflow_tool.config import Config
 class ImageRebuilder:
     """Class for rebuilding Container images."""
 
-    def __init__(self, base_image, rebuild_reason=None, config="default.yaml", release="current"):
+    def __init__(self,
+                 base_image: str,
+                 rebuild_reason: str = None,
+                 config: str = "default.yaml",
+                 release: str = "current"):
         """ Init method of ImageRebuilder class
 
         Args:
@@ -37,12 +42,12 @@ class ImageRebuilder:
         """
         self.base_image = base_image
 
-        self.brewapi = None
+        self.brewapi: KojiAPI = None
         self.dhapi = None
-        self.distgit = None
+        self.distgit: DistgitAPI = None
         self.commit_msg = None
         self.args = None
-        self.tmp_workdir = None
+        self.tmp_workdir: str = None
         self.repo_url = None
         self.jira_header = None
 
@@ -60,7 +65,7 @@ class ImageRebuilder:
         self.set_config(self.conf_name, release=release)
 
     @classmethod
-    def from_args(cls, args):
+    def from_args(cls, args) -> Any:
         """
         Creates an ImageRebuilder instance from argparse arguments.
         """
@@ -107,7 +112,7 @@ class ImageRebuilder:
         if getattr(args, 'image_set', None) is not None and args.image_set:
             self.image_set = args.image_set
 
-    def _get_set_from_config(self, layer):
+    def _get_set_from_config(self, layer: str) -> str:
         i = getattr(self.conf, layer, [])
         if i is None:
             err_msg = "Image set '{}' not found in config.".format(layer)
@@ -125,6 +130,7 @@ class ImageRebuilder:
             self.brewapi = KojiAPI(self.conf, self.logger.getChild("koji"),
                                    self.latest_release)
 
+    # TODO switch to property
     def _setup_dhapi(self):
         from dhwebapi.dhwebapi import DockerHubWebAPI, DockerHubException
         if not self.dhapi:
@@ -168,17 +174,17 @@ class ImageRebuilder:
             if ret.returncode:
                 raise(RebuilderError("Kerberos token not found."))
 
-    def _change_workdir(self, path):
+    def _change_workdir(self, path: str):
         self.logger.info("Using working directory: " + path)
         os.chdir(path)
 
     @needs_base
-    def _get_tmp_workdir(self, setup_dir=True):
+    def _get_tmp_workdir(self, setup_dir: bool = True) -> str:
         # Check if the workdir has been set by the user
         if self.tmp_workdir:
             return self.tmp_workdir
         tmp = None
-        tmp_id = self.base_image.replace(':', '-')
+        tmp_id = self.base_image.replace(":", "-")
         # Check if there is an existing tempdir for the build
         for f in os.scandir(tempfile.gettempdir()):
             if os.path.isdir(f.path) and f.name.startswith(tmp_id):
@@ -198,8 +204,8 @@ class ImageRebuilder:
     def set_do_set(self, val):
         self.do_set = val
 
-    def _get_images(self):
-        images = []
+    def _get_images(self) -> List:
+        images: List = []
         if self.do_set:
             # Use only the image sets the user asked for
             for layer in self.do_set:
@@ -211,7 +217,7 @@ class ImageRebuilder:
                 images += i
         return self._filter_images(images)
 
-    def _filter_images(self, base):
+    def _filter_images(self, base: List) -> List:
         if self.do_image:
             return [i for i in base if i["component"] in self.do_image]
         elif self.exclude_image:
@@ -219,10 +225,11 @@ class ImageRebuilder:
         else:
             return base
 
-    def _prebuild_check(self, image_set, branches=[]):
+    def _prebuild_check(self, image_set: List, branches: List = None):
         tmp = self._get_tmp_workdir(setup_dir=False)
         if not tmp:
-            raise RebuilderError("Temporary directory structure does not exist. Pull upstream first.")
+            msg = "Temporary directory structure does not exist. Pull upstream first."
+            raise RebuilderError(msg)
         self.logger.info("Checking for correct repository configuration ...")
         releases = branches
         for image in image_set:
@@ -235,10 +242,10 @@ class ImageRebuilder:
                 raise e
             # This checks if any of the releases can be found in the name of the checked-out branch
             if releases and not [i for i in releases if i in str(repo.active_branch)]:
-                raise RebuilderError("Unexpected active branch for {}: {}".format(component,
-                                                                                  repo.active_branch))
+                msg = f"Unexpected active branch for {component}: {repo.active_branch}"
+                raise RebuilderError(msg)
 
-    def _build_images(self, image_set, custom_args=[], branches=[]):
+    def _build_images(self, image_set, custom_args: List = None, branches: List = None):
         if not image_set:
             # Nothing to build
             self.logger.warn("No images to build, exiting.")
@@ -255,8 +262,8 @@ class ImageRebuilder:
         for image in image_set:
             component = image["component"]
             cwd = os.path.join(tmp, component)
-            self.logger.info("Building image {} ...".format(component))
-            args = [u._get_packager(self.conf), 'container-build']
+            self.logger.info(f"Building image {component} ...")
+            args = [u._get_packager(self.conf), "container-build"]
             if custom_args:
                 args.extend(custom_args)
             proc = subprocess.Popen(args, cwd=cwd, stdout=subprocess.PIPE,
@@ -268,18 +275,16 @@ class ImageRebuilder:
         self.logger.info("Fetching tasks...")
         for proc, image in procs:
             component = image["component"]
-            self.logger.debug("Query component: {}".format(component))
+            self.logger.debug(f"Query component: {component}")
             # Iterate until a taskID is found
             for stdout in iter(proc.stdout.readline, ""):
                 if "taskID" in stdout:
-                    self.logger.info("{} - {}".format(component,
-                                                      stdout.strip()))
+                    self.logger.info(f"{component} - {stdout.strip()}")
                     break
             else:
                 # If we get here the command must have failed
                 # The error will get printed out later when getting all builds
-                temp = "Could not find task for {}!"
-                self.logger.warning(temp.format(component))
+                self.logger.warning(f"Could not find task for {component}!")
 
         self.logger.info("Waiting for builds...")
         timeout = 30
@@ -289,21 +294,22 @@ class ImageRebuilder:
                 out = err = None
                 component = image["component"]
                 try:
-                    self.logger.debug("Waiting {} seconds for {}".format(timeout,
-                                                                         component))
+                    self.logger.debug(f"Waiting {timeout} seconds for {component}")
                     out, err = proc.communicate(timeout=timeout)
                 except subprocess.TimeoutExpired:
                     msg = "{} not yet finished, checking next build"
                     self.logger.debug(msg.format(component))
+                    self.logger.debug(f"{component} not yet finished, checking next build")
                     continue
                 if proc.returncode != 0:
-                    self.logger.error("{} build has failed".format(component))
+                    self.logger.error(f"{component} build has failed")
                 else:
-                    self.logger.info("{} build has finished".format(component))
+                    self.logger.info(f"{component} build has finished")
                     # If this image triggers a new layer, build it
                     if "trigger" in image:
                         triggers.append((component, image["trigger"]))
 
+                self.logger.info(f"{component} build has finished")
                 if err:
                     # Write out stderr if we encounter an error
                     err = u._4sp(err)
@@ -316,7 +322,7 @@ class ImageRebuilder:
             self.logger.info(msg, component)
             self.build_images(trigger)
 
-    def _get_config_path(self, config):
+    def _get_config_path(self, config: str) -> str:
         if not os.path.isabs(config):
             base_path = os.path.abspath(__file__)
             dir_path = os.path.dirname(base_path)
@@ -329,7 +335,7 @@ class ImageRebuilder:
         print("Method not yet implemented.")
 
     @needs_brewapi
-    def get_brew_builds(self, print_time=True):
+    def get_brew_builds(self, print_time: bool = True) -> str:
         """Returns information about builds in brew
 
         Args:
@@ -357,7 +363,7 @@ class ImageRebuilder:
             archives = self.brewapi.brew.listArchives(build_id)
             archive = archives[0]["extra"]
             name = archive["docker"]["config"]["config"]["Labels"]["name"]
-            image_name = "{name}:{vr}".format(name=name, vr=vr)
+            image_name = f"{name}:{vr}"
             result = template.format(component, nvr, image_name)
             if print_time:
                 result += self.brewapi.get_time_built(nvr) + '|'
@@ -365,7 +371,7 @@ class ImageRebuilder:
             output.append(result)
         return '\n'.join(output)
 
-    def set_config(self, conf_name, release="current"):
+    def set_config(self, conf_name: str, release: str = "current"):
         """
         Use a configuration file other than the current one.
         The configuration file used must be located in the standard 'config' directory.
@@ -385,7 +391,7 @@ class ImageRebuilder:
         if self.distgit:
             self.distgit.conf = newconf
 
-    def set_tmp_workdir(self, tmp):
+    def set_tmp_workdir(self, tmp: str):
         """
         Sets the temporary working directory to the one provided.
         The directory has to already exist.
@@ -399,7 +405,7 @@ class ImageRebuilder:
             raise RebuilderError("Provided working directory does not exist.")
 
     @needs_distgit
-    def set_commit_msg(self, msg):
+    def set_commit_msg(self, msg: str):
         """
         Set the commit message to some other than the default one.
 
@@ -441,12 +447,10 @@ class ImageRebuilder:
 
     def print_upstream(self):
         """Prints the upstream name and url for images used in config"""
-        template = "{component} {img_name} {ups_name} {url}"
         for i in self._get_images():
             ups_name = re.search(".*\/([a-zA-Z0-9-]+).git",
                                  i["git_url"]).group(1)
-            print(template.format(component=i["component"], url=i["git_url"],
-                                  ups_name=ups_name, img_name=i["name"]))
+            print(f'{i["component"]} {i["name"]} {ups_name} {i["git_url"]}')
 
     def show_config_contents(self):
         """Prints the symbols and values of configuration used"""
@@ -470,7 +474,7 @@ class ImageRebuilder:
         images = self._filter_images(image_config)
         self._build_images(images)
 
-    def print_brew_builds(self, print_time=True):
+    def print_brew_builds(self, print_time: bool = True):
         """Prints information about builds in brew
 
         Args:
@@ -484,9 +488,11 @@ class ImageRebuilder:
     # Dist-git method wrappers
     @needs_distgit
     def pull_downstream(self):
-        """Pulls downstream dist-git repositories and does not make any further changes to them
+        """
+        Pulls downstream dist-git repositories and does not make any further changes to them
 
-        Additionally runs a script against each repository if check_script is set, checking its exit value.
+        Additionally runs a script against each repository if check_script is set,
+        checking its exit value.
         """
         self._check_kerb_ticket()
         tmp = self._get_tmp_workdir()
@@ -502,9 +508,11 @@ class ImageRebuilder:
 
     @needs_distgit
     def pull_upstream(self):
-        """Pulls upstream git repositories and does not make any further changes to them
+        """
+        Pulls upstream git repositories and does not make any further changes to them
 
-        Additionally runs a script against each repository if check_script is set, checking its exit value.
+        Additionally runs a script against each repository if check_script is set,
+        checking its exit value.
         """
         tmp = self._get_tmp_workdir()
         self._change_workdir(tmp)
@@ -512,9 +520,9 @@ class ImageRebuilder:
         for i in images:
             # Use unversioned name as a path for the repository
             ups_name = i["name"].split('-')[0]
-            repo = self.distgit._clone_upstream(i["git_url"],
-                                                ups_name,
-                                                commands=i["commands"])
+            self.distgit._clone_upstream(i["git_url"],
+                                         ups_name,
+                                         commands=i["commands"])
         # If check script is set, run the script provided for each config entry
         if self.check_script:
             for i in images:
@@ -529,7 +537,9 @@ class ImageRebuilder:
         self._check_kerb_ticket()
         tmp = self._get_tmp_workdir(setup_dir=False)
         if not tmp:
-            raise RebuilderError("Temporary directory structure does not exist. Pull upstream/rebase first.")
+            raise RebuilderError(
+                "Temporary directory structure does not exist. Pull upstream/rebase first."
+            )
         self._change_workdir(tmp)
         images = self._get_images()
 
@@ -543,7 +553,7 @@ class ImageRebuilder:
         self.dist_git_changes(rebase=True)
 
     @needs_distgit
-    def dist_git_changes(self, rebase=False):
+    def dist_git_changes(self, rebase: bool = False):
         """Method to merge changes from upstream into downstream
 
         Pulls both downstream and upstream repositories into a temporary directory.
@@ -560,11 +570,14 @@ class ImageRebuilder:
         self.distgit.dist_git_changes(images, rebase)
         self.logger.info("\nGit location: " + tmp)
         if self.args:
-            template = "./rebuild-helper {} git show"
+            tmp_str = ' --tmp ' + self.tmp_workdir if self.tmp_workdir else '"'
             self.logger.info("You can view changes made by running:")
-            self.logger.info(template.format('--base ' + self.base_image + (' --tmp ' + self.tmp_workdir if self.tmp_workdir else "")))
+            self.logger.info(f"cwt --base {self.base_image} {tmp_str} git show")
         if self.args:
-            self.logger.info("To push and build run: rebuild-helper git push && rebuild-helper build [base/core/s2i] --repo-url link-to-repo-file")
+            self.logger.info(
+                "To push and build run:"
+                "cwt git push && cwt|rh_cwt build"
+                "[base/core/s2i] --repo-url link-to-repo-file")
 
     @needs_distgit
     def merge_future_branches(self):
@@ -577,7 +590,7 @@ class ImageRebuilder:
         self.distgit.merge_future_branches(images)
 
     @needs_distgit
-    def show_git_changes(self, components=None):
+    def show_git_changes(self, components: List = None):
         """Shows changes made to tracked files in local downstream repositories
 
         Args:
@@ -598,9 +611,11 @@ class ImageRebuilder:
         imgs = self._get_images()
 
         for img in imgs:
-            #FIXME: Will not work with new config
+            # FIXME: Will not work with new config
             name, version, component, branch, url, path, *rest = img
 
             with open(os.path.join(name.split('-')[0], path, "README.md")) as f:
                 desc = "".join(f.readlines())
-                self.dhapi.set_repository_full_description(namespace="centos", repo_name=name.replace("rhel", "centos"), full_description=desc)
+                self.dhapi.set_repository_full_description(namespace="centos",
+                                                           repo_name=name.replace("rhel", "centos"),
+                                                           full_description=desc)
