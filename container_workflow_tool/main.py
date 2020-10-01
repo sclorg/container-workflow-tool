@@ -250,6 +250,7 @@ class ImageRebuilder:
         self._prebuild_check(image_set, branches)
 
         procs = []
+        triggers = []
         tmp = self._get_tmp_workdir(setup_dir=False)
         for image in image_set:
             component = image["component"]
@@ -301,15 +302,19 @@ class ImageRebuilder:
                     self.logger.info("{} build has finished".format(component))
                     # If this image triggers a new layer, build it
                     if "trigger" in image:
-                        msg = "Triggering layered builds on image {}..."
-                        self.logger.info(msg.format(component))
-                        self.build_images(image["trigger"])
+                        triggers.append((component, image["trigger"]))
+
                 if err:
                     # Write out stderr if we encounter an error
                     err = u._4sp(err)
                     self.logger.error(err)
 
                 procs.remove((proc, image))
+
+        for component, trigger in triggers:
+            msg = "Triggering layered builds on image %s..."
+            self.logger.info(msg, component)
+            self.build_images(trigger)
 
     def _get_config_path(self, config):
         if not os.path.isabs(config):
