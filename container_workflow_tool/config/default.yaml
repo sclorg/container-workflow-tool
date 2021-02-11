@@ -31,7 +31,7 @@ v1:
         - nodejs
 ##-5.0      - passenger
         - perl
-##-7.3      - php
+        - php
         - python3
 ##        - ruby
   current: *rawhide
@@ -135,7 +135,7 @@ v1:
       bz_version: "FEDORA"
       component: "php"
       git_url: "php"
-      git_path: "7.3"
+      git_path: "7.4"
       git_branch: "master"
       user: "luhliari"
     python3:
@@ -167,7 +167,7 @@ v1:
       bz_version: "FEDORA"
       component: "ruby"
       git_url: "ruby"
-      git_path: "2.5"
+      git_path: "3.0"
       git_branch: "master"
       user: "remi"
     rust:
