@@ -1,15 +1,15 @@
 ---
 v1:
-  name: Configuration files for Fedora 34
+  name: Configuration files for Fedora 33
   cwt: !include share/cwt_config.yaml
 
-  fedora34: &f34
+  fedora33: &f33
     releases:
       fedora:
         id: "FEDORA"
-        current: "34"
+        current: "33"
         future:
-          - "35"
+          - "34"
     build_tag: "fFEDORA-container-updates-candidate"
     image_sets:
       base:
@@ -35,14 +35,14 @@ v1:
         - perl
         - php
         - python3
-##-2.7        - ruby
+        - ruby
 
-  current: *f34
+  current: *f33
 
   urls: !include share/urls.yaml
 
   commands:
-    2: "sed -i 's|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f34/|' */Dockerfile.fedora"
+    2: "sed -i 's|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f33/|' */Dockerfile.fedora"
 
   # format:
   # - image_name
@@ -163,7 +163,7 @@ v1:
       bz_version: "FEDORA"
       component: "ruby"
       git_url: "ruby"
-      git_path: "3.0"
+      git_path: "2.7"
       git_branch: "fFEDORA"
       user: "remi"
     rust:
@@ -188,7 +188,7 @@ v1:
       git_branch: "fFEDORA"
       user: "pkubat"
       commands:
-        4: "sed -i 's|registry.fedoraproject.org/fedora:[0-9]*|registry.fedoraproject.org/fedora:34|' */Dockerfile.fedora"
+        4: "sed -i 's|registry.fedoraproject.org/fedora:[0-9]*|registry.fedoraproject.org/fedora:33|' */Dockerfile.fedora"
     toolchain:
       bz_version: "FEDORA"
       component: "toolchain"
