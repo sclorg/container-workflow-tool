@@ -539,9 +539,8 @@ class ImageRebuilder:
         self._check_kerb_ticket()
         tmp = self._get_tmp_workdir(setup_dir=False)
         if not tmp:
-            raise RebuilderError(
-                "Temporary directory structure does not exist. Pull upstream/rebase first."
-            )
+            msg = "Temporary directory structure does not exist. Pull upstream/rebase first."
+            raise RebuilderError(msg)
         self._change_workdir(tmp)
         images = self._get_images()
 
