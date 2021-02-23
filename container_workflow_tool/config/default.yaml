@@ -30,7 +30,7 @@ v1:
 ##-7.0      - llvm
         - nodejs
 ##-5.0      - passenger
-##-5.28      - perl
+        - perl
 ##-7.3      - php
         - python3
 ##        - ruby
@@ -114,7 +114,7 @@ v1:
       bz_version: "FEDORA"
       component: "nodejs"
       git_url: "nodejs"
-      git_path: "12"
+      git_path: "15"
       git_branch: "master"
       user: "zsvetlik"
     passenger:
@@ -128,7 +128,7 @@ v1:
       bz_version: "FEDORA"
       component: "perl"
       git_url: "perl"
-      git_path: "5.28"
+      git_path: "5.32"
       git_branch: "master"
       user: "ppisar"
     php:
@@ -142,7 +142,7 @@ v1:
       bz_version: "FEDORA"
       component: "python3"
       git_url: "python3"
-      git_path: "3.8"
+      git_path: "3.10"
       git_branch: "master"
       user: "torsava"
       commands:
