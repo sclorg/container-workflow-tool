@@ -29,7 +29,7 @@ class BrewTestCase(TestCaseBase):
     def test_get_taskinfo(self):
         taskinfo = self.ir.brewapi.get_taskinfo(24268996)
         self.assertIn('create_ts', taskinfo)
-        self.assertEqual(taskinfo['create_ts'], 1516286326.9219)
+        self.assertEqual(taskinfo['create_ts'], 1516286326.921902)
 
 
 if __name__ == '__main__':
