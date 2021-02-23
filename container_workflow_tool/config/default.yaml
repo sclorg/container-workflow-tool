@@ -8,7 +8,7 @@ v1:
       fedora:
         id: "FEDORA"
         current: "master"
-    build_tag: "f33-container-candidate"
+    build_tag: "f35-container-candidate"
     image_sets:
       base:
         - s2i-core
@@ -39,7 +39,7 @@ v1:
   urls: !include share/urls.yaml
 
   commands:
-    3: "sed -i 's|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f33/|' */Dockerfile.fedora"
+    3: "sed -i 's|registry.fedoraproject.org/f[0-9]*/|registry.fedoraproject.org/f35/|' */Dockerfile.fedora"
 
   # format:
   # - image_name
