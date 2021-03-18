@@ -62,7 +62,7 @@ class DistgitAPI(object):
             if relstr is None:
                 release = relstr
             else:
-                release = re.search(relstr + '="?([0-9\.]*)', fdata)
+                release = re.search(relstr + r'="?([0-9\.]*)', fdata)
                 if release is not None:
                     release = release.group(1)
             return release
@@ -80,25 +80,25 @@ class DistgitAPI(object):
         self.logger.debug("Setting release to: " + str(release))
         if release is not None:
             relstr = self._get_release_format(fdata)
-            ret = re.sub(relstr + '=\"?[0-9\.]*\"?',
-                         relstr + '=\"' + release + '\"', fdata)
+            ret = re.sub(relstr + r'=\"?[0-9\.]*\"?',
+                         relstr + r'=\"' + release + '\"', fdata)
         else:
             ret = fdata
         return ret
 
     def _bump_release(self, version_str, bump_type):
         if version_str:
-            l = version_str.split('.')
-            if len(l) == 1 and bump_type == 'minor':
+            length = version_str.split('.')
+            if len(length) == 1 and bump_type == 'minor':
                 # Release="1" -> Release="1.1"
-                l.append('1')
-            elif len(l) >= 1 and bump_type == 'major':
+                length.append('1')
+            elif len(length) >= 1 and bump_type == 'major':
                 # Release="1.1" -> Release="2.0"
-                l = [str(int(l[0]) + 1), str(0)]
+                length = [str(int(length[0]) + 1), str(0)]
             else:
                 # Just bump the last number
-                l[-1] = str(int(l[-1]) + 1)
-            return '.'.join(l)
+                length[-1] = str(int(length[-1]) + 1)
+            return '.'.join(length)
 
     def _get_from(self, dockerfile_path):
         """Gets FROM field from a Dockerfile
@@ -159,7 +159,7 @@ class DistgitAPI(object):
         ret = subprocess.run(script_path, shell=True, stderr=subprocess.PIPE,
                              stdout=subprocess.DEVNULL, cwd=component_path)
 
-        if ret.returncode is not 0:
+        if ret.returncode != 0:
             self.logger.info(template.format(name=component, status="Affected"))
             err = ret.stderr.decode('utf-8').strip()
             if err:
@@ -343,16 +343,24 @@ class DistgitAPI(object):
                 # from source, following the first symlink
                 if os.path.islink(dest_file) and not os.path.isabs(os.readlink(dest_file)):
                     dest_target = os.path.join(os.path.dirname(dest_file), os.readlink(dest_file))
-                    self.logger.debug('looking for dangling symlink {} (that points to {})'.format(dest_file, dest_target))
+                    msg = f"looking for dangling symlink {dest_file} (that points to {dest_target})"
+                    self.logger.debug(msg)
                     if os.path.exists(dest_target):
                         continue
-                    # We found a dangling symlink to relative path, so we need to use the matching path in source,
-                    # which means removing destination name from destination and adding it to source root
-                    dest_path_rel = re.sub(r"^{comp}{sep}".format(comp=dest_parent, sep=os.path.sep), "", dest_file)
+                    # We found a dangling symlink to relative path,
+                    # so we need to use the matching path in source,
+                    # which means removing destination name
+                    # from destination and adding it to source root
+                    dest_path_rel = re.sub(
+                        r"^{comp}{sep}".format(comp=dest_parent, sep=os.path.sep),
+                        "",
+                        dest_file
+                    )
                     src_path_content = os.path.join(src_parent, dest_path_rel)
                     self.logger.debug("unlink {dest}".format(dest=dest_file))
                     os.unlink(dest_file)
-                    src_full = os.path.join(os.path.dirname(src_path_content), os.readlink(src_path_content))
+                    src_full = os.path.join(os.path.dirname(src_path_content),
+                                            os.readlink(src_path_content))
                     if os.path.isdir(src_full):
                         # In this case, when the source directory includes another symlinks outside
                         # of this directory, those wouldn't be fixed, so let's run the same function
@@ -571,6 +579,10 @@ class DistgitAPI(object):
                 # Clears the screen
                 print(chr(27) + "[2J")
                 # Force pager for short git diffs
-                subprocess.run("git config core.pager 'less -+F' --replace-all", cwd=path, shell=True)
+                subprocess.run(
+                    "git config core.pager 'less -+F' --replace-all",
+                    cwd=path,
+                    shell=True
+                )
                 # Not using GitPython as its git.show seems to have some problems with encoding
                 subprocess.run(['git', command], cwd=path)
