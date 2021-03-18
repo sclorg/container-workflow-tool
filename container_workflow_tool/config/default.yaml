@@ -9,6 +9,7 @@ v1:
         id: "FEDORA"
         current: "main"
     build_tag: "f35-container-candidate"
+    from_tag: "rawhide"
     image_sets:
       base:
         - s2i-core

@@ -11,6 +11,7 @@ v1:
         future:
           - "34"
     build_tag: "fFEDORA-container-updates-candidate"
+    from_tag: "latest"
     image_sets:
       base:
         - s2i-core
