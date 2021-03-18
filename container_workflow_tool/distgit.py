@@ -100,40 +100,56 @@ class DistgitAPI(object):
                 length[-1] = str(int(length[-1]) + 1)
             return '.'.join(length)
 
-    def _get_from(self, dockerfile_path):
+    def _get_tag(self):
+        return 'rhel' + self.base_image.split(':')[1].split('-')[0]
+
+    def _get_from(self, fdata):
         """Gets FROM field from a Dockerfile
 
         Args:
-            dockerfile_path (str): Path to the Dockerfile
+            fdata (str): String containing the Dockerfile
 
         Returns:
             str: FROM string
         """
+        image_base = re.search('FROM (.*)\n', fdata)
+        if image_base:
+            image_base = image_base.group(1)
+        return image_base
 
-        with open(dockerfile_path) as f:
-            image_base = re.search('FROM (.*)\n', f.read())
-            if image_base:
-                image_base = image_base.group(1)
-            return image_base
+    def _set_from(self, fdata, from_tag):
+        """
+        Updates FROM field from a Dockerfile with value defined in configuration file
 
-    def _update_dockerfile_rebuild(self, dockerfile_path, release, base_image):
+        Returns:
+            str: Dockerfile content with updated tag field
+        """
+        self.logger.debug("Setting tag to: " + str(from_tag))
+        base_image = self._get_from(fdata=fdata)
+        self.logger.debug(f"Base image is: {self.base_image}")
+        imagename_without_tag = base_image.split(':')[0]
+        ret = re.sub("FROM (.*)\n",
+                     f"FROM {imagename_without_tag}:{from_tag}\n", fdata)
+        return ret
+
+    def _update_dockerfile_rebuild(self, dockerfile_path, release, from_tag):
         with open(dockerfile_path) as f:
             fdata = f.read()
         res = self._set_release(fdata, self._bump_release(release, None))
+        res = self._set_from(res, from_tag)
         with open(dockerfile_path, 'w') as f:
             f.write(res)
 
-    def update_dockerfile(self, df, release, base_image):
+    def update_dockerfile(self, df, release, from_tag):
         """Updates basic fields of a Dockerfile. Sets from, release fields
 
         Args:
             df (str): Path to the Dockerfile
             release (str): value to be inserted into the release field
-            base_image (str): value to be inserted into the from field
+            from_tag (str): value to be inserted into the from field
         """
         # This only bumped release label but it is not used in Fedora anymore
-        # self._update_dockerfile_rebuild(df, release, base_image)
-        pass
+        self._update_dockerfile_rebuild(df, release, from_tag)
 
     # FIXME: This should be provided by some external Dockerfile linters
     def _check_labels(self, dockerfile_path):
@@ -229,8 +245,9 @@ class DistgitAPI(object):
                 repo = self._clone_downstream(component, branch)
                 df_path = os.path.join(component, "Dockerfile")
                 release = self._get_release(df_path)
+                from_tag = self.conf.get("from_tag", "latest")
                 if rebase or not pull_upstr:
-                    self.update_dockerfile(df_path, release, self.base_image)
+                    self.update_dockerfile(df_path, release, from_tag)
                     # It is possible for the git repository to have no changes
                     if repo.is_dirty():
                         commit = self.get_commit_msg(rebase, image)
@@ -247,7 +264,7 @@ class DistgitAPI(object):
                     # Save the upstream commit hash
                     ups_hash = Repo(ups_path).commit().hexsha
                     self._pull_upstream(component, path, url, repo, ups_name, commands)
-                    self.update_dockerfile(df_path, release, self.base_image)
+                    self.update_dockerfile(df_path, release, from_tag)
                     repo.git.add("Dockerfile")
                     # It is possible for the git repository to have no changes
                     if repo.is_dirty():
