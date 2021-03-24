@@ -100,9 +100,6 @@ class DistgitAPI(object):
                 length[-1] = str(int(length[-1]) + 1)
             return '.'.join(length)
 
-    def _get_tag(self):
-        return 'rhel' + self.base_image.split(':')[1].split('-')[0]
-
     def _get_from(self, fdata):
         """Gets FROM field from a Dockerfile
 

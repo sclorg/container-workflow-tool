@@ -452,8 +452,8 @@ class ImageRebuilder:
         for i in self._get_images():
             ups_name = re.search(r".*\/([a-zA-Z0-9-]+).git",
                                  i["git_url"]).group(1)
-            print(f'{i["component"]} {i["name"]} {ups_name} {i["git_url"]} '
-                  f'{i["git_path"]} {i["git_branch"]}')
+            print(f'{i["component"]} {i["name"]} {ups_name} {i["git_url"]} {i["git_path"]} '
+                  f'{i["git_branch"]}')
 
     def show_config_contents(self):
         """Prints the symbols and values of configuration used"""
