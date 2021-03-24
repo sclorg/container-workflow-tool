@@ -115,7 +115,7 @@ v1:
       bz_version: "FEDORA"
       component: "nodejs"
       git_url: "nodejs"
-      git_path: "15"
+      git_path: "14"
       git_branch: "main"
       user: "zsvetlik"
     passenger:
