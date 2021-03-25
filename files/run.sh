@@ -18,7 +18,7 @@ CWT_CONFIG_DIR=/tmp/container-workflow-tool/container_workflow_tool/config
 # Get the OS info from source git
 cd "$RESULTS"
 config=$(git rev-parse --abbrev-ref HEAD)
-echo "$config" | grep -q "master" && config="rawhide"
+echo "$config" | grep -q "main" && config="rawhide"
 
 # Get the upstream folder name
 cd "$CWT_DIR"

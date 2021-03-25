@@ -33,7 +33,7 @@ v1:
 ##-7.0      - llvm
         - nodejs
 ##-5.0      - passenger
-##-5.28      - perl
+        - perl
 ##-7.2      - php
         - python3
 ##-2.7        - ruby
@@ -125,7 +125,7 @@ v1:
       bz_version: "FEDORA"
       component: "perl"
       git_url: "perl"
-      git_path: "5.28"
+      git_path: "5.30"
       git_branch: "fFEDORA"
       user: "ppisar"
     php:
