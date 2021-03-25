@@ -28,6 +28,10 @@ class Cli(CliCommon):
     def git_usage(self):
         return CliCommon.git_usage(self) % (self.prg_name, "")
 
+
+    def newversion_usage(self):
+        return CliCommon.newversion_usage(self) % (self.prg_name, "") 
+
     def run(self):
         if self.args.command == "build":
             method_name = "build_images"

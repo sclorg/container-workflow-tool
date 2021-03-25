@@ -36,4 +36,9 @@ actions['koji'] = ['latestbuilds', ]
 actions['dockerhub'] = ['updatefulldescription', ]
 actions['utils'] = ['showconfig', 'listimages', 'listupstream', ]
 
+action_map['newversion'] = {
+'add': 'add_new_version',
+'show': 'show_changes',
+}
+
 COMMAND = ""
