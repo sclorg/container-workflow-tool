@@ -108,7 +108,7 @@ class DistgitAPI(object):
             res = self._get_from(fdata)
         return res
 
-    def _get_from(self, fdata):
+    def _get_from(self, fdata: str) -> str:
         """Gets FROM field from a Dockerfile
 
         Args:
@@ -117,11 +117,11 @@ class DistgitAPI(object):
         Returns:
             str: FROM string
         """
-
+        registry_base = None
         image_base = re.search('FROM (.*)\n', fdata)
         if image_base:
-            image_base = image_base.group(1)
-        return image_base
+            registry_base = image_base.group(1)
+        return registry_base
 
     def _set_from(self, fdata, from_tag):
         """
@@ -144,7 +144,7 @@ class DistgitAPI(object):
         with open(dockerfile_path) as f:
             fdata = f.read()
         res = self._set_release(fdata, self._bump_release(release, None))
-        res = self._set_from(dockerfile_path, from_tag)
+        res = self._set_from(res, from_tag)
         with open(dockerfile_path, 'w') as f:
             f.write(res)
 
