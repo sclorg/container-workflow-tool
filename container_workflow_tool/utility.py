@@ -5,6 +5,8 @@ import logging
 
 import textwrap
 
+from pathlib import Path
+
 
 class RebuilderError(Exception):
     pass
@@ -19,6 +21,8 @@ class ArgParser(argparse.ArgumentParser):
 
 # Utility textwrap functions
 def _2sp(a): return textwrap.indent(a, '  ')
+
+
 def _4sp(a): return textwrap.indent(a, '    ')
 
 
@@ -60,6 +64,13 @@ def _get_hostname_url(config):
     # default to "https://src.fedoraproject.org"
     git_url = getattr(config, "hostname_url", None)
     return git_url
+
+
+def save_output(output: str, output_file: str):
+    print(output)
+    out_file = Path.cwd() / output_file
+    with out_file.open("a") as fp:
+        fp.write(output)
 
 
 def setup_logger(logger_id, level=logging.INFO):
