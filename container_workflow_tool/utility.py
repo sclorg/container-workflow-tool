@@ -68,7 +68,10 @@ def _get_hostname_url(config):
 
 def save_output(output: str, output_file: str):
     print(output)
-    out_file = Path.cwd() / output_file
+    out_file = Path(output_file)
+    # If file is not absolute lets create out_file from current directory
+    if not out_file.is_absolute():
+        out_file = Path.cwd() / output_file
     with out_file.open("a") as fp:
         fp.write(output)
 
