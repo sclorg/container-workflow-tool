@@ -37,6 +37,8 @@ class CliCommon(object):
                             action='append')
         parser.add_argument('--disable-klist', action='store_true',
                             help='Disables getting kerberos token by klist')
+        parser.add_argument('--output-file',
+                            help='Specify output file, where some actions stores computer readable results')
         parser.add_argument('--base', nargs='?')
         subparsers = parser.add_subparsers(dest='command')
         subparsers.required = True
@@ -81,6 +83,7 @@ class CliCommon(object):
         --do-set             - Use a specific set of images instead of all from the config (use dist-git names)
         --tmp                - Overrides default temporary working directory
         --disable-klist      - Disables getting kerberos token by klist
+        --output-file        - Specify file, where the output will be stored
         {args}
 """
         return action_help
