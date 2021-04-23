@@ -5,8 +5,6 @@ import logging
 
 import textwrap
 
-from pathlib import Path
-
 
 class RebuilderError(Exception):
     pass
@@ -66,14 +64,8 @@ def _get_hostname_url(config):
     return git_url
 
 
-def save_output(output: str, output_file: str):
-    print(output)
-    out_file = Path(output_file)
-    # If file is not absolute lets create out_file from current directory
-    if not out_file.is_absolute():
-        out_file = Path.cwd() / output_file
-    with out_file.open("a") as fp:
-        fp.write(output)
+def save_output(logger, output):
+    logger.info(output)
 
 
 def setup_logger(logger_id, level=logging.INFO):
