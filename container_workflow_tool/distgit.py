@@ -132,7 +132,7 @@ class DistgitAPI(object):
         """
         self.logger.debug("Setting tag to: " + str(from_tag))
         base_image = self._get_from(fdata=fdata)
-        self.logger.debug(f"Base image is: {self.base_image}")
+        self.logger.debug(f"Base image is: {base_image}")
         imagename_without_tag = base_image.split(':')[0]
         ret = re.sub("FROM (.*)\n",
                      f"FROM {imagename_without_tag}:{from_tag}\n", fdata)
@@ -148,13 +148,12 @@ class DistgitAPI(object):
         with open(dockerfile_path, 'w') as f:
             f.write(res)
 
-    def update_dockerfile(self, df, release, base_image, from_tag, downstream_from: str = ""):
+    def update_dockerfile(self, df, release, from_tag, downstream_from: str = ""):
         """Updates basic fields of a Dockerfile. Sets from, release fields
 
         Args:
             df (str): Path to the Dockerfile
             release (str): value to be inserted into the release field
-            base_image (str): value for base_image
             from_tag (str): value to be inserted into the from field
             downstream_from (str): value from downstream Dockerfile
         """
@@ -256,14 +255,13 @@ class DistgitAPI(object):
                 pull_upstr = image.get("pull_upstream", True)
                 repo = self._clone_downstream(component, branch)
                 df_path = os.path.join(component, "Dockerfile")
-                self.logger.info(df_path)
                 release = self._get_release(df_path)
                 downstream_from = self._get_from_df(df_path)
                 self.logger.info(f"Downstream_from: {downstream_from}\n")
                 from_tag = self.conf.get("from_tag", "latest")
                 if rebase or not pull_upstr:
                     self.update_dockerfile(
-                        df_path, release, self.base_image, from_tag, downstream_from=downstream_from
+                        df_path, release, from_tag, downstream_from=downstream_from
                     )
                     # It is possible for the git repository to have no changes
                     if repo.is_dirty():
@@ -282,7 +280,7 @@ class DistgitAPI(object):
                     ups_hash = Repo(ups_path).commit().hexsha
                     self._pull_upstream(component, path, url, repo, ups_name, commands)
                     self.update_dockerfile(
-                        df_path, release, self.base_image, from_tag, downstream_from=downstream_from
+                        df_path, release, from_tag, downstream_from=downstream_from
                     )
                     repo.git.add("Dockerfile")
                     # It is possible for the git repository to have no changes
