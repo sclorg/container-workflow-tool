@@ -19,7 +19,7 @@ v1:
       core:
 #        - cassandra
         - httpd
-##-10.3      - mariadb
+        - mariadb
 ##-4.0      - mongodb
 ##-8.0      - mysql
         - nginx
@@ -83,7 +83,7 @@ v1:
       bz_version: "FEDORA"
       component: "mariadb"
       git_url: "mariadb"
-      git_path: "10.3"
+      git_path: "10.5"
       git_branch: "fFEDORA"
       user: "hhorak"
     mongodb:
