@@ -14,12 +14,11 @@ import logging
 
 from git import Repo, GitError
 from typing import List, Any
-from pathlib import Path
 
 import container_workflow_tool.utility as u
 from container_workflow_tool.koji import KojiAPI
 from container_workflow_tool.distgit import DistgitAPI
-from container_workflow_tool.utility import RebuilderError, save_output
+from container_workflow_tool.utility import RebuilderError
 from container_workflow_tool.decorators import needs_base, needs_brewapi, needs_dhapi
 from container_workflow_tool.decorators import needs_distgit
 from container_workflow_tool.config import Config
@@ -60,9 +59,9 @@ class ImageRebuilder:
         self.check_script = None
         self.image_set = None
         self.disable_klist = None
-        self.output_file = None
         self.latest_release = None
-        self.logger = self._setup_logger()
+
+        self._setup_logger()
         self.set_config(self.conf_name, release=release)
 
     @classmethod
@@ -72,22 +71,7 @@ class ImageRebuilder:
         """
         rebuilder = ImageRebuilder(base_image=args.base)
         rebuilder._setup_args(args)
-        rebuilder.setup_log_to_file()
         return rebuilder
-
-    def setup_log_to_file(self):
-        # File handler
-        if self.output_file:
-            out_file = Path(self.output_file)
-            # If file is not absolute lets create out_file from current directory
-            if not out_file.is_absolute():
-                out_file = Path.cwd() / self.output_file
-            file_handler = logging.FileHandler(out_file)
-            file_handler.setLevel(logging.INFO)
-            file_format_str = "%(message)s"
-            file_formatter = logging.Formatter(file_format_str)
-            file_handler.setFormatter(file_formatter)
-            self.logger.addHandler(file_handler)
 
     def _setup_args(self, args):
         self.args = args
@@ -123,8 +107,6 @@ class ImageRebuilder:
             self.disable_klist = args.disable_klist
         if getattr(args, 'latest_release', None) is not None and args.latest_release:
             self.latest_release = args.latest_release
-        if getattr(args, 'output_file', None) is not None and args.output_file:
-            self.output_file = args.output_file
 
         # Image set to build
         if getattr(args, 'image_set', None) is not None and args.image_set:
@@ -389,7 +371,7 @@ class ImageRebuilder:
                 result += self.brewapi.get_time_built(nvr) + '|'
             result += str(len(archives))
             output.append(result)
-        return save_output(self.logger, output)
+        return '\n'.join(output)
 
     def set_config(self, conf_name: str, release: str = "current"):
         """
@@ -463,7 +445,7 @@ class ImageRebuilder:
     def list_images(self):
         """Prints list of images that we work with"""
         for i in self._get_images():
-            save_output(self.logger, i["component"])
+            print(i["component"])
 
     def print_upstream(self):
         """Prints the upstream name and url for images used in config"""
@@ -472,7 +454,7 @@ class ImageRebuilder:
                                  i["git_url"]).group(1)
             msg = f"{i.get('component')} {i.get('name')} {ups_name} " \
                   f"{i.get('git_url')} {i.get('git_path')} {i.get('git_branch')}"
-            save_output(self.logger, f"{msg}")
+            print(f"{msg}")
 
     def show_config_contents(self):
         """Prints the symbols and values of configuration used"""
@@ -505,7 +487,7 @@ class ImageRebuilder:
         Returns:
             str: Resulting brew build text
         """
-        save_output(self.logger, self.get_brew_builds(print_time=print_time))
+        print(self.get_brew_builds(print_time=print_time))
 
     # Dist-git method wrappers
     @needs_distgit
