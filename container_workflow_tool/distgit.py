@@ -100,7 +100,15 @@ class DistgitAPI(object):
                 length[-1] = str(int(length[-1]) + 1)
             return '.'.join(length)
 
-    def _get_from(self, fdata):
+    def _get_from_df(self, dockerfile_path):
+        res = None
+        if os.path.exists(dockerfile_path):
+            with open(dockerfile_path) as f:
+                fdata = f.read()
+            res = self._get_from(fdata)
+        return res
+
+    def _get_from(self, fdata: str) -> str:
         """Gets FROM field from a Dockerfile
 
         Args:
@@ -109,10 +117,11 @@ class DistgitAPI(object):
         Returns:
             str: FROM string
         """
+        registry_base = None
         image_base = re.search('FROM (.*)\n', fdata)
         if image_base:
-            image_base = image_base.group(1)
-        return image_base
+            registry_base = image_base.group(1)
+        return registry_base
 
     def _set_from(self, fdata, from_tag):
         """
@@ -123,13 +132,15 @@ class DistgitAPI(object):
         """
         self.logger.debug("Setting tag to: " + str(from_tag))
         base_image = self._get_from(fdata=fdata)
-        self.logger.debug(f"Base image is: {self.base_image}")
+        self.logger.debug(f"Base image is: {base_image}")
         imagename_without_tag = base_image.split(':')[0]
         ret = re.sub("FROM (.*)\n",
                      f"FROM {imagename_without_tag}:{from_tag}\n", fdata)
         return ret
 
-    def _update_dockerfile_rebuild(self, dockerfile_path, release, from_tag):
+    def _update_dockerfile_rebuild(
+            self, dockerfile_path, release, from_tag, downstream_from: str = "",
+    ):
         with open(dockerfile_path) as f:
             fdata = f.read()
         res = self._set_release(fdata, self._bump_release(release, None))
@@ -137,16 +148,19 @@ class DistgitAPI(object):
         with open(dockerfile_path, 'w') as f:
             f.write(res)
 
-    def update_dockerfile(self, df, release, from_tag):
+    def update_dockerfile(self, df, release, from_tag, downstream_from: str = ""):
         """Updates basic fields of a Dockerfile. Sets from, release fields
 
         Args:
             df (str): Path to the Dockerfile
             release (str): value to be inserted into the release field
             from_tag (str): value to be inserted into the from field
+            downstream_from (str): value from downstream Dockerfile
         """
         # This only bumped release label but it is not used in Fedora anymore
-        self._update_dockerfile_rebuild(df, release, from_tag)
+        self._update_dockerfile_rebuild(
+            df, release, from_tag, downstream_from=downstream_from
+        )
 
     # FIXME: This should be provided by some external Dockerfile linters
     def _check_labels(self, dockerfile_path):
@@ -242,9 +256,13 @@ class DistgitAPI(object):
                 repo = self._clone_downstream(component, branch)
                 df_path = os.path.join(component, "Dockerfile")
                 release = self._get_release(df_path)
+                downstream_from = self._get_from_df(df_path)
+                self.logger.debug(f"Downstream_from: {downstream_from}\n")
                 from_tag = self.conf.get("from_tag", "latest")
                 if rebase or not pull_upstr:
-                    self.update_dockerfile(df_path, release, from_tag)
+                    self.update_dockerfile(
+                        df_path, release, from_tag, downstream_from=downstream_from
+                    )
                     # It is possible for the git repository to have no changes
                     if repo.is_dirty():
                         commit = self.get_commit_msg(rebase, image)
@@ -261,7 +279,9 @@ class DistgitAPI(object):
                     # Save the upstream commit hash
                     ups_hash = Repo(ups_path).commit().hexsha
                     self._pull_upstream(component, path, url, repo, ups_name, commands)
-                    self.update_dockerfile(df_path, release, from_tag)
+                    self.update_dockerfile(
+                        df_path, release, from_tag, downstream_from=downstream_from
+                    )
                     repo.git.add("Dockerfile")
                     # It is possible for the git repository to have no changes
                     if repo.is_dirty():

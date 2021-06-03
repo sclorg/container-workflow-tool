@@ -11,3 +11,7 @@ RUN git config --global user.name "foobar"
 WORKDIR /cwt
 
 COPY ./ /cwt
+
+RUN pip3 install .
+
+CMD make test

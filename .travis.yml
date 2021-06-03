@@ -1,5 +1,7 @@
 language: bash
 sudo: required
 services: docker
+before_install:
+  - make build
 script:
   - make test-in-container
