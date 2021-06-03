@@ -257,7 +257,7 @@ class DistgitAPI(object):
                 df_path = os.path.join(component, "Dockerfile")
                 release = self._get_release(df_path)
                 downstream_from = self._get_from_df(df_path)
-                self.logger.info(f"Downstream_from: {downstream_from}\n")
+                self.logger.debug(f"Downstream_from: {downstream_from}\n")
                 from_tag = self.conf.get("from_tag", "latest")
                 if rebase or not pull_upstr:
                     self.update_dockerfile(
