@@ -19,6 +19,8 @@ class ArgParser(argparse.ArgumentParser):
 
 # Utility textwrap functions
 def _2sp(a): return textwrap.indent(a, '  ')
+
+
 def _4sp(a): return textwrap.indent(a, '    ')
 
 
@@ -29,8 +31,8 @@ def flatten_list(input_list):
         if not isinstance(sl, list):
             flattened.append(sl)
         else:
-            for l in sl:
-                flattened.append(l)
+            for ll in sl:
+                flattened.append(ll)
     return flattened
 
 

@@ -37,6 +37,8 @@ class CliCommon(object):
                             action='append')
         parser.add_argument('--disable-klist', action='store_true',
                             help='Disables getting kerberos token by klist')
+        parser.add_argument('--output-file',
+                            help='Specify output file, where some actions stores computer readable results')
         parser.add_argument('--base', nargs='?')
         subparsers = parser.add_subparsers(dest='command')
         subparsers.required = True
@@ -57,7 +59,9 @@ class CliCommon(object):
         parsers['git'].add_argument('--rebuild-reason', help='Use a custom reason for rebuilding')
         parsers['git'].add_argument('--commit-msg', help='Use a custom message instead of the default one')
         parsers['git'].add_argument('--check-script', help='Script/command to be run when checking repositories')
-        parsers['build'].add_argument('--repo-url', help='Set the url of a .repo file to be used when building the image')
+        parsers['build'].add_argument(
+            '--repo-url', help='Set the url of a .repo file to be used when building the image'
+        )
         return parser
 
     def cli_usage(self):
@@ -74,13 +78,15 @@ class CliCommon(object):
         --base               - Specific base image release, required for some actions
         --clear-cache        - Clears tmp dir before running the command
         --latest-release     - Work with latest brew builds by release value
-        --config             - Overrides default configuration file, expects the name of file a inside the config folder, optionally takes image_set argument
+        --config             - Overrides default configuration file,
+                               expects the name of file a inside the config folder, optionally takes image_set argument
                                example usage: --config default.yaml:fedora27
         --do-image           - Use a custom set of images instead of all from the config (use dist-git names)
         --exclude-image      - Exclude an image from the list of images defined by config (use dist-git names)
         --do-set             - Use a specific set of images instead of all from the config (use dist-git names)
         --tmp                - Overrides default temporary working directory
         --disable-klist      - Disables getting kerberos token by klist
+        --output-file        - Save output of cwt into a output_file
         {args}
 """
         return action_help
@@ -91,7 +97,8 @@ class CliCommon(object):
         merge            - Clone dist-git, merges content from primary branch to future branches
         cloneupstream    - Clones upstream git repositories
         clonedownstream  - Pulls downstream dist-git repositories and does not make any further changes to them
-        pullupstream     - Clone dist-git, clone upstream, copy content from upstream repo to dist-git, commit (all images; does not push, manual review/push needed)
+        pullupstream     - Clone dist-git, clone upstream, copy content from upstream repo to dist-git,
+                           commit (all images; does not push, manual review/push needed)
         push             - Pushes local changes for all components into downstream dist-git repository
         rebase           - Clone dist-git, bump release, commit, push, build in brew
         show             - Walk trough git repositories and show changes for each
