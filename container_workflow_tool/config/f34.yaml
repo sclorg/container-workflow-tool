@@ -27,7 +27,7 @@ v1:
         - s2i-base
 ##-8      - toolchain
 ##-5.0      - redis
-##-6      - varnish
+        - varnish
       s2i:
 ##        - golang
 ##-7.0      - llvm
