@@ -34,7 +34,7 @@ v1:
         - perl
         - php
         - python3
-##        - ruby
+        - ruby
   current: *rawhide
 
   urls: !include share/urls.yaml
