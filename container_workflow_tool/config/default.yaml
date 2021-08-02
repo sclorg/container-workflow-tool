@@ -24,7 +24,7 @@ v1:
         - postgresql
         - s2i-base
 ##-8      - toolchain
-##-5.0      - redis
+        - redis
         - varnish
       s2i:
 ##        - golang
@@ -161,7 +161,7 @@ v1:
       bz_version: "FEDORA"
       component: "redis"
       git_url: "redis"
-      git_path: "5.0"
+      git_path: "6"
       git_branch: "main"
       user: "remi"
     ruby:
