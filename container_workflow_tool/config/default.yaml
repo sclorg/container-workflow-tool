@@ -21,7 +21,7 @@ v1:
 ##-4.0      - mongodb
 ##-8.0      - mysql
         - nginx
-##-11        - postgresql
+        - postgresql
         - s2i-base
 ##-8      - toolchain
 ##-5.0      - redis
@@ -152,7 +152,7 @@ v1:
       bz_version: "FEDORA"
       component: "postgresql"
       git_url: "postgresql"
-      git_path: "11"
+      git_path: "13"
       git_branch: "main"
       user: "pkubat"
       commands:
