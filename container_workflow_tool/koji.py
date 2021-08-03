@@ -57,7 +57,7 @@ class KojiAPI:
             nvr_list = []
             self.logger.info("Fetching info from Brew... (0/{})".format(images_num))
             for i, image in enumerate(images, 1):
-                if i % 10 is 0:
+                if i % 10 == 0:
                     self.logger.info("Fetching info from Brew... ({}/{})".format(i, images_num))
                 name = image["name"]
                 component = image["component"]
