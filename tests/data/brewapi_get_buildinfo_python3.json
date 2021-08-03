@@ -1,0 +1,111 @@
+{
+  "build_id": 1733308,
+  "cg_id": 1,
+  "completion_time": "2021-04-07 07:23:44+00:00",
+  "completion_ts": 1617780224.0,
+  "creation_event_id": 71383208,
+  "creation_time": "2021-04-07 07:23:52.930015+00:00",
+  "creation_ts": 1617780232.930015,
+  "epoch": "None",
+  "extra": {
+    "image": {
+      "autorebuild": false,
+      "isolated": false,
+      "parent_image_builds": {
+        "registry.fedoraproject.org/f34/s2i-base:latest": {
+          "id": 1720423,
+          "nvr": "s2i-base-1-60.container"
+        }
+      },
+      "parent_images": [
+        "registry.fedoraproject.org/f34/s2i-base:latest"
+      ],
+      "parent_build_id": 1720423,
+      "help": "None",
+      "index": {
+        "tags": [
+          "0-31.container"
+        ],
+        "floating_tags": [
+          "latest",
+          "0"
+        ],
+        "unique_tags": [
+          "f34-container-candidate-88852-20210407071911"
+        ],
+        "pull": [
+          "candidate-registry.fedoraproject.org/f34/python3@sha256:cc01bf9c65fcc8ae3034926dace5bad5d3367ee81cda87bd64a7b84961ff021e",
+          "candidate-registry.fedoraproject.org/f34/python3:0-31.container"
+        ],
+        "digests": {
+          "application/vnd.docker.distribution.manifest.list.v2+json": "sha256:cc01bf9c65fcc8ae3034926dace5bad5d3367ee81cda87bd64a7b84961ff021e"
+        }
+      },
+      "media_types": [
+        "application/vnd.docker.distribution.manifest.list.v2+json",
+        "application/vnd.docker.distribution.manifest.v1+json",
+        "application/vnd.docker.distribution.manifest.v2+json"
+      ]
+    },
+    "container_koji_task_id": 65375869,
+    "submitter": "containerbuild",
+    "typeinfo": {
+      "image": {
+        "autorebuild": false,
+        "isolated": false,
+        "parent_image_builds": {
+          "registry.fedoraproject.org/f34/s2i-base:latest": {
+            "id": 1720423,
+            "nvr": "s2i-base-1-60.container"
+          }
+        },
+        "parent_images": [
+          "registry.fedoraproject.org/f34/s2i-base:latest"
+        ],
+        "parent_build_id": 1720423,
+        "help": "None",
+        "index": {
+          "tags": [
+            "0-31.container"
+          ],
+          "floating_tags": [
+            "latest",
+            "0"
+          ],
+          "unique_tags": [
+            "f34-container-candidate-88852-20210407071911"
+          ],
+          "pull": [
+            "candidate-registry.fedoraproject.org/f34/python3@sha256:cc01bf9c65fcc8ae3034926dace5bad5d3367ee81cda87bd64a7b84961ff021e",
+            "candidate-registry.fedoraproject.org/f34/python3:0-31.container"
+          ],
+          "digests": {
+            "application/vnd.docker.distribution.manifest.list.v2+json": "sha256:cc01bf9c65fcc8ae3034926dace5bad5d3367ee81cda87bd64a7b84961ff021e"
+          }
+        },
+        "media_types": [
+          "application/vnd.docker.distribution.manifest.list.v2+json",
+          "application/vnd.docker.distribution.manifest.v1+json",
+          "application/vnd.docker.distribution.manifest.v2+json"
+        ]
+      }
+    }
+  },
+  "id": 1733308,
+  "name": "python3",
+  "nvr": "python3-0-31.container",
+  "owner_id": 3559,
+  "owner_name": "lbalhar",
+  "package_id": 9781,
+  "package_name": "python3",
+  "release": "31.container",
+  "source": "https://src.fedoraproject.org/container/python3.git#fb5763a161dc1b5da85f7b7eaf478eaf9abe00d9",
+  "start_time": "2021-04-07 07:19:14+00:00",
+  "start_ts": 1617779954.0,
+  "state": 1,
+  "task_id": "None",
+  "version": "0",
+  "volume_id": 0,
+  "volume_name": "DEFAULT",
+  "cg_name": "atomic-reactor"
+}

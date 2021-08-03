@@ -1,0 +1,137 @@
+{
+  "btype": "image",
+  "btype_id": 4,
+  "build_id": 1798434,
+  "buildroot_id": 28678056,
+  "checksum": "fa60cc04d57309a95c43bcc5cec14391",
+  "checksum_type": 0,
+  "extra": {
+    "image": {
+      "arch": "x86_64"
+    },
+    "docker": {
+      "id": "sha256:0b156e65e44806594bed2e5a19499c8252bfcd92623f4deb3d22b68c12427eee",
+      "repositories": [
+        "candidate-registry.fedoraproject.org/f34/s2i-base:f34-container-candidate-28080-20210723042630-x86_64",
+        "candidate-registry.fedoraproject.org/f34/s2i-base@sha256:1f17edbfca1aa2d7c3136a8af13da032d294699a706127ed1b38bee8248ce6db"
+      ],
+      "layer_sizes": [
+        {
+          "diff_id": "sha256:9e6713d530bf59dd0ce8155e1a48372e2ad1773be06a8087deafeb5ad0fed586",
+          "size": 177503473
+        },
+        {
+          "diff_id": "sha256:53494403a146764387ecbbd1b0b99962d2414878c5a6ce6784aa95b631e07e16",
+          "size": 48420588
+        },
+        {
+          "diff_id": "sha256:f44cdcd5f77c5b43e875d5546aae1cdddcb628fe2d766cb98e6eebc139480719",
+          "size": 498092946
+        }
+      ],
+      "tags": [
+        "f34-container-candidate-28080-20210723042630-x86_64"
+      ],
+      "config": {
+        "architecture": "amd64",
+        "config": {
+          "Hostname": "586fc9e75e28",
+          "Domainname": "",
+          "User": "",
+          "AttachStdin": false,
+          "AttachStdout": false,
+          "AttachStderr": false,
+          "Tty": false,
+          "OpenStdin": false,
+          "StdinOnce": false,
+          "Env": [
+            "DISTTAG=f34container",
+            "FGC=f34",
+            "container=oci",
+            "PATH=/opt/app-root/src/bin:/opt/app-root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+            "SUMMARY=Base image with essential libraries and tools used as a base for builder images like perl, python, ruby, etc.",
+            "DESCRIPTION=The s2i-base image, being built upon s2i-core, provides any images layered on top of it with all the tools needed to use source-to-image functionality. Additionally, s2i-base also contains various libraries needed for it to serve as a base for other builder images, like s2i-python or s2i-ruby.",
+            "NAME=s2i-base",
+            "VERSION=1",
+            "ARCH=x86_64",
+            "STI_SCRIPTS_URL=image:///usr/libexec/s2i",
+            "STI_SCRIPTS_PATH=/usr/libexec/s2i",
+            "APP_ROOT=/opt/app-root",
+            "HOME=/opt/app-root/src",
+            "PLATFORM=fedora"
+          ],
+          "Cmd": [
+            "base-usage"
+          ],
+          "ArgsEscaped": true,
+          "Image": "6d0bfb20353b9e39b8ea24d483b7a26d72cb52ec991a37ae680295f8b3febaa9",
+          "Volumes": "None",
+          "WorkingDir": "/opt/app-root/src",
+          "Entrypoint": [
+            "container-entrypoint"
+          ],
+          "OnBuild": [],
+          "Labels": {
+            "architecture": "x86_64",
+            "authoritative-source-url": "registry.fedoraproject.org",
+            "build-date": "2021-07-23T04:26:33.529300",
+            "com.redhat.build-host": "osbs-node02.iad2.fedoraproject.org",
+            "com.redhat.component": "s2i-base",
+            "description": "The s2i-base image, being built upon s2i-core, provides any images layered on top of it with all the tools needed to use source-to-image functionality. Additionally, s2i-base also contains various libraries needed for it to serve as a base for other builder images, like s2i-python or s2i-ruby.",
+            "distribution-scope": "public",
+            "io.k8s.description": "The s2i-base image, being built upon s2i-core, provides any images layered on top of it with all the tools needed to use source-to-image functionality. Additionally, s2i-base also contains various libraries needed for it to serve as a base for other builder images, like s2i-python or s2i-ruby.",
+            "io.k8s.display-name": "s2i base",
+            "io.openshift.s2i.scripts-url": "image:///usr/libexec/s2i",
+            "io.s2i.scripts-url": "image:///usr/libexec/s2i",
+            "license": "MIT",
+            "maintainer": "SoftwareCollections.org <sclorg@redhat.com>",
+            "name": "f34/s2i-base",
+            "release": "63.container",
+            "summary": "Base image with essential libraries and tools used as a base for builder images like perl, python, ruby, etc.",
+            "usage": "This image is supposed to be used as a base image for other images that support source-to-image",
+            "vcs-ref": "5704f4271e82ed787be554d9f80895923c00645d",
+            "vcs-type": "git",
+            "vendor": "Fedora Project",
+            "version": "1"
+          }
+        },
+        "created": "2021-07-23T04:27:47.325898Z",
+        "docker_version": "1.13.1",
+        "history": [
+          {
+            "created": "2021-06-11T05:48:31Z",
+            "comment": "Created by Image Factory"
+          },
+          {
+            "created": "2021-07-21T08:35:39.668731Z"
+          },
+          {
+            "comment": "",
+            "created": "2021-07-23T04:27:47.325898Z"
+          }
+        ],
+        "os": "linux",
+        "rootfs": {
+          "type": "layers",
+          "diff_ids": [
+            "sha256:9e6713d530bf59dd0ce8155e1a48372e2ad1773be06a8087deafeb5ad0fed586",
+            "sha256:53494403a146764387ecbbd1b0b99962d2414878c5a6ce6784aa95b631e07e16",
+            "sha256:f44cdcd5f77c5b43e875d5546aae1cdddcb628fe2d766cb98e6eebc139480719"
+          ]
+        }
+      },
+      "digests": {
+        "application/vnd.docker.distribution.manifest.v2+json": "sha256:1f17edbfca1aa2d7c3136a8af13da032d294699a706127ed1b38bee8248ce6db"
+      },
+      "parent_id": "sha256:cd048f7b368f4eef6bbbe11018d296f8712a3b78920c05a3128d5d39aca36c2d"
+    }
+  },
+  "filename": "docker-image-sha256:0b156e65e44806594bed2e5a19499c8252bfcd92623f4deb3d22b68c12427eee.x86_64.tar.gz",
+  "id": 473334,
+  "metadata_only": false,
+  "size": 252907690,
+  "type_description": "Tar files",
+  "type_extensions": "tar tar.gz tar.bz2 tar.xz tgz",
+  "type_id": 4,
+  "type_name": "tar"
+}

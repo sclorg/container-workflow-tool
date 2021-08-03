@@ -33,6 +33,11 @@ class KojiAPI:
         self.logger.debug("Getting taskinfo for task " + str(task_id))
         return self.brew.getTaskInfo(task_id)
 
+    def get_listarchives(self, build_id):
+        """Gets list archive for build_id"""
+        self.logger.debug("Gettings list archives for build_id " + str(build_id))
+        return self.brew.listArchives(build_id)
+
     def get_buildinfo(self, nvr):
         """Gets build info from brew"""
         if nvr not in self.buildinfo:

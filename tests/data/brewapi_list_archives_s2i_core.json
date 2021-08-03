@@ -1,0 +1,129 @@
+{
+  "btype": "image",
+  "btype_id": 4,
+  "build_id": 1782517,
+  "buildroot_id": 28595567,
+  "checksum": "2410cb6ae663b25ff0aef6fcbeed8d28",
+  "checksum_type": 0,
+  "extra": {
+    "image": {
+      "arch": "x86_64"
+    },
+    "docker": {
+      "id": "sha256:cd048f7b368f4eef6bbbe11018d296f8712a3b78920c05a3128d5d39aca36c2d",
+      "repositories": [
+        "candidate-registry.fedoraproject.org/f34/s2i-core:f34-container-candidate-63687-20210721083440-x86_64",
+        "candidate-registry.fedoraproject.org/f34/s2i-core@sha256:61c054ac00848dfa21bb51f2f91bd6170a167aaa762ec03d34fb988fed6c0abe"
+      ],
+      "layer_sizes": [
+        {
+          "diff_id": "sha256:9e6713d530bf59dd0ce8155e1a48372e2ad1773be06a8087deafeb5ad0fed586",
+          "size": 177503473
+        },
+        {
+          "diff_id": "sha256:53494403a146764387ecbbd1b0b99962d2414878c5a6ce6784aa95b631e07e16",
+          "size": 48420588
+        }
+      ],
+      "tags": [
+        "f34-container-candidate-63687-20210721083440-x86_64"
+      ],
+      "config": {
+        "architecture": "amd64",
+        "config": {
+          "Hostname": "586fc9e75e28",
+          "Domainname": "",
+          "User": "",
+          "AttachStdin": false,
+          "AttachStdout": false,
+          "AttachStderr": false,
+          "Tty": false,
+          "OpenStdin": false,
+          "StdinOnce": false,
+          "Env": [
+            "DISTTAG=f34container",
+            "FGC=f34",
+            "container=oci",
+            "PATH=/opt/app-root/src/bin:/opt/app-root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+            "SUMMARY=Base image which allows using of source-to-image.",
+            "DESCRIPTION=The s2i-core image provides any images layered on top of it with all the tools needed to use source-to-image functionality while keeping the image size as small as possible.",
+            "NAME=s2i-core",
+            "VERSION=0",
+            "ARCH=x86_64",
+            "STI_SCRIPTS_URL=image:///usr/libexec/s2i",
+            "STI_SCRIPTS_PATH=/usr/libexec/s2i",
+            "APP_ROOT=/opt/app-root",
+            "HOME=/opt/app-root/src",
+            "PLATFORM=fedora"
+          ],
+          "Cmd": [
+            "base-usage"
+          ],
+          "ArgsEscaped": true,
+          "Image": "44118d8084ef2cdd3dab02ac08a344984582b5a0c25de21d83e28320087a73f9",
+          "Volumes": "None",
+          "WorkingDir": "/opt/app-root/src",
+          "Entrypoint": [
+            "container-entrypoint"
+          ],
+          "OnBuild": [],
+          "Labels": {
+            "architecture": "x86_64",
+            "authoritative-source-url": "registry.fedoraproject.org",
+            "build-date": "2021-07-21T08:34:43.651050",
+            "com.redhat.build-host": "osbs-node01.iad2.fedoraproject.org",
+            "com.redhat.component": "s2i-core",
+            "description": "The s2i-core image provides any images layered on top of it with all the tools needed to use source-to-image functionality while keeping the image size as small as possible.",
+            "distribution-scope": "public",
+            "io.k8s.description": "The s2i-core image provides any images layered on top of it with all the tools needed to use source-to-image functionality while keeping the image size as small as possible.",
+            "io.k8s.display-name": "s2i core",
+            "io.openshift.s2i.scripts-url": "image:///usr/libexec/s2i",
+            "io.s2i.scripts-url": "image:///usr/libexec/s2i",
+            "license": "MIT",
+            "maintainer": "SoftwareCollections.org <sclorg@redhat.com>",
+            "name": "f34/s2i-core",
+            "release": "51.container",
+            "summary": "Base image which allows using of source-to-image.",
+            "usage": "This image is supposed to be used as a base image for other images that support source-to-image",
+            "vcs-ref": "2bf7367ff62cd21036b703a1591bdaf85e902d0e",
+            "vcs-type": "git",
+            "vendor": "Fedora Project",
+            "version": "0"
+          }
+        },
+        "created": "2021-07-21T08:35:39.668731Z",
+        "docker_version": "1.13.1",
+        "history": [
+          {
+            "created": "2021-06-11T05:48:31Z",
+            "comment": "Created by Image Factory"
+          },
+          {
+            "comment": "",
+            "created": "2021-07-21T08:35:39.668731Z"
+          }
+        ],
+        "os": "linux",
+        "rootfs": {
+          "type": "layers",
+          "diff_ids": [
+            "sha256:9e6713d530bf59dd0ce8155e1a48372e2ad1773be06a8087deafeb5ad0fed586",
+            "sha256:53494403a146764387ecbbd1b0b99962d2414878c5a6ce6784aa95b631e07e16"
+          ]
+        }
+      },
+      "digests": {
+        "application/vnd.docker.distribution.manifest.v2+json": "sha256:61c054ac00848dfa21bb51f2f91bd6170a167aaa762ec03d34fb988fed6c0abe"
+      },
+      "parent_id": "sha256:abec9a7a7dc640768e6dc51b6a5728e470411615c62e9ff46215206bde816772"
+    }
+  },
+  "filename": "docker-image-sha256:cd048f7b368f4eef6bbbe11018d296f8712a3b78920c05a3128d5d39aca36c2d.x86_64.tar.gz",
+  "id": 472717,
+  "metadata_only": false,
+  "size": 80402410,
+  "type_description": "Tar files",
+  "type_extensions": "tar tar.gz tar.bz2 tar.xz tgz",
+  "type_id": 4,
+  "type_name": "tar"
+}

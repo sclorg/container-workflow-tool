@@ -1,0 +1,161 @@
+{
+  "btype": "image",
+  "btype_id": 4,
+  "build_id": 1733308,
+  "buildroot_id": 26616092,
+  "checksum": "b29c429063cefc754b078bffd53d9d19",
+  "checksum_type": 0,
+  "extra": {
+    "image": {
+      "arch": "x86_64"
+    },
+    "docker": {
+      "id": "sha256:1dc21ab0b22ee0693430abe9648b9b2baa820fa337bc5f71b5e48bcfc1a2b8ec",
+      "repositories": [
+        "candidate-registry.fedoraproject.org/f34/python3:f34-container-candidate-21291-20210407071917-x86_64",
+        "candidate-registry.fedoraproject.org/f34/python3@sha256:26b78983b776025fa6eb62494d331bdde8f717e1b7eb2bc650e642a8ce950e54"
+      ],
+      "layer_sizes": [
+        {
+          "diff_id": "sha256:c0e5b4c45f7b79191379b9a38cce6c236db682b5f44d9703bf636cd4fcb3192b",
+          "size": 180520449
+        },
+        {
+          "diff_id": "sha256:c62015db59682e8ed2c1d4c5465c0acfbff98832a516a586c2e8df063c5a5972",
+          "size": 51853004
+        },
+        {
+          "diff_id": "sha256:12721b6be596f8e26e6a871621602b916dc06e1bbaa13d16c3e04bae89868257",
+          "size": 511416848
+        },
+        {
+          "diff_id": "sha256:70a8dc938cb7c0a628ce7ddf824a3004c9ae5f7a2d0eeaa4f245488d79523eaa",
+          "size": 385602595
+        }
+      ],
+      "tags": [
+        "f34-container-candidate-21291-20210407071917-x86_64"
+      ],
+      "config": {
+        "architecture": "amd64",
+        "config": {
+          "Hostname": "81cc3e5eac9f",
+          "Domainname": "",
+          "User": "1001",
+          "AttachStdin": false,
+          "AttachStdout": false,
+          "AttachStderr": false,
+          "ExposedPorts": {
+            "8080/tcp": {}
+          },
+          "Tty": false,
+          "OpenStdin": false,
+          "StdinOnce": false,
+          "Env": [
+            "DISTTAG=f34container",
+            "FGC=f34",
+            "container=oci",
+            "PATH=/opt/app-root/src/.local/bin/:/opt/app-root/src/bin:/opt/app-root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+            "SUMMARY=Platform for building and running Python 3.9 applications",
+            "DESCRIPTION=Python 3.9 available as container is a base platform for building and running various Python 3.9 applications and frameworks. Python is an easy to learn, powerful programming language. It has efficient high-level data structures and a simple but effective approach to object-oriented programming. Python's elegant syntax and dynamic typing, together with its interpreted nature, make it an ideal language for scripting and rapid application development in many areas on most platforms.",
+            "NAME=python3",
+            "VERSION=0",
+            "ARCH=x86_64",
+            "STI_SCRIPTS_URL=image:///usr/libexec/s2i",
+            "STI_SCRIPTS_PATH=/usr/libexec/s2i",
+            "APP_ROOT=/opt/app-root",
+            "HOME=/opt/app-root/src",
+            "PLATFORM=fedora",
+            "PYTHON_VERSION=3.9",
+            "PYTHONUNBUFFERED=1",
+            "PYTHONIOENCODING=UTF-8",
+            "LC_ALL=en_US.UTF-8",
+            "LANG=en_US.UTF-8",
+            "PIP_NO_CACHE_DIR=off",
+            "BASH_ENV=/opt/app-root/bin/activate",
+            "ENV=/opt/app-root/bin/activate",
+            "PROMPT_COMMAND=. /opt/app-root/bin/activate"
+          ],
+          "Cmd": [
+            "/bin/sh",
+            "-c",
+            "$STI_SCRIPTS_PATH/usage"
+          ],
+          "ArgsEscaped": true,
+          "Image": "469cfaa842a5f6b15b35b732cf697f92c5b7b818ba4425c3b53d648960f28032",
+          "Volumes": "None",
+          "WorkingDir": "/opt/app-root/src",
+          "Entrypoint": [
+            "container-entrypoint"
+          ],
+          "OnBuild": [],
+          "Labels": {
+            "architecture": "x86_64",
+            "authoritative-source-url": "registry.fedoraproject.org",
+            "build-date": "2021-04-07T07:19:20.335539",
+            "com.redhat.build-host": "osbs-node02.iad2.fedoraproject.org",
+            "com.redhat.component": "python3",
+            "description": "Python 3.9 available as container is a base platform for building and running various Python 3.9 applications and frameworks. Python is an easy to learn, powerful programming language. It has efficient high-level data structures and a simple but effective approach to object-oriented programming. Python's elegant syntax and dynamic typing, together with its interpreted nature, make it an ideal language for scripting and rapid application development in many areas on most platforms.",
+            "distribution-scope": "public",
+            "io.k8s.description": "Python 3.9 available as container is a base platform for building and running various Python 3.9 applications and frameworks. Python is an easy to learn, powerful programming language. It has efficient high-level data structures and a simple but effective approach to object-oriented programming. Python's elegant syntax and dynamic typing, together with its interpreted nature, make it an ideal language for scripting and rapid application development in many areas on most platforms.",
+            "io.k8s.display-name": "Python 3.9",
+            "io.openshift.expose-services": "8080:http",
+            "io.openshift.s2i.scripts-url": "image:///usr/libexec/s2i",
+            "io.openshift.tags": "builder,python,python39,python-39,rh-python39",
+            "io.s2i.scripts-url": "image:///usr/libexec/s2i",
+            "license": "MIT",
+            "maintainer": "SoftwareCollections.org <sclorg@redhat.com>",
+            "name": "f34/python3",
+            "release": "31.container",
+            "summary": "Platform for building and running Python 3.9 applications",
+            "usage": "s2i build https://github.com/sclorg/s2i-python-container.git --context-dir=3.9/test/setup-test-app/ f34/python3 python-sample-app",
+            "vcs-ref": "fb5763a161dc1b5da85f7b7eaf478eaf9abe00d9",
+            "vcs-type": "git",
+            "vendor": "Fedora Project",
+            "version": "0"
+          }
+        },
+        "created": "2021-04-07T07:20:57.111624Z",
+        "docker_version": "1.13.1",
+        "history": [
+          {
+            "created": "2021-03-04T11:30:03Z",
+            "comment": "Created by Image Factory"
+          },
+          {
+            "created": "2021-03-04T14:53:46.448361Z"
+          },
+          {
+            "created": "2021-03-08T07:42:34.102489Z"
+          },
+          {
+            "comment": "",
+            "created": "2021-04-07T07:20:57.111624Z"
+          }
+        ],
+        "os": "linux",
+        "rootfs": {
+          "type": "layers",
+          "diff_ids": [
+            "sha256:c0e5b4c45f7b79191379b9a38cce6c236db682b5f44d9703bf636cd4fcb3192b",
+            "sha256:c62015db59682e8ed2c1d4c5465c0acfbff98832a516a586c2e8df063c5a5972",
+            "sha256:12721b6be596f8e26e6a871621602b916dc06e1bbaa13d16c3e04bae89868257",
+            "sha256:70a8dc938cb7c0a628ce7ddf824a3004c9ae5f7a2d0eeaa4f245488d79523eaa"
+          ]
+        }
+      },
+      "digests": {
+        "application/vnd.docker.distribution.manifest.v2+json": "sha256:26b78983b776025fa6eb62494d331bdde8f717e1b7eb2bc650e642a8ce950e54"
+      },
+      "parent_id": "sha256:582ee67b3a35310a5fa5b801739939726e9bab43146e8334ba99e74a0cc0869d"
+    }
+  },
+  "filename": "docker-image-sha256:1dc21ab0b22ee0693430abe9648b9b2baa820fa337bc5f71b5e48bcfc1a2b8ec.x86_64.tar.gz",
+  "id": 439748,
+  "metadata_only": false,
+  "size": 399867547,
+  "type_description": "Tar files",
+  "type_extensions": "tar tar.gz tar.bz2 tar.xz tgz",
+  "type_id": 4,
+  "type_name": "tar"
+}
