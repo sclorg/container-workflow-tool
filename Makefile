@@ -9,10 +9,7 @@ else
 	PODMAN := /usr/bin/podman
 endif
 
-.PHONY: test tests
-test:
-	PYTHONPATH=.:$$PYTHONPATH python3 -W ignore::DeprecationWarning -m unittest -v
-
+.PHONY: tests
 tests:
 	cd tests && PYTHONPATH=$(CURDIR) python3 -m pytest --color=yes --verbose --showlocals .
 
