@@ -73,7 +73,7 @@ for path in paths:
 
 setup(
     name='container-workflow-tool',
-    version="0.5.0",
+    version="1.0.0",
     description='A python3 tool to make rebuilding images easier by automating several steps of the process.',
     keywords='tool,containers,images,automate, workflow',
     author='Petr Kubat',
