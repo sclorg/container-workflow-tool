@@ -9,13 +9,10 @@ jobs:
     # This job only runs for '[test]' pull request comments by owner, member
     name: Schedule test on Testing Farm service for Fedora
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python: [py36, py37, py38, py39]
     if: |
       github.event.issue.pull_request
       && contains(github.event.comment.body, '/test')
-      && contains(fromJson('["OWNER", "MEMBER"]'), github.event.comment.author_association)
+      && contains(fromJson('["OWNER","MEMBER"]'), github.event.comment.author_association)
     outputs:
       REQ_ID: ${{steps.sched_test.outputs.REQ_ID}}
       SHA: ${{steps.sha.outputs.SHA}}
@@ -37,33 +34,11 @@ jobs:
           # Store SHA into outputs
           echo "::set-output name=SHA::$(git rev-parse HEAD)"
 
-      - name: Create status check to pending
-        id: pending
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Create a JSON file for Testing Farm in order to schedule a CI testing job
-          cat << EOF > pending.json
-          {
-            "sha": "${{steps.sha.outputs.SHA}}",
-            "state": "pending",
-            "context": "Testing Farm",
-            "target_url": "http://artifacts.dev.testing-farm.io/${{ steps.sched_test.outputs.req_id }}/pipeline.log"
-          }
-          EOF
-          echo "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{steps.sha.outputs.SHA}}"
-          # GITHUB_TOKEN is used for updating pull request status.
-          # It is provided by GitHub https://docs.github.com/en/actions/reference/authentication-in-a-workflow#about-the-github_token-secret
-          curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{steps.sha.outputs.SHA}} \
-            --data @pending.json
-          echo "::set-output name=GITHUB_REPOSITORY::$GITHUB_REPOSITORY"
-
       - name: Schedule a test on Testing Farm for Fedora
         id: sched_test
         run: |
           # Update ubuntu-latest in order to install curl and jq
-          apt update && apt -y install curl jq
+          sudo apt-get update && sudo apt-get -y install curl jq
           cat << EOF > request.json
           {
             "api_key": "${{ secrets.TF_PUBLIC_API_KEY }}",
@@ -79,22 +54,46 @@ jobs:
                 "REPO_URL": "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY",
                 "REPO_NAME": "$GITHUB_REPOSITORY",
                 "PR_NUMBER": "${{ steps.pr_nr.outputs.PR_NR }}",
-                "TOX": "${{ matrix.python }}",
               }
             }]
           }
           EOF
           curl ${{ secrets.TF_ENDPOINT }}/requests --data @request.json --header "Content-Type: application/json" --output response.json
+          cat response.json
+          req_id=$(jq -r .id response.json)
+
           # Store REQ_ID into outputs for later on usage
-          echo "::set-output name=REQ_ID::$(jq -r .id response.json)"
+          echo "::set-output name=REQ_ID::$req_id"
+
+      - name: Create status check to pending
+        id: pending
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Create a JSON file for Testing Farm in order to schedule a CI testing job
+          cat << EOF > pending.json
+          {
+            "sha": "${{steps.sha.outputs.SHA}}",
+            "state": "pending",
+            "context": "Testing Farm",
+            "target_url": "http://artifacts.dev.testing-farm.io/${{ steps.sched_test.outputs.req_id }}/pipeline.log"
+          }
+          EOF
+          echo "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ steps.sha.outputs.SHA }}"
+          # GITHUB_TOKEN is used for updating pull request status.
+          # It is provided by GitHub https://docs.github.com/en/actions/reference/authentication-in-a-workflow#about-the-github_token-secret
+          curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ steps.sha.outputs.SHA }} \
+            --data @pending.json
+          echo "::set-output name=GITHUB_REPOSITORY::$GITHUB_REPOSITORY"
 
   running:
     needs: build
     name: Check running tests on Testing Farm service
     runs-on: ubuntu-20.04
     outputs:
-      REQ_ID: ${{steps.req_sha.outputs.REQ_ID}}
-      SHA: ${{steps.req_sha.outputs.SHA}}
+      REQ_ID: ${{ steps.req_sha.outputs.REQ_ID }}
+      SHA: ${{ steps.req_sha.outputs.SHA }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Check if REQ_ID and SHA exists
@@ -102,10 +101,10 @@ jobs:
         run: |
           # Update ubuntu-20.04 in order to install curl and jq
           # each job is separate machine
-          apt update && apt -y install curl jq
+          sudo apt-get update && sudo apt-get -y install curl jq
           # Propagate REQ_ID and SHA into the finish section
-          echo "::set-output name=REQ_ID::${{needs.build.outputs.REQ_ID}}"
-          echo "::set-output name=SHA::${{needs.build.outputs.SHA}}"
+          echo "::set-output name=REQ_ID::${{ needs.build.outputs.REQ_ID }}"
+          echo "::set-output name=SHA::${{ needs.build.outputs.SHA }}"
 
       - name: Switch to running state of Testing Farm request
         id: running
@@ -113,7 +112,7 @@ jobs:
           # Create running.json file for query, whether job is finished or not.
           cat << EOF > running.json
           {
-            "sha": "${{needs.build.outputs.SHA}}",
+            "sha": "${{ needs.build.outputs.SHA }}",
             "state": "pending",
             "context": "Testing Farm",
             "description": "Build started",
@@ -122,13 +121,13 @@ jobs:
           EOF
           # Update GitHub status description to 'Build started'
           curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{needs.build.outputs.SHA}} \
+            https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ needs.build.outputs.SHA }} \
             --data @running.json
 
       - name: Check test is still running
         id: still_running
         run: |
-          CMD=${{ secrets.TF_ENDPOINT }}/requests/${{needs.build.outputs.REQ_ID}}
+          CMD=${{ secrets.TF_ENDPOINT }}/requests/${{ needs.build.outputs.REQ_ID }}
           curl $CMD > job.json
           state=$(jq -r .state job.json)
           # Wait till job is not finished. As soon as state is complete or failure then go to the finish action
@@ -155,8 +154,8 @@ jobs:
         run: |
           # Update ubuntu-20.04 in order to install curl and jq
           # each job is separate machine
-          apt update && apt -y install curl jq
-          curl ${{ secrets.TF_ENDPOINT }}/requests/${{needs.running.outputs.REQ_ID}} > job.json
+          sudo apt-get update && sudo apt-get -y install curl jq
+          curl ${{ secrets.TF_ENDPOINT }}/requests/${{ needs.running.outputs.REQ_ID }} > job.json
           cat job.json
           state=$(jq -r .state job.json)
           result=$(jq -r .result.overall job.json)
@@ -191,5 +190,5 @@ jobs:
           cat final.json
           # Switch Github status to proper state
           curl -X POST -H "Authorization: Bearer ${{secrets.GITHUB_TOKEN}}" -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{needs.running.outputs.SHA}} \
+            https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ needs.running.outputs.SHA }} \
             --data @final.json
