@@ -42,11 +42,13 @@ class TestDistgit(object):
         self.ir.set_do_images([self.component])
         self.ir._setup_brewapi()
 
+    @pytest.mark.distgit
     def test_setup_distgit(self):
         assert self.ir.distgit is None
         self.ir._setup_distgit()
         assert self.ir.distgit is not None
 
+    @pytest.mark.distgit
     def test_pull_downstream(self):
         tmp = Path(self.ir._get_tmp_workdir())
         self.ir.pull_downstream()
@@ -56,6 +58,7 @@ class TestDistgit(object):
         assert dpath.is_file()
         shutil.rmtree(tmp / self.component)
 
+    @pytest.mark.distgit
     def test_pull_upstream(self):
         self.ir.pull_upstream()
         tmp = self.ir._get_tmp_workdir()
@@ -64,6 +67,7 @@ class TestDistgit(object):
         dpath = os.path.join(cpath, 'base', 'Dockerfile')
         assert os.path.isfile(dpath)
 
+    @pytest.mark.distgit
     def test_distgit_changes(self):
         self.ir.conf["from_tag"] = "test"
         tmp = Path(self.ir._get_tmp_workdir())
@@ -77,11 +81,13 @@ class TestDistgit(object):
         assert tag_found
         shutil.rmtree(tmp / self.component)
 
+    @pytest.mark.distgit
     def test_distgit_commit_msg(self):
         msg = "Unit testing"
         self.ir.set_commit_msg(msg)
         assert self.ir.distgit.commit_msg == msg
 
+    @pytest.mark.distgit
     def test_tag_dockerfile(self):
         tmp = Path(self.ir._get_tmp_workdir())
         self.ir.conf["from_tag"] = "test"

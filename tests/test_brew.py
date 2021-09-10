@@ -42,15 +42,18 @@ class TestBrew(object):
     def test_setup_brewapi(self):
         assert self.ir.brewapi
 
+    @pytest.mark.distgit
     def test_get_nvr(self):
         nvr = self.ir.brewapi.get_nvr('f26-container', self.component)
         assert nvr == 'postgresql-0-1.f26container'
 
+    @pytest.mark.distgit
     def test_get_buildinfo(self):
         buildinfo = self.ir.brewapi.get_buildinfo('postgresql-0-1.f26container')
         assert buildinfo['build_id']
         assert buildinfo['build_id'] == 1018414
 
+    @pytest.mark.distgit
     def test_get_taskinfo(self):
         taskinfo = self.ir.brewapi.get_taskinfo(24268996)
         assert taskinfo['create_ts']
