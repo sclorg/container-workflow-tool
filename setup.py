@@ -61,7 +61,7 @@ setup(
     author_email='pkubat@redhat.com',
     url='https://github.com/sclorg/container-workflow-tool',
     license='MIT',
-    packages=find_packages(exclude=['man', 'test']),
+    packages=find_packages(exclude=['man', 'tests']),
     scripts=[],
     entry_points={
         'console_scripts': [
