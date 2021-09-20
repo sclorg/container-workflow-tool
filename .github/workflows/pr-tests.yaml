@@ -51,7 +51,7 @@ jobs:
               "variables": {
                 "REPO_URL": "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY",
                 "REPO_NAME": "$GITHUB_REPOSITORY",
-                "PR_NUMBER": "${{ steps.pr_nr.outputs.PR_NR }}",
+                "PR_NUMBER": "${{ steps.pr_nr.outputs.PR_NR }}"
               }
             }]
           }
