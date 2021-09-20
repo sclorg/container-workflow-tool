@@ -13,9 +13,7 @@ jobs:
       github.event.issue.pull_request
       && contains(github.event.comment.body, '/test')
       && contains(fromJson('["OWNER","MEMBER"]'), github.event.comment.author_association)
-    outputs:
-      REQ_ID: ${{steps.sched_test.outputs.REQ_ID}}
-      SHA: ${{steps.sha.outputs.SHA}}
+
     steps:
       - name: Get pull request number
         id: pr_nr
@@ -33,7 +31,7 @@ jobs:
         run: |
           # Store SHA into outputs
           echo "::set-output name=SHA::$(git rev-parse HEAD)"
-
+          
       - name: Schedule a test on Testing Farm for Fedora
         id: sched_test
         run: |
@@ -58,35 +56,20 @@ jobs:
             }]
           }
           EOF
+          cat request.json
           curl ${{ secrets.TF_ENDPOINT }}/requests --data @request.json --header "Content-Type: application/json" --output response.json
           cat response.json
           req_id=$(jq -r .id response.json)
+          echo "$req_id"
 
           # Store REQ_ID into outputs for later on usage
           echo "::set-output name=REQ_ID::$req_id"
 
-      - name: Create status check to pending
-        id: pending
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Create a JSON file for Testing Farm in order to schedule a CI testing job
-          cat << EOF > pending.json
-          {
-            "sha": "${{steps.sha.outputs.SHA}}",
-            "state": "pending",
-            "context": "Testing Farm",
-            "target_url": "http://artifacts.dev.testing-farm.io/${{ steps.sched_test.outputs.req_id }}/pipeline.log"
-          }
-          EOF
-          echo "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ steps.sha.outputs.SHA }}"
-          # GITHUB_TOKEN is used for updating pull request status.
-          # It is provided by GitHub https://docs.github.com/en/actions/reference/authentication-in-a-workflow#about-the-github_token-secret
-          curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ steps.sha.outputs.SHA }} \
-            --data @pending.json
-          echo "::set-output name=GITHUB_REPOSITORY::$GITHUB_REPOSITORY"
-
+          
+    outputs:
+      REQ_ID: ${{ steps.sched_test.outputs.REQ_ID }}
+      SHA: ${{ steps.sha.outputs.SHA }}
+      
   running:
     needs: build
     name: Check running tests on Testing Farm service
