@@ -52,25 +52,6 @@ def get_dir(system_path=None, virtual_path=None):
     return os.path.join(*(['/'] + system_path))
 
 
-data_files = {}
-paths = ['config']
-
-for path in paths:
-    for root, dirs, files in os.walk(path, followlinks=True):
-        data_files[
-            get_dir(
-                ['usr', 'share', 'cwt', root])] = [
-            os.path.join(root, f) for f in files]
-
-paths = ['man']
-
-for path in paths:
-    for root, dirs, files in os.walk(path, followlinks=True):
-        data_files[
-            get_dir(
-                ['usr', 'share', 'man', 'man1'])] = [
-            os.path.join(root, f) for f in files]
-
 setup(
     name='container-workflow-tool',
     version="1.0.0",
@@ -81,8 +62,6 @@ setup(
     url='https://github.com/sclorg/container-workflow-tool',
     license='MIT',
     packages=find_packages(exclude=['man', 'test']),
-    include_package_data=True,
-    data_files=data_files.items(),
     scripts=[],
     entry_points={
         'console_scripts': [
