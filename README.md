@@ -23,7 +23,6 @@ Requirements
 * python3-GitPython
 * python3-requests-kerberos
 * fedpkg
-* http://github.com/ficap/dhwebapi (installed using pip3 and requirements.txt)
 
 Options
 -------
@@ -33,7 +32,6 @@ usage: cwt [options] command
     Command:
         koji            - List builds, base images, hash ids
         build           - Command for building images
-        dockerhub       - Manipulate DockerHub repo/registry
         git             - Work with upstream/downstream git repositories
         utils           - Other actions tied to the rebuild (communication, repository preparation etc.)
 

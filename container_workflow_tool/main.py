@@ -20,7 +20,7 @@ import container_workflow_tool.utility as u
 from container_workflow_tool.koji import KojiAPI
 from container_workflow_tool.distgit import DistgitAPI
 from container_workflow_tool.utility import RebuilderError
-from container_workflow_tool.decorators import needs_base, needs_brewapi, needs_dhapi
+from container_workflow_tool.decorators import needs_base, needs_brewapi
 from container_workflow_tool.decorators import needs_distgit
 from container_workflow_tool.config import Config
 
@@ -44,7 +44,6 @@ class ImageRebuilder:
         self.base_image = base_image
 
         self.brewapi: KojiAPI = None
-        self.dhapi = None
         self.distgit: DistgitAPI = None
         self.commit_msg = None
         self.args = None
@@ -150,31 +149,6 @@ class ImageRebuilder:
         if not self.brewapi:
             self.brewapi = KojiAPI(self.conf, self.logger.getChild("koji"),
                                    self.latest_release)
-
-    # TODO switch to property
-    def _setup_dhapi(self):
-        from dhwebapi.dhwebapi import DockerHubWebAPI, DockerHubException
-        if not self.dhapi:
-            token = None
-            username = None
-            password = None
-            try:
-                token = self.conf.DOCKERHUB_TOKEN
-                self.dhapi = DockerHubWebAPI(token=token)
-                return
-            except (AttributeError, DockerHubException):
-                pass
-
-            try:
-                username = self.conf.DOCKERHUB_USERNAME
-                password = self.conf.DOCKERHUB_PASSWORD
-            except AttributeError:
-                if username is None:
-                    username = input("Dockerhub username: ")
-                if password is None:
-                    password = getpass.unix_getpass(prompt="Password for user " + username + ": ")
-
-            self.dhapi = DockerHubWebAPI(username, password)
 
     def _setup_logger(self, level=logging.INFO, user_logger=None, name=__name__):
         # If a logger is already set up, do not setup a new one
@@ -626,19 +600,3 @@ class ImageRebuilder:
         tmp = self._get_tmp_workdir()
         self._change_workdir(tmp)
         self.distgit.show_git_changes(tmp, components)
-
-    @needs_dhapi
-    def update_dh_description(self):  # TODO: handle login if config changes during a run
-        self.pull_upstream()
-
-        imgs = self._get_images()
-
-        for img in imgs:
-            # FIXME: Will not work with new config
-            name, version, component, branch, url, path, *rest = img
-
-            with open(os.path.join(name.split('-')[0], path, "README.md")) as f:
-                desc = "".join(f.readlines())
-                self.dhapi.set_repository_full_description(namespace="centos",
-                                                           repo_name=name.replace("rhel", "centos"),
-                                                           full_description=desc)

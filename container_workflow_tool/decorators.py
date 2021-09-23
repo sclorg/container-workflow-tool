@@ -27,10 +27,3 @@ def needs_brewapi(f):
         self._setup_brewapi()
         return f(self, *args, **kwargs)
     return wrapper
-
-
-def needs_dhapi(f):
-    def wrapper(self, *args, **kwargs):
-        self._setup_dhapi()
-        return f(self, *args, **kwargs)
-    return wrapper
