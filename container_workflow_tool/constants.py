@@ -14,10 +14,6 @@ action_map['koji'] = {
     'latestbuilds': 'print_brew_builds',
 }
 
-action_map['dockerhub'] = {
-    'updatefulldescription': 'update_dh_description',
-}
-
 action_map['utils'] = {
     'showconfig': 'show_config_contents',
     'listimages': 'list_images',
@@ -33,7 +29,6 @@ actions = {}
 actions['git'] = ['pullupstream', 'clonedownstream', 'cloneupstream',
                   'rebase', 'merge', 'show', 'push', ]
 actions['koji'] = ['latestbuilds', ]
-actions['dockerhub'] = ['updatefulldescription', ]
 actions['utils'] = ['showconfig', 'listimages', 'listupstream', ]
 
 COMMAND = ""

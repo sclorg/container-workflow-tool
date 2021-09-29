@@ -69,7 +69,6 @@ class CliCommon(object):
     Command:
         {cmd}
         build           - Command for building images
-        dockerhub       - Manipulate DockerHub repo/registry
         git             - Work with upstream/downstream git repositories
         utils           - Other actions tied to the rebuild (communication, repository preparation etc.)
 
@@ -116,13 +115,6 @@ class CliCommon(object):
         latestbuilds - Query koji and list latest builds of images
     """
         return action_help
-
-    def dockerhub_usage(self):
-        action_help = """%s dockerhub action
-    Action:
-        updatefulldescription - Update full description on DockerHub
-        """
-        return action_help % self.prg_name
 
     def build_usage(self):
         action_help = """%s build image_set
