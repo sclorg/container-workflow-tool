@@ -51,7 +51,6 @@ class TestCli(object):
         "command,expected",
         [
             ("git", True),
-            ("dockerhub", True),
             ("utils", True),
             ("koji", True),
         ]
