@@ -23,6 +23,8 @@
 
 """
 A book with our finest spells
+The file contains variable definitions available for all test suite
+Like path to test directory and path to data directory
 """
 from pathlib import Path
 

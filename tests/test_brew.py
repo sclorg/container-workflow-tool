@@ -31,7 +31,6 @@ class TestBrew(object):
         self.ir = ImageRebuilder('Testing')
 
         self.ir.set_config('default.yaml', release="rawhide")
-        # Partner BZ testing
         self.ir.rebuild_reason = "Unit testing"
         self.ir.disable_klist = True
         self.ir.set_do_images([self.component])
