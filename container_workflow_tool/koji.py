@@ -33,6 +33,11 @@ class KojiAPI:
         self.logger.debug("Getting taskinfo for task " + str(task_id))
         return self.brew.getTaskInfo(task_id)
 
+    def get_listarchives(self, build_id):
+        """Gets list archive for build_id"""
+        self.logger.debug("Gettings list archives for build_id " + str(build_id))
+        return self.brew.listArchives(build_id)
+
     def get_buildinfo(self, nvr):
         """Gets build info from brew"""
         if nvr not in self.buildinfo:
@@ -57,7 +62,7 @@ class KojiAPI:
             nvr_list = []
             self.logger.info("Fetching info from Brew... (0/{})".format(images_num))
             for i, image in enumerate(images, 1):
-                if i % 10 is 0:
+                if i % 10 == 0:
                     self.logger.info("Fetching info from Brew... ({}/{})".format(i, images_num))
                 name = image["name"]
                 component = image["component"]

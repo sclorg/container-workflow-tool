@@ -1,0 +1,111 @@
+{
+  "build_id": 1798434,
+  "cg_id": 1,
+  "completion_time": "2021-07-23 04:30:36+00:00",
+  "completion_ts": 1627014636.0,
+  "creation_event_id": 76787218,
+  "creation_time": "2021-07-23 04:30:43.556042+00:00",
+  "creation_ts": 1627014643.556042,
+  "epoch": "None",
+  "extra": {
+    "image": {
+      "autorebuild": false,
+      "isolated": false,
+      "parent_image_builds": {
+        "registry.fedoraproject.org/f34/s2i-core:latest": {
+          "id": 1782517,
+          "nvr": "s2i-core-0-51.container"
+        }
+      },
+      "parent_images": [
+        "registry.fedoraproject.org/f34/s2i-core:latest"
+      ],
+      "parent_build_id": 1782517,
+      "help": "help.md",
+      "index": {
+        "tags": [
+          "1-63.container"
+        ],
+        "floating_tags": [
+          "latest",
+          "1"
+        ],
+        "unique_tags": [
+          "f34-container-candidate-68962-20210723042622"
+        ],
+        "pull": [
+          "candidate-registry.fedoraproject.org/f34/s2i-base@sha256:c47fbde7345e226b81895a6080e663d28112f1be4e82d44451e89d7d508acad5",
+          "candidate-registry.fedoraproject.org/f34/s2i-base:1-63.container"
+        ],
+        "digests": {
+          "application/vnd.docker.distribution.manifest.list.v2+json": "sha256:c47fbde7345e226b81895a6080e663d28112f1be4e82d44451e89d7d508acad5"
+        }
+      },
+      "media_types": [
+        "application/vnd.docker.distribution.manifest.list.v2+json",
+        "application/vnd.docker.distribution.manifest.v1+json",
+        "application/vnd.docker.distribution.manifest.v2+json"
+      ]
+    },
+    "container_koji_task_id": 72464937,
+    "submitter": "containerbuild",
+    "typeinfo": {
+      "image": {
+        "autorebuild": false,
+        "isolated": false,
+        "parent_image_builds": {
+          "registry.fedoraproject.org/f34/s2i-core:latest": {
+            "id": 1782517,
+            "nvr": "s2i-core-0-51.container"
+          }
+        },
+        "parent_images": [
+          "registry.fedoraproject.org/f34/s2i-core:latest"
+        ],
+        "parent_build_id": 1782517,
+        "help": "help.md",
+        "index": {
+          "tags": [
+            "1-63.container"
+          ],
+          "floating_tags": [
+            "latest",
+            "1"
+          ],
+          "unique_tags": [
+            "f34-container-candidate-68962-20210723042622"
+          ],
+          "pull": [
+            "candidate-registry.fedoraproject.org/f34/s2i-base@sha256:c47fbde7345e226b81895a6080e663d28112f1be4e82d44451e89d7d508acad5",
+            "candidate-registry.fedoraproject.org/f34/s2i-base:1-63.container"
+          ],
+          "digests": {
+            "application/vnd.docker.distribution.manifest.list.v2+json": "sha256:c47fbde7345e226b81895a6080e663d28112f1be4e82d44451e89d7d508acad5"
+          }
+        },
+        "media_types": [
+          "application/vnd.docker.distribution.manifest.list.v2+json",
+          "application/vnd.docker.distribution.manifest.v1+json",
+          "application/vnd.docker.distribution.manifest.v2+json"
+        ]
+      }
+    }
+  },
+  "id": 1798434,
+  "name": "s2i-base",
+  "nvr": "s2i-base-1-63.container",
+  "owner_id": 3559,
+  "owner_name": "lbalhar",
+  "package_id": 23883,
+  "package_name": "s2i-base",
+  "release": "63.container",
+  "source": "https://src.fedoraproject.org/container/s2i-base.git#5704f4271e82ed787be554d9f80895923c00645d",
+  "start_time": "2021-07-23 04:26:26+00:00",
+  "start_ts": 1627014386.0,
+  "state": 1,
+  "task_id": "None",
+  "version": "1",
+  "volume_id": 0,
+  "volume_name": "DEFAULT",
+  "cg_name": "atomic-reactor"
+}

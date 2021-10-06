@@ -330,7 +330,7 @@ class ImageRebuilder:
         print("Method not yet implemented.")
 
     @needs_brewapi
-    def get_brew_builds(self, print_time: bool = True) -> str:
+    def get_brew_builds(self, print_time: bool = True) -> List[str]:
         """Returns information about builds in brew
 
         Args:
@@ -355,7 +355,7 @@ class ImageRebuilder:
                 template = "|{0}|{1}|{2}|"
             vr = re.search(".*-([^-]*-[^-]*)$", nvr).group(1)
             build_id = self.brewapi.get_buildinfo(nvr)["build_id"]
-            archives = self.brewapi.brew.listArchives(build_id)
+            archives = self.brewapi.get_listarchives(build_id)
             archive = archives[0]["extra"]
             name = archive["docker"]["config"]["config"]["Labels"]["name"]
             image_name = f"{name}:{vr}"

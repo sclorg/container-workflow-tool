@@ -9,9 +9,9 @@ else
 	PODMAN := /usr/bin/podman
 endif
 
-.PHONY: test
-test:
-	PYTHONPATH=.:$$PYTHONPATH python3 -W ignore::DeprecationWarning -m unittest -v
+.PHONY: tests
+tests:
+	cd tests && PYTHONPATH=$(CURDIR) python3 -m pytest -m "not distgit" --color=yes --verbose --showlocals .
 
 build:
 	$(PODMAN) build --tag $(TEST_IMAGE) -f Dockerfile.tests .
