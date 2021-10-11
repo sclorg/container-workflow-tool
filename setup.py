@@ -62,6 +62,7 @@ setup(
     url='https://github.com/sclorg/container-workflow-tool',
     license='MIT',
     packages=find_packages(exclude=['man', 'tests']),
+    include_package_data=True,
     scripts=[],
     entry_points={
         'console_scripts': [
