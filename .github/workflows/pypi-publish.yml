@@ -1,9 +1,6 @@
 # MIT License
 #
-# Copyright (c) 2018 Userspace Containerization team at Red Hat
-#
-# source of this file is at:
-# https://github.com/packit/packit/blob/main/.github/workflows/pypi-publish.yml
+# Copyright (c) 2018 sclorg team at Red Hat
 #
 # Upload a Python package when a release is created
 # https://packaging.python.org/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows
