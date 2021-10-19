@@ -138,6 +138,17 @@ class DistgitAPI(object):
                      f"FROM {imagename_without_tag}:{from_tag}\n", fdata)
         return ret
 
+    def _update_test_openshift_yaml(self, test_openshift_yaml, version: str = ""):
+        """
+        Update test/test-openshift.yaml file with value VERSION_NUMBER and OS_NUMBER
+        The file is used for CVP pipeline
+
+        Args:
+            test_openshift_yaml (Path): Path to test/test-openshift.yaml file
+            version (str): version to be replaced with VERSION_NUMBER
+        """
+        pass
+
     def _update_dockerfile_rebuild(
             self, dockerfile_path, release, from_tag, downstream_from: str = "",
     ):
@@ -276,6 +287,9 @@ class DistgitAPI(object):
                     # Clone upstream repository
                     ups_path = os.path.join('upstreams/', ups_name)
                     self._clone_upstream(url, ups_path, commands=commands)
+                    test_openshift_yaml_file = os.path.join(ups_path, "test", "test-openshift.yaml")
+                    if os.path.exists(test_openshift_yaml_file):
+                        self.update_openshift_yaml(test_openshift_yaml_file, path)
                     # Save the upstream commit hash
                     ups_hash = Repo(ups_path).commit().hexsha
                     self._pull_upstream(component, path, url, repo, ups_name, commands)

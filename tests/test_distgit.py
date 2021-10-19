@@ -28,6 +28,7 @@ from flexmock import flexmock
 from pathlib import Path
 
 from container_workflow_tool.cli import ImageRebuilder
+from container_workflow_tool.distgit import DistgitAPI
 
 
 class TestDistgit(object):
@@ -71,6 +72,27 @@ class TestDistgit(object):
     def test_distgit_changes(self):
         self.ir.conf["from_tag"] = "test"
         tmp = Path(self.ir._get_tmp_workdir())
+        self.ir.dist_git_changes()
+        dpath = tmp / self.component / 'Dockerfile'
+        assert os.path.isfile(dpath)
+        assert not (tmp / self.component / "test" / "test-openshift.yaml").exists()
+        tag_found = False
+        with open(dpath) as f:
+            if ":test" in f.read():
+                tag_found = True
+        assert tag_found
+        shutil.rmtree(tmp / self.component)
+
+    @pytest.mark.distgit
+    def test_distgit_changes_openshift_yaml(self):
+        # TODO
+        # As soon as s2i-base-container will contain file 'test/test-openshift.yaml'
+        # Then change it to once
+        flexmock(DistgitAPI).should_receive("_update_test_openshift_yaml").never()
+        self.ir.conf["from_tag"] = "test"
+        tmp = Path(self.ir._get_tmp_workdir())
+        self.ir._setup_distgit()
+        self.ir.distgit._clone_downstream(self.component, "main")
         self.ir.dist_git_changes()
         dpath = tmp / self.component / 'Dockerfile'
         assert os.path.isfile(dpath)
