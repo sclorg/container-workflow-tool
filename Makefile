@@ -11,7 +11,7 @@ endif
 
 .PHONY: tests
 tests:
-	cd tests && PYTHONPATH=$(CURDIR) python3 -m pytest -m "not distgit" --color=yes --verbose --showlocals .
+	cd tests && PYTHONPATH=$(CURDIR) python3 -m pytest --color=yes --verbose --showlocals .
 
 build:
 	$(PODMAN) build --tag $(TEST_IMAGE) -f Dockerfile.tests .
