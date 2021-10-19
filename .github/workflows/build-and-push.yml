@@ -22,7 +22,7 @@ jobs:
           image: cwt-generator
           tags: latest 1 ${{ github.sha }}
 
-      - name: Push betka image to Quay.io
+      - name: Push cwt-generator image to Quay.io
         id: push-to-quay
         uses: redhat-actions/push-to-registry@v2.2
         with:
