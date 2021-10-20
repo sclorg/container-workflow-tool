@@ -138,6 +138,16 @@ class DistgitAPI(object):
                      f"FROM {imagename_without_tag}:{from_tag}\n", fdata)
         return ret
 
+    def _set_yaml_variable(self, fdata: str = "", tag: str = "", tag_str: str = "", variable: str = ""):
+        """
+        Updates test-openshift.yaml string
+        It replaces VERSION: VERSION_NUMBER -> VERSION: variable and
+        It replaces OS: OS_VERSION -> OS: <os_name>"
+        """
+        self.logger.debug(f"Replaces variable of tag {tag} from {tag_str} to {variable}")
+        ret = re.sub(rf"{tag}: {tag_str}", f"{tag}: {variable}", fdata)
+        return ret
+
     def _update_test_openshift_yaml(self, test_openshift_yaml, version: str = ""):
         """
         Update test/test-openshift.yaml file with value VERSION_NUMBER and OS_NUMBER
@@ -147,7 +157,17 @@ class DistgitAPI(object):
             test_openshift_yaml (Path): Path to test/test-openshift.yaml file
             version (str): version to be replaced with VERSION_NUMBER
         """
-        pass
+        with open(test_openshift_yaml) as f:
+            fdata = f.read()
+        fdata = self._set_yaml_variable(fdata, "VERSION", "VERSION_NUMBER", version)
+        os_name = "fedora"
+        if self.conf.image_names == "RHEL8":
+            os_name = "rhel8"
+        if self.conf.image_names == "RHSCL":
+            os_name = "rhel7"
+        fdata = self._set_yaml_variable(fdata, tag="OS", tag_str="OS_NUMBER", variable=os_name)
+        with open(test_openshift_yaml, 'w') as f:
+            f.write(fdata)
 
     def _update_dockerfile_rebuild(
             self, dockerfile_path, release, from_tag, downstream_from: str = "",

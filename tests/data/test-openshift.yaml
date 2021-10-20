@@ -1,0 +1,27 @@
+---
+- hosts: all # At runtime this playbook will be executed on a Jenkins slave against 'localhost'
+  gather_facts: false
+  tags:
+    - openshift
+
+  environment:
+    VERSION: VERSION_NUMBER
+    OS: OS_NUMBER
+    IMAGE_FULL_NAME: "{{ image_full_name }}"
+    IMAGE_REGISTRY_URL: "{{ image_registry_url }}"
+    IMAGE_NAMESPACE: "{{ image_namespace }}"
+    IMAGE_NAME: "{{ image_name }}"
+    IMAGE_TAG: "{{ image_tag }}"
+    IMAGE_DIGEST: "{{ image_digest }}"
+    OPENSHIFT_CLUSTER_URL: "{{ openshift_cluster_url }}"
+    OPENSHIFT_AUTH_TOKEN: "{{ openshift_auth_token }}"
+    OPENSHIFT_USERNAME: "{{ openshift_username }}"
+    OPENSHIFT_PROJECT_NAME: "{{ openshift_project_name }}"
+    CVP_ARTIFACTS_DIR: "{{ cvp_artifacts_dir }}"
+
+  tasks:
+    # CVP should have created the artifacts directory already, but it's always good to check.
+    - name: "Make sure the artifacts directory exists"
+      file:
+        path: "{{ cvp_artifacts_dir }}"
+        state: directory

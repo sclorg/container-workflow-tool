@@ -27,6 +27,7 @@ import shutil
 from flexmock import flexmock
 from pathlib import Path
 
+from tests.spellbook import DATA_DIR
 from container_workflow_tool.cli import ImageRebuilder
 from container_workflow_tool.distgit import DistgitAPI
 
@@ -122,3 +123,44 @@ class TestDistgit(object):
                 found_tag = True
         assert found_tag
         shutil.rmtree(tmp / self.component)
+
+    @pytest.mark.parametrize(
+        "tag,tag_str,variable,expected",
+        [
+            ("VERSION", "VERSION_NUMBER", "base", True),
+            ("VERSION", "VERSION_NUMBER", "1.14", True),
+            ("OS", "OS_NUMBER", "rhel8", True),
+            ("VER", "VERSION_NUMBER", "base", False),
+            ("OS", "VERSION_NUMBER", "base", False),
+            ("VERSION", "VERSIONS_NUMBER", "1.14", False),
+        ]
+    )
+    def test_set_yaml_variable(self, tag, tag_str, variable, expected):
+        self.ir._setup_distgit()
+        with open(os.path.join(DATA_DIR, "test-openshift.yaml")) as f:
+            yaml_file = f.read()
+        fixed = self.ir.distgit._set_yaml_variable(fdata=yaml_file, tag=tag, tag_str=tag_str, variable=variable)
+        result = f"{tag}: {variable}" in fixed
+        assert result == expected
+
+    @pytest.mark.parametrize(
+        "os_name,os_name_expected,version",
+        [
+            ("fedora", "fedora", "base"),
+            ("RHEL8", "rhel8", "1.14"),
+            ("RHSCL", "rhel7", "14"),
+            ("FOO", "fedora", "bar")
+        ]
+    )
+    def test_update_openshift_yaml(self, os_name, os_name_expected, version):
+        self.ir._setup_distgit()
+        self.ir.conf.image_names = os_name
+        tmp = Path(self.ir._get_tmp_workdir())
+        file_name = "test-openshift.yaml"
+        target_name = tmp / file_name
+        shutil.copy(os.path.join(DATA_DIR, file_name), target_name)
+        self.ir.distgit._update_test_openshift_yaml(str(target_name), version=version)
+        with open(target_name) as f:
+            content = f.read()
+        assert f"VERSION: {version}" in content
+        assert f"OS: {os_name_expected}" in content
