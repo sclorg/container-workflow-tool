@@ -135,11 +135,11 @@ class TestDistgit(object):
             ("VERSION", "VERSIONS_NUMBER", "1.14", False),
         ]
     )
-    def test_set_yaml_variable(self, tag, tag_str, variable, expected):
+    def test_update_variable_in_string(self, tag, tag_str, variable, expected):
         self.ir._setup_distgit()
         with open(os.path.join(DATA_DIR, "test-openshift.yaml")) as f:
             yaml_file = f.read()
-        fixed = self.ir.distgit._set_yaml_variable(fdata=yaml_file, tag=tag, tag_str=tag_str, variable=variable)
+        fixed = self.ir.distgit._update_variable_in_string(fdata=yaml_file, tag=tag, tag_str=tag_str, variable=variable)
         result = f"{tag}: {variable}" in fixed
         assert result == expected
 
