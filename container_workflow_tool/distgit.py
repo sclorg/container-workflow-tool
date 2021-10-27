@@ -377,7 +377,10 @@ class DistgitAPI(object):
                 dest_file = dst_root / dest_file_name
                 # Look for danging symlinks to relative path, then copy the content
                 # from source, following the first symlink
-                if dest_file.is_symlink() and not dest_file.is_absolute():
+                if dest_file.is_symlink():
+                    if os.path.isabs(os.readlink(str(dest_file))):
+                        self.logger.debug(f"Symlink {dest_file} contains absolute path. Skip it.")
+                        continue
                     dest_target = dest_file.parents[0] / dest_file.readlink()
                     msg = f"looking for dangling symlink {dest_file} (that points to {dest_target})"
                     self.logger.debug(msg)
@@ -390,7 +393,7 @@ class DistgitAPI(object):
                     dest_path_rel = dest_file.relative_to(dest_parent)
                     src_path_content = Path(src_parent) / dest_path_rel
                     self.logger.debug(f"unlink {dest_file}")
-                    os.unlink(str(dest_file))
+                    dest_file.unlink()
                     src_full = src_path_content.parents[0] / src_path_content.readlink()
                     if src_full.is_dir():
                         # In this case, when the source directory includes another symlinks outside
@@ -402,7 +405,8 @@ class DistgitAPI(object):
                     else:
                         if os.path.islink(src_full):
                             self.logger.debug(f"Source file {src_full} is symlink.")
-                            src_full = src_full.resolve()
+                            self.logger.debug(f"Link is: {src_full.readlink()}")
+                            src_full = src_parent / src_full.readlink()
                             self.logger.debug(f"Real target is {src_full}")
                         self.logger.debug(f"cp {src_full} {dest_file}")
                         shutil.copy2(src_full, dest_file, follow_symlinks=False)
