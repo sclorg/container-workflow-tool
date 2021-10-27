@@ -3,6 +3,7 @@ import shutil
 import re
 import subprocess
 
+from pathlib import Path
 from git import Repo
 from git.exc import GitCommandError
 
@@ -371,31 +372,27 @@ class DistgitAPI(object):
             dest_parent (string): path to destination directory
         """
         for dest_root, dest_dirs, dest_files in os.walk(dest_parent):
+            dst_root = Path(dest_root)
             for dest_file_name in dest_files:
-                dest_file = os.path.join(dest_root, dest_file_name)
+                dest_file = dst_root / dest_file_name
                 # Look for danging symlinks to relative path, then copy the content
                 # from source, following the first symlink
-                if os.path.islink(dest_file) and not os.path.isabs(os.readlink(dest_file)):
-                    dest_target = os.path.join(os.path.dirname(dest_file), os.readlink(dest_file))
+                if dest_file.is_symlink() and not dest_file.is_absolute():
+                    dest_target = dest_file.parents[0] / dest_file.readlink()
                     msg = f"looking for dangling symlink {dest_file} (that points to {dest_target})"
                     self.logger.debug(msg)
-                    if os.path.exists(dest_target):
+                    if dest_target.exists():
                         continue
                     # We found a dangling symlink to relative path,
                     # so we need to use the matching path in source,
                     # which means removing destination name
                     # from destination and adding it to source root
-                    dest_path_rel = re.sub(
-                        r"^{comp}{sep}".format(comp=dest_parent, sep=os.path.sep),
-                        "",
-                        dest_file
-                    )
-                    src_path_content = os.path.join(src_parent, dest_path_rel)
-                    self.logger.debug("unlink {dest}".format(dest=dest_file))
-                    os.unlink(dest_file)
-                    src_full = os.path.join(os.path.dirname(src_path_content),
-                                            os.readlink(src_path_content))
-                    if os.path.isdir(src_full):
+                    dest_path_rel = dest_file.relative_to(dest_parent)
+                    src_path_content = Path(src_parent) / dest_path_rel
+                    self.logger.debug(f"unlink {dest_file}")
+                    os.unlink(str(dest_file))
+                    src_full = src_path_content.parents[0] / src_path_content.readlink()
+                    if src_full.is_dir():
                         # In this case, when the source directory includes another symlinks outside
                         # of this directory, those wouldn't be fixed, so let's run the same function
                         # to fix dangling symlinks recursively.
@@ -405,8 +402,8 @@ class DistgitAPI(object):
                     else:
                         if os.path.islink(src_full):
                             self.logger.debug(f"Source file {src_full} is symlink.")
-                            src_full = os.path.realpath(src_full)
-                            self.logger.debug(f"Target is {src_full}")
+                            src_full = src_full.resolve()
+                            self.logger.debug(f"Real target is {src_full}")
                         self.logger.debug(f"cp {src_full} {dest_file}")
                         shutil.copy2(src_full, dest_file, follow_symlinks=False)
 
