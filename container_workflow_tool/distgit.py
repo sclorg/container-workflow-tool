@@ -403,7 +403,11 @@ class DistgitAPI(object):
                         shutil.copytree(src_full, dest_file, symlinks=True)
                         self._handle_dangling_symlinks(src_parent, dest_parent)
                     else:
-                        self.logger.debug("cp {src} {dest}".format(src=src_full, dest=dest_file))
+                        if os.path.islink(src_full):
+                            self.logger.debug(f"Source file {src_full} is symlink.")
+                            src_full = os.path.realpath(src_full)
+                            self.logger.debug(f"Target is {src_full}")
+                        self.logger.debug(f"cp {src_full} {dest_file}")
                         shutil.copy2(src_full, dest_file, follow_symlinks=False)
 
     def _pull_upstream(self, component, path, url, repo, ups_name, commands):
