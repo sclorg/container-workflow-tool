@@ -33,73 +33,6 @@ class DistgitAPI(object):
         """
         self.commit_msg = msg
 
-    def _get_release_format(self, fdata):
-        # Only use RELEASE as in Fedora this is the only incrementable
-        # Actual release label is defined as "$RELEASE.$DISTTAG"
-        if "RELEASE=" in fdata:
-            relstr = "RELEASE"
-        else:
-            msg = "No release information found in Dockerfile"
-            self.logger.debug(msg)
-            return None
-        return relstr
-
-    def _get_release(self, dockerfile_path):
-        """Gets release from a Dockerfile
-
-        Args:
-            dockerfile_path (str): Path to the Dockerfile
-
-        Returns:
-            str: Release string
-        """
-        # Dockerfile might not yet exist so start versioning from 1
-        if not os.path.exists(dockerfile_path):
-            return '1'
-        with open(dockerfile_path) as f:
-            fdata = f.read()
-            relstr = self._get_release_format(fdata)
-            if relstr is None:
-                release = relstr
-            else:
-                release = re.search(relstr + r'="?([0-9\.]*)', fdata)
-                if release is not None:
-                    release = release.group(1)
-            return release
-
-    def _set_release(self, fdata, release):
-        """Sets the release of a Dockerfile loaded into a string
-
-        Args:
-            fdata (str): String containing the Dockerfile
-            release (str): Release string
-
-        Returns:
-            str: Dockerfile content with updated release field
-        """
-        self.logger.debug("Setting release to: " + str(release))
-        if release is not None:
-            relstr = self._get_release_format(fdata)
-            ret = re.sub(relstr + r'=\"?[0-9\.]*\"?',
-                         relstr + r'=\"' + release + '\"', fdata)
-        else:
-            ret = fdata
-        return ret
-
-    def _bump_release(self, version_str, bump_type):
-        if version_str:
-            length = version_str.split('.')
-            if len(length) == 1 and bump_type == 'minor':
-                # Release="1" -> Release="1.1"
-                length.append('1')
-            elif len(length) >= 1 and bump_type == 'major':
-                # Release="1.1" -> Release="2.0"
-                length = [str(int(length[0]) + 1), str(0)]
-            else:
-                # Just bump the last number
-                length[-1] = str(int(length[-1]) + 1)
-            return '.'.join(length)
-
     def _get_from_df(self, dockerfile_path):
         res = None
         if os.path.exists(dockerfile_path):
@@ -139,27 +72,24 @@ class DistgitAPI(object):
         return ret
 
     def _update_dockerfile_rebuild(
-            self, dockerfile_path, release, from_tag, downstream_from: str = "",
+            self, dockerfile_path, from_tag, downstream_from: str = "",
     ):
         with open(dockerfile_path) as f:
             fdata = f.read()
-        res = self._set_release(fdata, self._bump_release(release, None))
-        res = self._set_from(res, from_tag)
+        res = self._set_from(fdata, from_tag)
         with open(dockerfile_path, 'w') as f:
             f.write(res)
 
-    def update_dockerfile(self, df, release, from_tag, downstream_from: str = ""):
-        """Updates basic fields of a Dockerfile. Sets from, release fields
+    def update_dockerfile(self, df, from_tag, downstream_from: str = ""):
+        """Updates basic fields of a Dockerfile. Sets from field
 
         Args:
             df (str): Path to the Dockerfile
-            release (str): value to be inserted into the release field
             from_tag (str): value to be inserted into the from field
             downstream_from (str): value from downstream Dockerfile
         """
-        # This only bumped release label but it is not used in Fedora anymore
         self._update_dockerfile_rebuild(
-            df, release, from_tag, downstream_from=downstream_from
+            df, from_tag, downstream_from=downstream_from
         )
 
     # FIXME: This should be provided by some external Dockerfile linters
@@ -255,13 +185,12 @@ class DistgitAPI(object):
                 pull_upstr = image.get("pull_upstream", True)
                 repo = self._clone_downstream(component, branch)
                 df_path = os.path.join(component, "Dockerfile")
-                release = self._get_release(df_path)
                 downstream_from = self._get_from_df(df_path)
                 self.logger.debug(f"Downstream_from: {downstream_from}\n")
                 from_tag = self.conf.get("from_tag", "latest")
                 if rebase or not pull_upstr:
                     self.update_dockerfile(
-                        df_path, release, from_tag, downstream_from=downstream_from
+                        df_path, from_tag, downstream_from=downstream_from
                     )
                     # It is possible for the git repository to have no changes
                     if repo.is_dirty():
@@ -280,7 +209,7 @@ class DistgitAPI(object):
                     ups_hash = Repo(ups_path).commit().hexsha
                     self._pull_upstream(component, path, url, repo, ups_name, commands)
                     self.update_dockerfile(
-                        df_path, release, from_tag, downstream_from=downstream_from
+                        df_path, from_tag, downstream_from=downstream_from
                     )
                     repo.git.add("Dockerfile")
                     # It is possible for the git repository to have no changes
