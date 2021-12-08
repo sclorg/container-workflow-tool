@@ -71,6 +71,37 @@ class DistgitAPI(object):
                      f"FROM {imagename_without_tag}:{from_tag}\n", fdata)
         return ret
 
+    def _update_variable_in_string(self, fdata: str = "", tag: str = "", tag_str: str = "", variable: str = ""):
+        """
+        Updates variable in string. Mainly used for updating test-openshift.yaml file.
+        It replaces VERSION: VERSION_NUMBER -> VERSION: variable and
+        It replaces OS: OS_VERSION -> OS: <os_name>"
+        """
+        self.logger.debug(f"Replaces variable of tag {tag} from {tag_str} to {variable}")
+        ret = re.sub(rf"{tag}: {tag_str}", f"{tag}: {variable}", fdata)
+        return ret
+
+    def _update_test_openshift_yaml(self, test_openshift_yaml, version: str = ""):
+        """
+        Update test/test-openshift.yaml file with value VERSION_NUMBER and OS_NUMBER
+        The file is used for CVP pipeline
+
+        Args:
+            test_openshift_yaml (Path): Path to test/test-openshift.yaml file
+            version (str): version to be replaced with VERSION_NUMBER
+        """
+        with open(test_openshift_yaml) as f:
+            fdata = f.read()
+        fdata = self._update_variable_in_string(fdata, "VERSION", "VERSION_NUMBER", version)
+        os_name = "fedora"
+        if self.conf.image_names == "RHEL8":
+            os_name = "rhel8"
+        if self.conf.image_names == "RHSCL":
+            os_name = "rhel7"
+        fdata = self._update_variable_in_string(fdata, tag="OS", tag_str="OS_NUMBER", variable=os_name)
+        with open(test_openshift_yaml, 'w') as f:
+            f.write(fdata)
+
     def _update_dockerfile_rebuild(
             self, dockerfile_path, from_tag, downstream_from: str = "",
     ):
@@ -205,6 +236,9 @@ class DistgitAPI(object):
                     # Clone upstream repository
                     ups_path = os.path.join('upstreams/', ups_name)
                     self._clone_upstream(url, ups_path, commands=commands)
+                    test_openshift_yaml_file = os.path.join(ups_path, "test", "test-openshift.yaml")
+                    if os.path.exists(test_openshift_yaml_file):
+                        self._update_test_openshift_yaml(test_openshift_yaml_file, path)
                     # Save the upstream commit hash
                     ups_hash = Repo(ups_path).commit().hexsha
                     self._pull_upstream(component, path, url, repo, ups_name, commands)
