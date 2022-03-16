@@ -39,7 +39,7 @@ class ImageRebuilder:
             rebuild_reason (str, optional): reason for the rebuild,
                                             used in commit
         """
-        self.base_image = base_image
+        self._base_image = base_image
 
         self._brewapi: KojiAPI = None
         self._distgit: DistgitAPI = None
@@ -148,6 +148,13 @@ class ImageRebuilder:
         if not self._brewapi:
             self._brewapi = KojiAPI(self.conf, self.logger.getChild("koji"),
                                    self.latest_release)
+        return self._brewapi
+
+    @property
+    def base_image(self):
+        if not self._base_image:
+            raise RebuilderError("Base image needs to be set.")
+        return self._base_image
 
     def _setup_logger(self, level=logging.INFO, user_logger=None, name=__name__):
         # If a logger is already set up, do not setup a new one
@@ -172,7 +179,6 @@ class ImageRebuilder:
         self.logger.info("Using working directory: " + path)
         os.chdir(path)
 
-    @needs_base
     def _get_tmp_workdir(self, setup_dir: bool = True) -> str:
         # Check if the workdir has been set by the user
         if self.tmp_workdir:
