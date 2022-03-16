@@ -36,10 +36,6 @@ class TestBrew(object):
         self.ir.set_do_images([self.component])
         self.component = 'postgresql'
         self.ir.set_do_images([self.component])
-        self.ir._setup_brewapi()
-
-    def test_setup_brewapi(self):
-        assert self.ir.brewapi
 
     @pytest.mark.distgit
     def test_get_nvr(self):
