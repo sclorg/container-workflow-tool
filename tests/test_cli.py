@@ -40,7 +40,6 @@ class TestCli(object):
         self.ir.set_do_images([self.component])
         self.component = 'postgresql'
         self.ir.set_do_images([self.component])
-        self.ir._setup_brewapi()
 
     def test_action_map(self):
         for command in actions:

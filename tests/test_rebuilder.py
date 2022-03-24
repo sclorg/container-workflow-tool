@@ -38,7 +38,6 @@ class TestRebuilder(object):
         self.ir.disable_klist = True
         self.ir.set_do_images([self.component])
         self.component = "postgresql"
-        self.ir._setup_brewapi()
 
     def teardown_method(self):
         self.ir.clear_cache()
@@ -99,7 +98,6 @@ class TestRebuilderNoSetupDir(object):
         self.ir.disable_klist = True
         self.ir.set_do_images([self.component])
         self.component = "postgresql"
-        self.ir._setup_brewapi()
 
     def test_do_not_setup_workdir(self):
         self.ir.tmp_workdir = self.ir._get_tmp_workdir(setup_dir=False)

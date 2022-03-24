@@ -20,8 +20,6 @@ import container_workflow_tool.utility as u
 from container_workflow_tool.koji import KojiAPI
 from container_workflow_tool.distgit import DistgitAPI
 from container_workflow_tool.utility import RebuilderError
-from container_workflow_tool.decorators import needs_base, needs_brewapi
-from container_workflow_tool.decorators import needs_distgit
 from container_workflow_tool.config import Config
 
 
@@ -41,10 +39,10 @@ class ImageRebuilder:
             rebuild_reason (str, optional): reason for the rebuild,
                                             used in commit
         """
-        self.base_image = base_image
+        self._base_image = base_image
 
-        self.brewapi: KojiAPI = None
-        self.distgit: DistgitAPI = None
+        self._brewapi: KojiAPI = None
+        self._distgit: DistgitAPI = None
         self.commit_msg = None
         self.args = None
         self.tmp_workdir: str = None
@@ -137,18 +135,26 @@ class ImageRebuilder:
             raise RebuilderError(err_msg)
         return i
 
-    # TODO Switch to using @property
-    def _setup_distgit(self):
-        if not self.distgit:
-            self.distgit = DistgitAPI(self.base_image, self.conf,
+    @property
+    def distgit(self):
+        if not self._distgit:
+            self._distgit = DistgitAPI(self.base_image, self.conf,
                                       self.rebuild_reason,
                                       self.logger.getChild("dist-git"))
+        return self._distgit
 
-    # TODO Switch to using @property
-    def _setup_brewapi(self):
-        if not self.brewapi:
-            self.brewapi = KojiAPI(self.conf, self.logger.getChild("koji"),
+    @property
+    def brewapi(self):
+        if not self._brewapi:
+            self._brewapi = KojiAPI(self.conf, self.logger.getChild("koji"),
                                    self.latest_release)
+        return self._brewapi
+
+    @property
+    def base_image(self):
+        if not self._base_image:
+            raise RebuilderError("Base image needs to be set.")
+        return self._base_image
 
     def _setup_logger(self, level=logging.INFO, user_logger=None, name=__name__):
         # If a logger is already set up, do not setup a new one
@@ -173,7 +179,6 @@ class ImageRebuilder:
         self.logger.info("Using working directory: " + path)
         os.chdir(path)
 
-    @needs_base
     def _get_tmp_workdir(self, setup_dir: bool = True) -> str:
         # Check if the workdir has been set by the user
         if self.tmp_workdir:
@@ -329,7 +334,6 @@ class ImageRebuilder:
     def _not_yet_implemented(self):
         print("Method not yet implemented.")
 
-    @needs_brewapi
     def get_brew_builds(self, print_time: bool = True) -> List[str]:
         """Returns information about builds in brew
 
@@ -399,7 +403,6 @@ class ImageRebuilder:
         else:
             raise RebuilderError("Provided working directory does not exist.")
 
-    @needs_distgit
     def set_commit_msg(self, msg: str):
         """
         Set the commit message to some other than the default one.
@@ -483,8 +486,6 @@ class ImageRebuilder:
         for builds in self.get_brew_builds(print_time=print_time):
             self.logger.info(builds)
 
-    # Dist-git method wrappers
-    @needs_distgit
     def pull_downstream(self):
         """
         Pulls downstream dist-git repositories and does not make any further changes to them
@@ -504,7 +505,6 @@ class ImageRebuilder:
                 self.distgit.check_script(i["component"], self.check_script,
                                           i["git_branch"])
 
-    @needs_distgit
     def pull_upstream(self):
         """
         Pulls upstream git repositories and does not make any further changes to them
@@ -528,7 +528,6 @@ class ImageRebuilder:
                 self.distgit.check_script(i["component"], self.check_script,
                                           os.path.join(ups_name, i["git_path"]))
 
-    @needs_distgit
     def push_changes(self):
         """Pushes changes for all components into downstream dist-git repository"""
         # Check for kerberos ticket
@@ -549,7 +548,6 @@ class ImageRebuilder:
         """
         self.dist_git_changes(rebase=True)
 
-    @needs_distgit
     def dist_git_changes(self, rebase: bool = False):
         """Method to merge changes from upstream into downstream
 
@@ -576,7 +574,6 @@ class ImageRebuilder:
                 "cwt git push && cwt build"
                 "[base/core/s2i] --repo-url link-to-repo-file")
 
-    @needs_distgit
     def merge_future_branches(self):
         """Merges current branch with future branches"""
         # Check for kerberos ticket
@@ -586,7 +583,6 @@ class ImageRebuilder:
         images = self._get_images()
         self.distgit.merge_future_branches(images)
 
-    @needs_distgit
     def show_git_changes(self, components: List = None):
         """Shows changes made to tracked files in local downstream repositories
 

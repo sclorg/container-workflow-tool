@@ -42,13 +42,6 @@ class TestDistgit(object):
         self.ir.rebuild_reason = "Unit testing"
         self.ir.disable_klist = True
         self.ir.set_do_images([self.component])
-        self.ir._setup_brewapi()
-
-    @pytest.mark.distgit
-    def test_setup_distgit(self):
-        assert self.ir.distgit is None
-        self.ir._setup_distgit()
-        assert self.ir.distgit is not None
 
     @pytest.mark.distgit
     def test_pull_downstream(self):
@@ -92,7 +85,6 @@ class TestDistgit(object):
         flexmock(DistgitAPI).should_receive("_update_test_openshift_yaml").never()
         self.ir.conf["from_tag"] = "test"
         tmp = Path(self.ir._get_tmp_workdir())
-        self.ir._setup_distgit()
         self.ir.distgit._clone_downstream(self.component, "main")
         self.ir.dist_git_changes()
         dpath = tmp / self.component / 'Dockerfile'
@@ -136,7 +128,6 @@ class TestDistgit(object):
         ]
     )
     def test_update_variable_in_string(self, tag, tag_str, variable, expected):
-        self.ir._setup_distgit()
         with open(os.path.join(DATA_DIR, "test-openshift.yaml")) as f:
             yaml_file = f.read()
         fixed = self.ir.distgit._update_variable_in_string(fdata=yaml_file, tag=tag, tag_str=tag_str, variable=variable)
@@ -153,7 +144,6 @@ class TestDistgit(object):
         ]
     )
     def test_update_openshift_yaml(self, os_name, os_name_expected, version):
-        self.ir._setup_distgit()
         self.ir.conf.image_names = os_name
         tmp = Path(self.ir._get_tmp_workdir())
         file_name = "test-openshift.yaml"

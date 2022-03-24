@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/fedora:rawhide
+FROM registry.fedoraproject.org/fedora:34
 ENV CWT_DIR=/tmp/container-workflow-tool
 RUN dnf install -y go-md2man \
     make git python3-PyYAML \
