@@ -215,7 +215,7 @@ class DistgitAPI(object):
                 commands = image["commands"]
                 pull_upstr = image.get("pull_upstream", True)
                 repo = self._clone_downstream(component, branch)
-                df_path = os.path.join(component, "Dockerfile")
+                df_path = os.path.join(component, f"Dockerfile{self.conf.df_ext}")
                 downstream_from = self._get_from_df(df_path)
                 self.logger.debug(f"Downstream_from: {downstream_from}\n")
                 from_tag = self.conf.get("from_tag", "latest")
@@ -414,8 +414,11 @@ class DistgitAPI(object):
             except FileNotFoundError:
                 # We don't care whether CentOS dockerfile exists or not. Just don't fail here.
                 pass
+            self.logger.debug(f"Git move Dockerfile{df_ext} -> Dockerfile")
             repo.git.mv("Dockerfile" + df_ext, "Dockerfile")
+            self.logger.debug(f"Create symlink from Dockerfile -> Dockerfile{df_ext}")
             os.symlink("Dockerfile", df_path + df_ext)
+            self.logger.debug(f"Add files Dockerfile and Dockerfile{df_ext}")
             repo.git.add("Dockerfile", "Dockerfile" + df_ext)
 
         # Make sure a $VERSION symlink exists
