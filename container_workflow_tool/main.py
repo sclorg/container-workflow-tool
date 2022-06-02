@@ -68,7 +68,8 @@ class ImageRebuilder:
         """
         Creates an ImageRebuilder instance from argparse arguments.
         """
-        rebuilder = ImageRebuilder(base_image=args.base)
+        config = getattr(args, 'config', 'default.yaml')
+        rebuilder = ImageRebuilder(base_image=args.base, config=config)
         rebuilder._setup_args(args)
         rebuilder.setup_log_to_file()
         return rebuilder
