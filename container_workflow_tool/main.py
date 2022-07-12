@@ -69,8 +69,8 @@ class ImageRebuilder:
         Creates an ImageRebuilder instance from argparse arguments.
         """
         config = args.config if args.config else 'default.yaml'
-        config_fn, image_set = u._split_config_path(config)
-        rebuilder = ImageRebuilder(base_image=args.base, config=config_fn, release=image_set)
+        config_path, image_set = u._split_config_path(config)
+        rebuilder = ImageRebuilder(base_image=args.base, config=config_path, release=image_set)
         rebuilder._setup_args(args)
         rebuilder.setup_log_to_file()
         return rebuilder
@@ -93,8 +93,8 @@ class ImageRebuilder:
         self.args = args
 
         if args.config:
-            config_fn, image_set = u._split_config_path(args.config)
-            self.set_config(config_fn, image_set)
+            config_path, image_set = u._split_config_path(args.config)
+            self.set_config(config_path, image_set)
         if args.tmp:
             self.set_tmp_workdir(args.tmp)
         if args.clear_cache:
