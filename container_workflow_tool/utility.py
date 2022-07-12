@@ -63,6 +63,11 @@ def _get_hostname_url(config):
     git_url = getattr(config, "hostname_url", None)
     return git_url
 
+def _split_config_path(config: str) -> (str, str):
+        conf = config.split(':')
+        config_fn = conf[0]
+        image_set = conf[1] if len(conf) > 1 else 'current'
+        return (config_fn, image_set)
 
 def setup_logger(logger_id, level=logging.INFO):
     logger = logging.getLogger(logger_id)
