@@ -51,23 +51,25 @@ def _remove_file(path, logger=None):
         os.remove(path)
 
 
-def _get_packager(config):
+def _get_packager(config) -> str:
     # Try to read which packager to use from the config file, default to rhpkg
     packager = getattr(config, 'packager_util', "fedpkg")
     return packager
 
 
-def _get_hostname_url(config):
+def _get_hostname_url(config) -> str:
     # Try to read which packager to use from the config file
     # default to "https://src.fedoraproject.org"
     git_url = getattr(config, "hostname_url", None)
     return git_url
 
+
 def _split_config_path(config: str) -> (str, str):
-        conf = config.split(':')
-        config_path = conf[0]
-        image_set = conf[1] if len(conf) > 1 else 'current'
-        return (config_path, image_set)
+    conf = config.split(':')
+    config_path = conf[0]
+    image_set = conf[1] if len(conf) > 1 else 'current'
+    return config_path, image_set
+
 
 def setup_logger(logger_id, level=logging.INFO):
     logger = logging.getLogger(logger_id)
