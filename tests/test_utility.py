@@ -25,6 +25,7 @@ import pytest
 
 from container_workflow_tool import utility
 from container_workflow_tool.cli import ImageRebuilder
+from container_workflow_tool.utility import RebuilderError
 
 
 class TestRebuilderUtility(object):
@@ -39,7 +40,6 @@ class TestRebuilderUtility(object):
         [
             ("fedora35.yaml", "fedora35.yaml", "current"),
             ("fedora35.yaml:f35", "fedora35.yaml", "f35"),
-            ("fedora35.yaml:f35:something", "fedora35.yaml", "f35"),
             ("/usr/local/cwt/config/fedora35.yaml:f35", "/usr/local/cwt/config/fedora35.yaml", "f35")
         ]
     )
@@ -47,6 +47,10 @@ class TestRebuilderUtility(object):
         path, image_set = utility._split_config_path(config=config)
         assert path == expected_path
         assert image_set == expected_image_set
+
+    def test_split_config_path_more_args(self):
+        with pytest.raises(RebuilderError):
+            utility._split_config_path(config="fedora35.yaml:f35:something")
 
     def test_get_hostname_url(self):
         hostname = utility._get_hostname_url(self.ir.conf)
