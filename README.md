@@ -1,5 +1,5 @@
 Container Workflow Tool
-=====================
+=======================
 [![Docker Repository on Quay](https://quay.io/repository/rhscl/cwt-generator/status "Docker Repository on Quay")](https://quay.io/repository/rhscl/cwt-generator)
 
 
@@ -54,13 +54,13 @@ To get the usage of a specific command, you can run:
     cwt command --help
 
 container-workflow-tool in the quay.io registry
---------------
+-----------------------------------------------
 `container-workflow-tool` is automatically built and pushed in
 [quay.io/rhscl/cwt-generator](https://quay.io/repository/rhscl/cwt-generator) as soon as changes
 are merged into `master` branch.
 
 Test
--------
+----
 This repository also contains test suites for python's `unittest` framework that check the basic functionality of cwt.
 These test can be run directly from the repository's root via Makefile:
 
