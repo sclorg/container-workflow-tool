@@ -67,10 +67,7 @@ def _get_hostname_url(config) -> str:
 def _split_config_path(config: str) -> (str, str):
     conf = config.split(':')
     if len(conf) > 2:
-        raise RebuilderError(
-            "Config path contains a lot of arguments."
-            "It has to be only <config.yaml>:<image_set>."
-        )
+        raise RebuilderError("Config path contains a lot of arguments.")
     config_path = conf[0]
     image_set = conf[1] if len(conf) > 1 else 'current'
     return config_path, image_set
