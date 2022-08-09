@@ -125,6 +125,9 @@ class TestDistgit(object):
             ("VER", "VERSION_NUMBER", "base", False),
             ("OS", "VERSION_NUMBER", "base", False),
             ("VERSION", "VERSIONS_NUMBER", "1.14", False),
+            ("SHORT_NAME", "CONTAINER_NAME", "nodejs", True),
+            ("SHORT_NAME", "CONT_NAME", "nodejs", False),
+            ("SHORTNAME", "CONTAINER_NAME", "nodejs", False),
         ]
     )
     def test_update_variable_in_string(self, tag, tag_str, variable, expected):
