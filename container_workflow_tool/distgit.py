@@ -81,7 +81,7 @@ class DistgitAPI(object):
         ret = re.sub(rf"{tag}: {tag_str}", f"{tag}: {variable}", fdata)
         return ret
 
-    def _update_test_openshift_yaml(self, test_openshift_yaml, version: str = ""):
+    def _update_test_openshift_yaml(self, test_openshift_yaml, version: str = "", short_name: str = ""):
         """
         Update test/test-openshift.yaml file with value VERSION_NUMBER and OS_NUMBER
         The file is used for CVP pipeline
@@ -89,6 +89,7 @@ class DistgitAPI(object):
         Args:
             test_openshift_yaml (Path): Path to test/test-openshift.yaml file
             version (str): version to be replaced with VERSION_NUMBER
+            short_name (str): short_name to be replaced with CONTAINER_NAME
         """
         with open(test_openshift_yaml) as f:
             fdata = f.read()
@@ -99,6 +100,7 @@ class DistgitAPI(object):
         if self.conf.image_names == "RHSCL":
             os_name = "rhel7"
         fdata = self._update_variable_in_string(fdata, tag="OS", tag_str="OS_NUMBER", variable=os_name)
+        fdata = self._update_variable_in_string(fdata, tag="SHORT_NAME", tag_str="CONTAINER_NAME", variable=short_name)
         with open(test_openshift_yaml, 'w') as f:
             f.write(fdata)
 
@@ -238,7 +240,7 @@ class DistgitAPI(object):
                     self._clone_upstream(url, ups_path, commands=commands)
                     test_openshift_yaml_file = os.path.join(ups_path, "test", "test-openshift.yaml")
                     if os.path.exists(test_openshift_yaml_file):
-                        self._update_test_openshift_yaml(test_openshift_yaml_file, path)
+                        self._update_test_openshift_yaml(test_openshift_yaml_file, path, short_name=url)
                     # Save the upstream commit hash
                     ups_hash = Repo(ups_path).commit().hexsha
                     self._pull_upstream(component, path, url, repo, ups_name, commands)
