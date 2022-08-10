@@ -174,6 +174,7 @@ class ImageRebuilder:
         os.chdir(path)
 
     def _get_tmp_workdir(self, setup_dir: bool = True) -> str:
+        self._check_base(self.base_image)
         # Check if the workdir has been set by the user
         if self.tmp_workdir:
             return self.tmp_workdir
@@ -197,6 +198,10 @@ class ImageRebuilder:
 
     def set_do_set(self, val):
         self.do_set = val
+
+    def _check_base(self, base_image):
+        if not base_image:
+            raise RebuilderError("Base image needs to be set.")
 
     def _get_images(self) -> List:
         images: List = []

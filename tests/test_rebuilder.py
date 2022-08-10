@@ -86,6 +86,51 @@ class TestRebuilder(object):
         assert self.ir.repo_url == url
 
 
+class TestRebuilderNoBaseImage(object):
+
+    def setup_method(self):
+        self.component = 's2i-base'
+        self.ir = ImageRebuilder('Testing')
+        self.ir.base_image = None
+        self.ir.set_config('default.yaml', release="rawhide")
+        # Partner BZ testing
+        self.ir.rebuild_reason = "Unit testing"
+        self.ir.disable_klist = True
+        self.ir.set_do_images([self.component])
+
+    def test_distgit_pull_upstream(self):
+        with pytest.raises(RebuilderError):
+            self.ir.pull_downstream()
+
+    def test_prebuild_check(self):
+        with pytest.raises(RebuilderError):
+            self.ir._prebuild_check([self.component])
+
+    def test_main_build_images(self):
+        with pytest.raises(RebuilderError):
+            self.ir._build_images([self.component], branches=["rawhide"])
+
+    def test_main_pull_downstream(self):
+        with pytest.raises(RebuilderError):
+            self.ir.pull_downstream()
+
+    def test_main_pull_upstream(self):
+        with pytest.raises(RebuilderError):
+            self.ir.pull_upstream()
+
+    def test_main_push_changes(self):
+        with pytest.raises(RebuilderError):
+            self.ir.push_changes()
+
+    def test_main_merge_future_branches(self):
+        with pytest.raises(RebuilderError):
+            self.ir.merge_future_branches()
+
+    def test_main_show_git_changes(self):
+        with pytest.raises(RebuilderError):
+            self.ir.show_git_changes()
+
+
 class TestRebuilderNoSetupDir(object):
 
     def setup_method(self):
