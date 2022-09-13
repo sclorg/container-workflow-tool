@@ -78,7 +78,7 @@ class DistgitAPI(object):
         It replaces OS: OS_VERSION -> OS: <os_name>"
         """
         self.logger.debug(f"Replaces variable of tag {tag} from {tag_str} to {variable}")
-        ret = re.sub(rf"{tag}: {tag_str}", f"{tag}: {variable}", fdata)
+        ret = re.sub(rf'{tag}: "{tag_str}"', f"{tag}: \"{variable}\"", fdata)
         return ret
 
     def _update_test_openshift_yaml(self, test_openshift_yaml, version: str = "", short_name: str = ""):
