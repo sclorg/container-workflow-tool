@@ -5,9 +5,9 @@
     - openshift
 
   environment:
-    VERSION: VERSION_NUMBER
-    OS: OS_NUMBER
-    SHORT_NAME: CONTAINER_NAME
+    VERSION: "VERSION_NUMBER"
+    OS: "OS_NUMBER"
+    SHORT_NAME: "CONTAINER_NAME"
     IMAGE_FULL_NAME: "{{ image_full_name }}"
     IMAGE_REGISTRY_URL: "{{ image_registry_url }}"
     IMAGE_NAMESPACE: "{{ image_namespace }}"

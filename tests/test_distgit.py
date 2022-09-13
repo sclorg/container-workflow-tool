@@ -134,7 +134,7 @@ class TestDistgit(object):
         with open(os.path.join(DATA_DIR, "test-openshift.yaml")) as f:
             yaml_file = f.read()
         fixed = self.ir.distgit._update_variable_in_string(fdata=yaml_file, tag=tag, tag_str=tag_str, variable=variable)
-        result = f"{tag}: {variable}" in fixed
+        result = f"{tag}: \"{variable}\"" in fixed
         assert result == expected
 
     @pytest.mark.parametrize(
@@ -155,5 +155,5 @@ class TestDistgit(object):
         self.ir.distgit._update_test_openshift_yaml(str(target_name), version=version)
         with open(target_name) as f:
             content = f.read()
-        assert f"VERSION: {version}" in content
-        assert f"OS: {os_name_expected}" in content
+        assert f"VERSION: \"{version}\"" in content
+        assert f"OS: \"{os_name_expected}\"" in content
