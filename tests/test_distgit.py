@@ -123,6 +123,7 @@ class TestDistgit(object):
             ("VERSION", "VERSION_NUMBER", "1.14", True),
             ("OS", "OS_NUMBER", "rhel8", True),
             ("VER", "VERSION_NUMBER", "base", False),
+            ("OS", "OS_NUMBER", "rhel9", True),
             ("OS", "VERSION_NUMBER", "base", False),
             ("VERSION", "VERSIONS_NUMBER", "1.14", False),
             ("SHORT_NAME", "CONTAINER_NAME", "nodejs", True),
@@ -142,6 +143,7 @@ class TestDistgit(object):
         [
             ("fedora", "fedora", "base"),
             ("RHEL8", "rhel8", "1.14"),
+            ("RHEL9", "rhel9", "1.14"),
             ("RHSCL", "rhel7", "14"),
             ("FOO", "fedora", "bar")
         ]
