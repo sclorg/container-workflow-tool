@@ -121,12 +121,15 @@ class TestDistgit(object):
         [
             ("VERSION", "VERSION_NUMBER", "base", True),
             ("VERSION", "VERSION_NUMBER", "1.14", True),
+            ("VERSION", "\"VERSION_NUMBER\"", "1.14", False),
             ("OS", "OS_NUMBER", "rhel8", True),
             ("VER", "VERSION_NUMBER", "base", False),
             ("OS", "OS_NUMBER", "rhel9", True),
+            ("OS", "\"OS_NUMBER\"", "rhel9", False),
             ("OS", "VERSION_NUMBER", "base", False),
             ("VERSION", "VERSIONS_NUMBER", "1.14", False),
             ("SHORT_NAME", "CONTAINER_NAME", "nodejs", True),
+            ("SHORT_NAME", "\"CONTAINER_NAME\"", "nodejs", False),
             ("SHORT_NAME", "CONT_NAME", "nodejs", False),
             ("SHORTNAME", "CONTAINER_NAME", "nodejs", False),
         ]
