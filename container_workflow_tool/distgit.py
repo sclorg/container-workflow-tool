@@ -240,9 +240,6 @@ class DistgitAPI(object):
                     # Clone upstream repository
                     ups_path = os.path.join('upstreams/', ups_name)
                     self._clone_upstream(url, ups_path, commands=commands)
-                    test_openshift_yaml_file = os.path.join(ups_path, "test", "test-openshift.yaml")
-                    if os.path.exists(test_openshift_yaml_file):
-                        self._update_test_openshift_yaml(test_openshift_yaml_file, path, short_name=url)
                     # Save the upstream commit hash
                     ups_hash = Repo(ups_path).commit().hexsha
                     self._pull_upstream(component, path, url, repo, ups_name, commands)
@@ -407,6 +404,10 @@ class DistgitAPI(object):
                 # Report warning if help.md does not exists
                 self.logger.warn("help.md file missing")
         # Add all the changes and remove those we do not want
+        test_openshift_yaml_file = os.path.join(component, "test", "test-openshift.yaml")
+        if os.path.exists(test_openshift_yaml_file):
+            self._update_test_openshift_yaml(test_openshift_yaml_file, path, short_name=ups_name)
+
         repo.git.add("*")
         self._do_git_reset(repo)
         # TODO: Configurable?
