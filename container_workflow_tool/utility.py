@@ -2,8 +2,9 @@ import sys
 import argparse
 import os
 import logging
-
+from pathlib import Path
 import textwrap
+import contextlib
 
 
 class RebuilderError(Exception):
@@ -71,6 +72,22 @@ def _split_config_path(config: str):
     config_path = conf[0]
     image_set = conf[1] if len(conf) > 1 else 'current'
     return config_path, image_set
+
+
+@contextlib.contextmanager
+def cwd(path):
+    """
+    Checks out a git repository into a temporary directory.
+    Changes CWD to the temporary directory.
+    Yields the temporary directory.
+    On exit, the temporary directory is removed and CWD is restored.
+    """
+    prev_cwd = Path.cwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(prev_cwd)
 
 
 def setup_logger(logger_id, level=logging.INFO):

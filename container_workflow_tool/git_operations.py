@@ -1,6 +1,6 @@
 # MIT License
 #
-# Copyright (c) 2020 SCL team at Red Hat
+# Copyright (c) 2023 SCL team at Red Hat
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -55,7 +55,7 @@ class GitOperations(object):
         """
         self.commit_msg = msg
 
-    def _do_git_reset(self, repo):
+    def do_git_reset(self, repo):
         file_list = ['--', '.gitignore'] + self.conf.ignore_files
         repo.git.reset(file_list)
         # One file at a time to make sure all files get reset even on error
@@ -68,7 +68,7 @@ class GitOperations(object):
                 repo.git.clean('-xfd', f)
                 self.logger.debug("Removing untracked ignored file: " + f)
 
-    def _clone_upstream(self, url, ups_path, commands=None):
+    def clone_upstream(self, url, ups_path, commands=None):
         """
         :params: url is URL to repofile from upstream. https://github.com/sclorg
         :param: ups_path is path where URL is cloned locally
@@ -113,20 +113,24 @@ class GitOperations(object):
         os.chdir(oldcwd)
         return repo
 
-    def are_unpushed_commits_available(self, repo) -> bool:
+    def are_unpushed_commits_available(self, repo, branch_name="") -> bool:
         """
         Get unpushed commits
         :param repo: repo object to check for unpushed commits
+        :param branch_name: In case of gitlab, forked_branch and branch_name has to be defined.
+                            branch_name is e.g. rhel-8.7.0 and 'repo.active_branch.name' is 'rhel-8.7.0-<ubi_name>'
         :return: List of commits or empty array
         """
         branch = repo.active_branch.name
         # Get a list of commits that have not been pushed to remote
         select = "origin/" + branch + ".." + branch
+        if branch_name != "":
+            select = "origin/" + branch_name + ".." + branch
         if len(list(repo.iter_commits(select))) == 0:
             return False
         return True
 
-    def show_git_changes(self, tmp, components=None, diff=False):
+    def show_git_changes(self, tmp, components=None, diff=False, branch_name=""):
         """Shows changes made to tracked files in local downstream repositories
 
         Walks through all repositories and calls 'git-show' or 'git-diff' on each of them.
@@ -135,6 +139,8 @@ class GitOperations(object):
             tmp (str): Path to the directory that is used to store git repositories
             components (list of str, optional): List of components to show changes for
             diff (boolean, optional): Controls whether the method calls git-show or git-diff
+            branch_name (str, optional): In case of gitlab, forked_branch and branch_name has to be defined.
+                            branch_name is e.g. rhel-8.7.0 and 'repo.active_branch.name' is 'rhel-8.7.0-<ubi_name>'
         """
         # Function to check if a path contains a git repository
         def is_git(x): return os.path.isdir(os.path.join(x, '.git'))
@@ -155,7 +161,7 @@ class GitOperations(object):
             repo = Repo(path)
             # Only show changes if there are unpushed commits to show
             # or we only want the diff of unstaged changes
-            if self.are_unpushed_commits_available(repo) or diff:
+            if self.are_unpushed_commits_available(repo, branch_name=branch_name) or diff:
                 # Clears the screen
                 print(chr(27) + "[2J")
                 # Force pager for short git diffs
@@ -229,7 +235,7 @@ class GitOperations(object):
             commit += "\n created from upstream commit: " + ups_hash
         return commit
 
-    def _pull_upstream(self, component, path, url, repo, ups_name, commands):
+    def pull_upstream(self, component, path, url, repo, ups_name, commands):
         """Pulls an upstream repo and copies it into downstream"""
         ups_path = os.path.join('upstreams/', ups_name)
         cp_path = os.path.join(ups_path, path)
@@ -268,7 +274,7 @@ class GitOperations(object):
             self.update_test_openshift_yaml(test_openshift_yaml_file, path, short_name=ups_name)
 
         repo.git.add("*")
-        self._do_git_reset(repo)
+        self.do_git_reset(repo)
         # TODO: Configurable?
         df_ext = self.df_ext
         df_path = os.path.join(component, "Dockerfile")

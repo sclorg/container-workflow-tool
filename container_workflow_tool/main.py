@@ -9,7 +9,6 @@ import shutil
 import re
 import tempfile
 import pprint
-import getpass
 import logging
 
 from git import Repo, GitError
@@ -53,6 +52,7 @@ class ImageRebuilder:
 
         self.conf_name = config
         self.rebuild_reason = rebuild_reason
+        self.gitlab_usage = None
         self.do_image = None
         self.exclude_image = None
         self.do_set = None
@@ -117,6 +117,8 @@ class ImageRebuilder:
             self.set_commit_msg(args.commit_msg)
         if getattr(args, 'rebuild_reason', None) is not None and args.rebuild_reason:
             self.rebuild_reason = args.rebuild_reason
+        if getattr(args, 'gitlab', None) is not None and args.gitlab:
+            self.gitlab_usage = args.gitlab
         if getattr(args, 'check_script', None) is not None and args.check_script:
             self.check_script = args.check_script
         if getattr(args, 'disable_klist', None) is not None and args.disable_klist:
@@ -125,6 +127,8 @@ class ImageRebuilder:
             self.latest_release = args.latest_release
         if getattr(args, 'output_file', None) is not None and args.output_file:
             self.output_file = args.output_file
+        if getattr(args, 'gitlab', None) is not None and args.gitlab:
+            self.gitlab_usage = args.gitlab
 
         # Image set to build
         if getattr(args, 'image_set', None) is not None and args.image_set:
@@ -150,7 +154,7 @@ class ImageRebuilder:
         if not self._git_ops:
             self._git_ops = GitOperations(self.base_image, self.conf,
                                           self.rebuild_reason,
-                                          self.logger.getChild("-git-ops"))
+                                          self.logger.getChild("git-ops"))
         return self._git_ops
 
     @property
@@ -502,10 +506,7 @@ class ImageRebuilder:
         Additionally runs a script against each repository if check_script is set,
         checking its exit value.
         """
-        self._check_kerb_ticket()
-        tmp = self._get_tmp_workdir()
-        self._change_workdir(tmp)
-        images = self._get_images()
+        tmp, images = self.preparation()
         for i in images:
             self.distgit._clone_downstream(i["component"], i["git_branch"])
         # If check script is set, run the script provided for each config entry
@@ -521,15 +522,11 @@ class ImageRebuilder:
         Additionally runs a script against each repository if check_script is set,
         checking its exit value.
         """
-        tmp = self._get_tmp_workdir()
-        self._change_workdir(tmp)
-        images = self._get_images()
+        tmp, images = self.preparation()
         for i in images:
             # Use unversioned name as a path for the repository
             ups_name = i["name"].split('-')[0]
-            self.distgit._clone_upstream(i["git_url"],
-                                         ups_name,
-                                         commands=i["commands"])
+            self.git_ops.clone_upstream(i["git_url"], ups_name, commands=i["commands"])
         # If check script is set, run the script provided for each config entry
         if self.check_script:
             for i in images:
@@ -537,8 +534,7 @@ class ImageRebuilder:
                 self.distgit.check_script(i["component"], self.check_script,
                                           os.path.join(ups_name, i["git_path"]))
 
-    def push_changes(self):
-        """Pushes changes for all components into downstream dist-git repository"""
+    def preparation(self):
         # Check for kerberos ticket
         self._check_kerb_ticket()
         tmp = self._get_tmp_workdir(setup_dir=False)
@@ -547,7 +543,12 @@ class ImageRebuilder:
             raise RebuilderError(msg)
         self._change_workdir(tmp)
         images = self._get_images()
+        return tmp, images
 
+    def push_changes(self):
+        """Pushes changes for all components into downstream dist-git repository"""
+
+        tmp, images = self.preparation()
         self.distgit.push_changes(tmp, images)
 
     def dist_git_rebase(self):
@@ -557,21 +558,7 @@ class ImageRebuilder:
         """
         self.dist_git_changes(rebase=True)
 
-    def dist_git_changes(self, rebase: bool = False):
-        """Method to merge changes from upstream into downstream
-
-        Pulls both downstream and upstream repositories into a temporary directory.
-        Merge is done by copying tracked files from upstream into downstream.
-
-        Args:
-            rebase (bool, optional): Specifies whether a rebase should be done instead.
-        """
-        # Check for kerberos ticket
-        self._check_kerb_ticket()
-        tmp = self._get_tmp_workdir()
-        self._change_workdir(tmp)
-        images = self._get_images()
-        self.distgit.dist_git_changes(images, rebase)
+    def git_changes_report(self, tmp):
         self.logger.info("\nGit location: " + tmp)
         if self.args:
             tmp_str = ' --tmp ' + self.tmp_workdir if self.tmp_workdir else '"'
@@ -583,13 +570,23 @@ class ImageRebuilder:
                 "cwt git push && cwt build"
                 "[base/core/s2i] --repo-url link-to-repo-file")
 
+    def dist_git_changes(self, rebase: bool = False):
+        """Method to merge changes from upstream into downstream
+
+        Pulls both downstream and upstream repositories into a temporary directory.
+        Merge is done by copying tracked files from upstream into downstream.
+
+        Args:
+            rebase (bool, optional): Specifies whether a rebase should be done instead.
+        """
+        tmp, images = self.preparation()
+        self.distgit.dist_git_changes(images, rebase)
+        self.git_changes_report(tmp=tmp)
+
     def merge_future_branches(self):
         """Merges current branch with future branches"""
         # Check for kerberos ticket
-        self._check_kerb_ticket()
-        tmp = self._get_tmp_workdir()
-        self._change_workdir(tmp)
-        images = self._get_images()
+        tmp, images = self.preparation()
         self.distgit.merge_future_branches(images)
 
     def show_git_changes(self, components: List = None):
@@ -599,9 +596,8 @@ class ImageRebuilder:
             components (list of str, optional): List of components to show changes for
         Walks through all downstream repositories and calls 'git-show' on each of them.
         """
+        tmp, _ = self.preparation()
         if not components:
             images = self._get_images()
             components = [i["component"] for i in images]
-        tmp = self._get_tmp_workdir()
-        self._change_workdir(tmp)
         self.distgit.show_git_changes(tmp, components)
