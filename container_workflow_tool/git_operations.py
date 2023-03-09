@@ -182,7 +182,7 @@ class GitOperations(object):
             os_name = "rhel8"
         if self.conf.image_names == "RHEL9":
             os_name = "rhel9"
-        if self.conf.image_names == "RHSCL":
+        elif self.conf.image_names == "RHSCL":
             os_name = "rhel7"
         fdata = self.update_variable_in_string(fdata, tag="OS", tag_str="OS_NUMBER", variable=os_name)
         fdata = self.update_variable_in_string(fdata, tag="SHORT_NAME", tag_str="CONTAINER_NAME", variable=short_name)
