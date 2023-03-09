@@ -38,7 +38,7 @@ class DockerfileHandler(object):
         if os.path.exists(dockerfile_path):
             with open(dockerfile_path) as f:
                 fdata = f.read()
-            res = self.get_from(fdata)
+            return self.get_from(fdata)
         return res
 
     def get_from(self, fdata: str) -> str:
