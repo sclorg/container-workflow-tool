@@ -53,7 +53,7 @@ class DockerfileHandler(object):
         registry_base = None
         image_base = re.search('FROM (.*)\n', fdata)
         if image_base:
-            registry_base = image_base.group(1)
+            return image_base.group(1)
         return registry_base
 
     def set_from(self, fdata, from_tag):
