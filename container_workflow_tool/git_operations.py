@@ -98,18 +98,18 @@ class GitOperations(object):
         # Need to be in the upstream git root, so change cwd
         oldcwd = os.getcwd()
         os.chdir(ups_path)
-
-        for order in sorted(commands):
-            cmd = commands[order]
-            self.logger.debug("Running '{o}' command '{c}'".format(o=order,
-                                                                   c=cmd))
-            ret = subprocess.run(cmd, stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE, shell=True,
-                                 executable='/bin/bash')
-            if ret.returncode != 0:
-                msg = "'{c}' failed".format(c=cmd.split(" "))
-                self.logger.error(ret.stderr)
-                raise RebuilderError(msg)
+        if commands:
+            for order in sorted(commands):
+                cmd = commands[order]
+                self.logger.debug("Running '{o}' command '{c}'".format(o=order,
+                                                                       c=cmd))
+                ret = subprocess.run(cmd, stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE, shell=True,
+                                     executable='/bin/bash')
+                if ret.returncode != 0:
+                    msg = "'{c}' failed".format(c=cmd.split(" "))
+                    self.logger.error(ret.stderr)
+                    raise RebuilderError(msg)
         os.chdir(oldcwd)
         return repo
 
