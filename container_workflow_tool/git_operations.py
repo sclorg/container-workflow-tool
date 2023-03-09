@@ -103,7 +103,7 @@ class GitOperations(object):
     def _get_unpushed_commits(self, repo):
         """
         Get unpushed commits
-        :param repo: repo name to check for unpushed commits
+        :param repo: repo object to check for unpushed commits
         :return: List of commits or empty array
         """
         branch = repo.active_branch.name
