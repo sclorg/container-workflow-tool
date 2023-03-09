@@ -246,7 +246,7 @@ class GitOperations(object):
         readme_md = os.path.join(component, "README.md")
         if not os.path.isfile(help_md):
             if os.path.isfile(readme_md):
-                os.symlink('README.md', help_md)
+                os.symlink(readme_md, help_md)
                 repo.git.add('help.md')
             else:
                 # Report warning if help.md does not exists
