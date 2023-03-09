@@ -160,7 +160,7 @@ class GitOperations(object):
                 print(chr(27) + "[2J")
                 # Force pager for short git diffs
                 subprocess.run(
-                    "git -c \"core.pager='less -+F'\" --replace-all",
+                    "git config core.pager 'less -+F' --replace-all",
                     cwd=path,
                     shell=True
                 )
