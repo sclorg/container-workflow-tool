@@ -180,7 +180,7 @@ class GitOperations(object):
         os_name = "fedora"
         if self.conf.image_names == "RHEL8":
             os_name = "rhel8"
-        if self.conf.image_names == "RHEL9":
+        elif self.conf.image_names == "RHEL9":
             os_name = "rhel9"
         elif self.conf.image_names == "RHSCL":
             os_name = "rhel7"
