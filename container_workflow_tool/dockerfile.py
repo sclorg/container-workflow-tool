@@ -23,25 +23,22 @@
 import os
 import re
 
-import container_workflow_tool.utility as u
+from container_workflow_tool.utility import setup_logger
 
 
-class DockerfileHandler(object):
+class DockerfileHandler():
     """Class for handling with Dockerfile files."""
 
     def __init__(self, base_image, logger):
         self.base_image = base_image
-        self.logger = logger if logger else u.setup_logger("dockerfile")
+        self.logger = logger if logger else setup_logger("dockerfile")
 
     def get_from_df(self, dockerfile_path):
-        res = None
-        if os.path.exists(dockerfile_path):
-            with open(dockerfile_path) as f:
-                fdata = f.read()
-            return self.get_from(fdata)
-        return res
+        with open(dockerfile_path) as f:
+            fdata = f.read()
+        return self.get_from(fdata)
 
-    def get_from(self, fdata: str) -> str:
+    def get_from(self, fdata: str):
         """Gets FROM field from a Dockerfile
 
         Args:
@@ -50,11 +47,9 @@ class DockerfileHandler(object):
         Returns:
             str: FROM string
         """
-        registry_base = None
         image_base = re.search('FROM (.*)\n', fdata)
         if image_base:
             return image_base.group(1)
-        return registry_base
 
     def set_from(self, fdata, from_tag):
         """
@@ -63,7 +58,7 @@ class DockerfileHandler(object):
         Returns:
             str: Dockerfile content with updated tag field
         """
-        self.logger.debug("Setting tag to: " + str(from_tag))
+        self.logger.debug(f"Setting tag to: {from_tag}")
         base_image = self.get_from(fdata=fdata)
         self.logger.debug(f"Base image is: {base_image}")
         imagename_without_tag = base_image.split(':')[0]
@@ -80,7 +75,7 @@ class DockerfileHandler(object):
         with open(dockerfile_path, 'w') as f:
             f.write(res)
 
-    def update_dockerfile(self, df, from_tag, downstream_from: str = ""):
+    def update_dockerfile(self, df: str, from_tag: str, downstream_from: str = ""):
         """Updates basic fields of a Dockerfile. Sets from field
 
         Args:
@@ -88,6 +83,7 @@ class DockerfileHandler(object):
             from_tag (str): value to be inserted into the from field
             downstream_from (str): value from downstream Dockerfile
         """
-        self.update_dockerfile_rebuild(
-            df, from_tag, downstream_from=downstream_from
-        )
+        if os.path.exists(df):
+            self.update_dockerfile_rebuild(
+                df, from_tag, downstream_from=downstream_from
+            )

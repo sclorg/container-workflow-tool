@@ -25,11 +25,12 @@ import pytest
 import shutil
 
 from pathlib import Path
+
 from flexmock import flexmock
 
 from container_workflow_tool.cli import ImageRebuilder
-
 from tests.spellbook import DATA_DIR
+from tests.conftest import get_tmp_workdir
 
 
 class TestGitOperations():
@@ -43,7 +44,6 @@ class TestGitOperations():
         self.ir.rebuild_reason = "Unit testing"
         self.ir.disable_klist = True
         self.ir.set_do_images([self.component])
-
 
     @pytest.mark.distgit
     def test_distgit_commit_msg(self):
@@ -63,15 +63,17 @@ class TestGitOperations():
     )
     def test_update_openshift_yaml(self, os_name, os_name_expected, version):
         self.ir.conf.image_names = os_name
-        tmp = Path(self.ir._get_tmp_workdir())
+        tmp_dir = get_tmp_workdir()
+        flexmock(ImageRebuilder).should_receive("_get_tmp_workdir").and_return(tmp_dir.name)
         file_name = "test-openshift.yaml"
-        target_name = tmp / file_name
-        shutil.copy(os.path.join(DATA_DIR, file_name), target_name)
+        target_name = Path(tmp_dir.name) / file_name
+        shutil.copy(Path(DATA_DIR) / file_name, target_name)
         self.ir.git_ops.update_test_openshift_yaml(str(target_name), version=version)
         with open(target_name) as f:
             content = f.read()
         assert f"VERSION: \"{version}\"" in content
         assert f"OS: \"{os_name_expected}\"" in content
+        tmp_dir.cleanup()
 
     @pytest.mark.parametrize(
         "tag,tag_str,variable,expected",

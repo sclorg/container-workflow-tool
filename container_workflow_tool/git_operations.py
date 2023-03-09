@@ -28,8 +28,8 @@ import re
 from git import Repo
 from git.exc import GitCommandError
 
-import container_workflow_tool.utility as u
-from container_workflow_tool.utility import RebuilderError
+from container_workflow_tool.utility import RebuilderError, setup_logger
+from container_workflow_tool.sync import SyncHandler
 
 
 class GitOperations(object):
@@ -41,9 +41,9 @@ class GitOperations(object):
         if not rebuild_reason:
             rebuild_reason = self.conf.rebuild_reason
         self.rebuild_reason = rebuild_reason.format(base_image=base_image)
-        self.logger = logger if logger else u.setup_logger("git-ops")
+        self.logger = logger if logger else setup_logger("git-ops")
         self.df_ext = self.conf.df_ext
-
+        self.sync_handler = SyncHandler(logger=logger)
         self.commit_msg = None
 
     def set_commit_msg(self, msg):
@@ -69,6 +69,18 @@ class GitOperations(object):
                 self.logger.debug("Removing untracked ignored file: " + f)
 
     def _clone_upstream(self, url, ups_path, commands=None):
+        """
+        :params: url is URL to repofile from upstream. https://github.com/sclorg
+        :param: ups_path is path where URL is cloned locally
+        :params: commands has a format mentioned in config.yaml files
+         Like for ./config/rawhide.yaml file and at the varnish container
+         the structure is:
+         varnish:
+               user: "luhliari"
+               commands:
+                 1: "make generate-all"
+        :return: repo object
+        """
         try:
             repo = Repo.clone_from(url=url, to_path=ups_path)
             self.logger.info("Cloned into: " + url)
@@ -86,6 +98,7 @@ class GitOperations(object):
         # Need to be in the upstream git root, so change cwd
         oldcwd = os.getcwd()
         os.chdir(ups_path)
+
         for order in sorted(commands):
             cmd = commands[order]
             self.logger.debug("Running '{o}' command '{c}'".format(o=order,
@@ -100,7 +113,7 @@ class GitOperations(object):
         os.chdir(oldcwd)
         return repo
 
-    def _get_unpushed_commits(self, repo):
+    def are_unpushed_commits_available(self, repo) -> bool:
         """
         Get unpushed commits
         :param repo: repo object to check for unpushed commits
@@ -109,8 +122,9 @@ class GitOperations(object):
         branch = repo.active_branch.name
         # Get a list of commits that have not been pushed to remote
         select = "origin/" + branch + ".." + branch
-        commits = [i for i in repo.iter_commits(select)]
-        return commits
+        if len(list(repo.iter_commits(select))) == 0:
+            return False
+        return True
 
     def show_git_changes(self, tmp, components=None, diff=False):
         """Shows changes made to tracked files in local downstream repositories
@@ -130,12 +144,10 @@ class GitOperations(object):
         if not components:
             # Get the whole subdirectory
             files = [f.path for f in os.scandir(tmp) if is_git(f.path)]
-        elif isinstance(components, list):
-            files = [path for path in [os.path.join(tmp, c) for c in components] if is_git(path)]
-        elif isinstance(components, str) and is_git(os.path.join(tmp, components)):
-            files = [os.path.join(tmp, components)]
         else:
-            raise u.RebuilderError("Unknown component: {}".format(str(components)))
+            if isinstance(components, str):
+                components = [components]
+            files = [path for path in [os.path.join(tmp, c) for c in components] if is_git(path)]
         if not files:
             self.logger.warn("No git repositories found in directory " + tmp)
         # Walk through the repositories and show changes made in the last commit
@@ -143,12 +155,12 @@ class GitOperations(object):
             repo = Repo(path)
             # Only show changes if there are unpushed commits to show
             # or we only want the diff of unstaged changes
-            if self._get_unpushed_commits(repo) or diff:
+            if self.are_unpushed_commits_available(repo) or diff:
                 # Clears the screen
                 print(chr(27) + "[2J")
                 # Force pager for short git diffs
                 subprocess.run(
-                    "git config core.pager 'less -+F' --replace-all",
+                    "git -c \"core.pager='less -+F'\" --replace-all",
                     cwd=path,
                     shell=True
                 )
@@ -217,7 +229,6 @@ class GitOperations(object):
             commit += "\n created from upstream commit: " + ups_hash
         return commit
 
-
     def _pull_upstream(self, component, path, url, repo, ups_name, commands):
         """Pulls an upstream repo and copies it into downstream"""
         ups_path = os.path.join('upstreams/', ups_name)
@@ -272,7 +283,6 @@ class GitOperations(object):
             repo.git.add("Dockerfile", "Dockerfile" + df_ext)
 
         # Make sure a $VERSION symlink exists
-        repo = Repo(component)
         version = os.path.basename(cp_path)
         link_name = os.path.join(component, version)
         if not os.path.islink(link_name):
@@ -281,7 +291,7 @@ class GitOperations(object):
                 repo.git.add(version)
             except FileExistsError:  # noqa: F821 - Doesnt see built-ins?
                 t = "Failed creating symlink '{}' -> '.', file already exists."
-                raise u.RebuilderError(t.format(link_name))
+                raise RebuilderError(t.format(link_name))
 
         # Run post upstream pull hook
         self._post_upstream_pull(cp_path, component)

@@ -23,14 +23,15 @@
 import os
 import shutil
 import re
-import container_workflow_tool.utility as u
+
+from container_workflow_tool.utility import setup_logger, _remove_file
 
 
 class SyncHandler(object):
     """Class for handling with Dockerfile files."""
 
     def __init__(self, logger):
-        self.logger = logger if logger else u.setup_logger("sync_handler")
+        self.logger = logger if logger else setup_logger("sync_handler")
 
     def copy_upstream2downstream(self, src_parent, dest_parent):
         """Copies content from upstream repo to downstream repo
@@ -50,7 +51,7 @@ class SyncHandler(object):
                 self.logger.debug("rmtree {}".format(dest))
                 shutil.rmtree(dest)
             else:
-                u._remove_file(dest, self.logger)
+                _remove_file(dest, self.logger)
 
             # Now copy the src to dest
             if os.path.islink(src) or not os.path.isdir(src):

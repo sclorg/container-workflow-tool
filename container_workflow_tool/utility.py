@@ -1,7 +1,6 @@
 import sys
 import argparse
 import os
-import re
 import logging
 
 import textwrap
@@ -65,7 +64,7 @@ def _get_hostname_url(config) -> str:
     return git_url
 
 
-def _split_config_path(config: str) -> (str, str):
+def _split_config_path(config: str):
     conf = config.split(':')
     if len(conf) > 2:
         raise RebuilderError("You can only use one image_set argument with the --config option.")
