@@ -32,7 +32,7 @@ from container_workflow_tool.cli import ImageRebuilder
 from tests.spellbook import DATA_DIR
 
 
-class TestGitOperations(object):
+class TestGitOperations():
 
     def setup_method(self):
         self.component = 's2i-base'
