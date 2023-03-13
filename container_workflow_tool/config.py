@@ -5,7 +5,6 @@
 import os
 
 import yaml
-from typing import IO
 
 
 class Loader(yaml.SafeLoader):
@@ -70,6 +69,9 @@ class Config(dict):
         self["packager_util"] = config["packager_utils"]
         self["hostname_url"] = config.get("hostname_url", "")
         self["product"] = config.get("product", "")
+        self["jira_project"] = config.get("jira_project", "")
+        self["jira_label"] = config.get("jira_label", "")
+        self["jira_url"] = config.get("jira_url", "")
         self["image_names"] = config.get("image_names", "")
         self["rebuild_reason"] = config.get("rebuild_reason", "")
         self["ignore_files"] = config["ignore_files"]
