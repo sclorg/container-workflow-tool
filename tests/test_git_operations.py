@@ -33,7 +33,7 @@ from tests.spellbook import DATA_DIR
 from tests.conftest import get_tmp_workdir
 
 
-class TestGitOperations():
+class TestGitOperations:
 
     def setup_method(self):
         self.component = 's2i-base'

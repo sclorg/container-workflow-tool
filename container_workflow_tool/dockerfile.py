@@ -26,7 +26,7 @@ import re
 from container_workflow_tool.utility import setup_logger
 
 
-class DockerfileHandler():
+class DockerfileHandler:
     """Class for handling with Dockerfile files."""
 
     def __init__(self, base_image, logger):
@@ -66,15 +66,6 @@ class DockerfileHandler():
                      f"FROM {imagename_without_tag}:{from_tag}\n", fdata)
         return ret
 
-    def update_dockerfile_rebuild(
-            self, dockerfile_path, from_tag, downstream_from: str = "",
-    ):
-        with open(dockerfile_path) as f:
-            fdata = f.read()
-        res = self.set_from(fdata, from_tag)
-        with open(dockerfile_path, 'w') as f:
-            f.write(res)
-
     def update_dockerfile(self, df: str, from_tag: str, downstream_from: str = ""):
         """Updates basic fields of a Dockerfile. Sets from field
 
@@ -84,6 +75,8 @@ class DockerfileHandler():
             downstream_from (str): value from downstream Dockerfile
         """
         if os.path.exists(df):
-            self.update_dockerfile_rebuild(
-                df, from_tag, downstream_from=downstream_from
-            )
+            with open(df) as f:
+                fdata = f.read()
+            res = self.set_from(fdata, from_tag)
+            with open(df, 'w') as f:
+                f.write(res)
