@@ -69,7 +69,7 @@ class TestCli(object):
         c = Cli(None)
         # Check if all commands are mentioned in their respective usage texts
         with pytest.raises(AttributeError):
-            assert not getattr(c, "foobar_usage")()
+            getattr(c, "foobar_usage")
 
     def test_common_arguments(self):
         c = Cli(None)
