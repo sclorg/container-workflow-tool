@@ -27,7 +27,6 @@ import shutil
 from flexmock import flexmock
 from pathlib import Path
 
-from tests.spellbook import DATA_DIR
 from container_workflow_tool.cli import ImageRebuilder
 from container_workflow_tool.git_operations import GitOperations
 

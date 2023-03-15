@@ -23,13 +23,13 @@
 import os
 import re
 
-from container_workflow_tool.utility import setup_logger
+from container_workflow_tool.utility import setup_logger, RebuilderError
 
 
 class DockerfileHandler:
     """Class for handling with Dockerfile files."""
 
-    def __init__(self, base_image, logger):
+    def __init__(self, base_image, logger=None):
         self.base_image = base_image
         self.logger = logger if logger else setup_logger("dockerfile")
 
@@ -48,8 +48,9 @@ class DockerfileHandler:
             str: FROM string
         """
         image_base = re.search('FROM (.*)\n', fdata)
-        if image_base:
-            return image_base.group(1)
+        if image_base.group(1) == "":
+            raise RebuilderError("FROM field is missing")
+        return image_base.group(1)
 
     def set_from(self, fdata, from_tag):
         """
@@ -59,7 +60,10 @@ class DockerfileHandler:
             str: Dockerfile content with updated tag field
         """
         self.logger.debug(f"Setting tag to: {from_tag}")
-        base_image = self.get_from(fdata=fdata)
+        try:
+            base_image = self.get_from(fdata=fdata)
+        except RebuilderError:
+            return fdata
         self.logger.debug(f"Base image is: {base_image}")
         imagename_without_tag = base_image.split(':')[0]
         ret = re.sub("FROM (.*)\n",
