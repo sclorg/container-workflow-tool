@@ -23,7 +23,6 @@
 import pytest
 
 import container_workflow_tool
-
 from container_workflow_tool.dockerfile import DockerfileHandler
 
 

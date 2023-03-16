@@ -23,7 +23,6 @@
 import os
 import pytest
 import shutil
-
 from pathlib import Path
 
 from flexmock import flexmock

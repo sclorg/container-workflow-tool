@@ -48,9 +48,9 @@ class DockerfileHandler:
             str: FROM string
         """
         image_base = re.search('FROM (.*)\n', fdata)
-        if image_base.group(1) == "":
-            raise RebuilderError("FROM field is missing")
-        return image_base.group(1)
+        if image_base and image_base.group(1) != "":
+            return image_base.group(1)
+        raise RebuilderError("FROM field is missing")
 
     def set_from(self, fdata, from_tag):
         """
