@@ -23,6 +23,9 @@
 import pytest
 import json
 
+import tempfile
+
+
 from tests.spellbook import DATA_DIR
 
 
@@ -66,3 +69,7 @@ def brewapi_list_archives_s2i_core():
 @pytest.fixture()
 def brewapi_list_archives_python3():
     return json.loads((DATA_DIR / "brewapi_list_archives_python3.json").read_text())
+
+
+def get_tmp_workdir():
+    return tempfile.TemporaryDirectory()

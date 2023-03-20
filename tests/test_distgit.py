@@ -27,9 +27,8 @@ import shutil
 from flexmock import flexmock
 from pathlib import Path
 
-from tests.spellbook import DATA_DIR
 from container_workflow_tool.cli import ImageRebuilder
-from container_workflow_tool.distgit import DistgitAPI
+from container_workflow_tool.git_operations import GitOperations
 
 
 class TestDistgit(object):
@@ -82,7 +81,7 @@ class TestDistgit(object):
         # TODO
         # As soon as s2i-base-container will contain file 'test/test-openshift.yaml'
         # Then change it to once
-        flexmock(DistgitAPI).should_receive("_update_test_openshift_yaml").never()
+        flexmock(GitOperations).should_receive("update_test_openshift_yaml").never()
         self.ir.conf["from_tag"] = "test"
         tmp = Path(self.ir._get_tmp_workdir())
         self.ir.distgit._clone_downstream(self.component, "main")
@@ -97,12 +96,6 @@ class TestDistgit(object):
         shutil.rmtree(tmp / self.component)
 
     @pytest.mark.distgit
-    def test_distgit_commit_msg(self):
-        msg = "Unit testing"
-        self.ir.set_commit_msg(msg)
-        assert self.ir.distgit.commit_msg == msg
-
-    @pytest.mark.distgit
     def test_tag_dockerfile(self):
         tmp = Path(self.ir._get_tmp_workdir())
         self.ir.conf["from_tag"] = "test"
@@ -115,50 +108,3 @@ class TestDistgit(object):
                 found_tag = True
         assert found_tag
         shutil.rmtree(tmp / self.component)
-
-    @pytest.mark.parametrize(
-        "tag,tag_str,variable,expected",
-        [
-            ("VERSION", "VERSION_NUMBER", "base", True),
-            ("VERSION", "VERSION_NUMBER", "1.14", True),
-            ("VERSION", "\"VERSION_NUMBER\"", "1.14", False),
-            ("OS", "OS_NUMBER", "rhel8", True),
-            ("VER", "VERSION_NUMBER", "base", False),
-            ("OS", "OS_NUMBER", "rhel9", True),
-            ("OS", "\"OS_NUMBER\"", "rhel9", False),
-            ("OS", "VERSION_NUMBER", "base", False),
-            ("VERSION", "VERSIONS_NUMBER", "1.14", False),
-            ("SHORT_NAME", "CONTAINER_NAME", "nodejs", True),
-            ("SHORT_NAME", "\"CONTAINER_NAME\"", "nodejs", False),
-            ("SHORT_NAME", "CONT_NAME", "nodejs", False),
-            ("SHORTNAME", "CONTAINER_NAME", "nodejs", False),
-        ]
-    )
-    def test_update_variable_in_string(self, tag, tag_str, variable, expected):
-        with open(os.path.join(DATA_DIR, "test-openshift.yaml")) as f:
-            yaml_file = f.read()
-        fixed = self.ir.distgit._update_variable_in_string(fdata=yaml_file, tag=tag, tag_str=tag_str, variable=variable)
-        result = f"{tag}: \"{variable}\"" in fixed
-        assert result == expected
-
-    @pytest.mark.parametrize(
-        "os_name,os_name_expected,version",
-        [
-            ("fedora", "fedora", "base"),
-            ("RHEL8", "rhel8", "1.14"),
-            ("RHEL9", "rhel9", "1.14"),
-            ("RHSCL", "rhel7", "14"),
-            ("FOO", "fedora", "bar")
-        ]
-    )
-    def test_update_openshift_yaml(self, os_name, os_name_expected, version):
-        self.ir.conf.image_names = os_name
-        tmp = Path(self.ir._get_tmp_workdir())
-        file_name = "test-openshift.yaml"
-        target_name = tmp / file_name
-        shutil.copy(os.path.join(DATA_DIR, file_name), target_name)
-        self.ir.distgit._update_test_openshift_yaml(str(target_name), version=version)
-        with open(target_name) as f:
-            content = f.read()
-        assert f"VERSION: \"{version}\"" in content
-        assert f"OS: \"{os_name_expected}\"" in content

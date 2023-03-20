@@ -19,6 +19,7 @@ from pathlib import Path
 import container_workflow_tool.utility as u
 from container_workflow_tool.koji import KojiAPI
 from container_workflow_tool.distgit import DistgitAPI
+from container_workflow_tool.git_operations import GitOperations
 from container_workflow_tool.utility import RebuilderError
 from container_workflow_tool.config import Config
 
@@ -43,6 +44,7 @@ class ImageRebuilder:
 
         self._brewapi: KojiAPI = None
         self._distgit: DistgitAPI = None
+        self._git_ops: GitOperations = None
         self.commit_msg = None
         self.args = None
         self.tmp_workdir: str = None
@@ -139,15 +141,23 @@ class ImageRebuilder:
     def distgit(self):
         if not self._distgit:
             self._distgit = DistgitAPI(self.base_image, self.conf,
-                                      self.rebuild_reason,
-                                      self.logger.getChild("dist-git"))
+                                       self.rebuild_reason,
+                                       self.logger.getChild("dist-git"))
         return self._distgit
+
+    @property
+    def git_ops(self):
+        if not self._git_ops:
+            self._git_ops = GitOperations(self.base_image, self.conf,
+                                          self.rebuild_reason,
+                                          self.logger.getChild("-git-ops"))
+        return self._git_ops
 
     @property
     def brewapi(self):
         if not self._brewapi:
             self._brewapi = KojiAPI(self.conf, self.logger.getChild("koji"),
-                                   self.latest_release)
+                                    self.latest_release)
         return self._brewapi
 
     def _setup_logger(self, level=logging.INFO, user_logger=None, name=__name__):

@@ -1,4 +1,4 @@
-.PHONY: test-in-container build-generator push-generator
+.PHONY: test-in-container build-generator push-generator build
 
 TEST_IMAGE=cwt-tests
 GENERATOR_IMAGE=quay.io/rhscl/cwt-generator
