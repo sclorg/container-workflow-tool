@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2016-2021 CWT Authors
+# Copyright (c) 2016-2023 CWT Authors
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -58,7 +58,7 @@ def get_dir(system_path=None, virtual_path=None):
 
 setup(
     name='container-workflow-tool',
-    version="1.5.2",
+    version="1.5.3",
     description='A python3 tool to make rebuilding images easier by automating several steps of the process.',
     long_description=long_description,
     long_description_content_type='text/markdown',
