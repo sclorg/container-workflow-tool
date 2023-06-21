@@ -126,7 +126,7 @@ class GitOperations(object):
         select = "origin/" + branch + ".." + branch
         if branch_name != "":
             select = "origin/" + branch_name + ".." + branch
-        if len(list(repo.iter_commits(select))) == 0:
+        return bool(list(repo.iter_commits(select)))
             return False
         return True
 
