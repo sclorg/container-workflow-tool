@@ -117,18 +117,14 @@ class ImageRebuilder:
             self.set_commit_msg(args.commit_msg)
         if getattr(args, 'rebuild_reason', None) is not None and args.rebuild_reason:
             self.rebuild_reason = args.rebuild_reason
-        if getattr(args, 'gitlab', None) is not None and args.gitlab:
+        if args.command == "git":
             self.gitlab_usage = args.gitlab
         if getattr(args, 'check_script', None) is not None and args.check_script:
             self.check_script = args.check_script
-        if getattr(args, 'disable_klist', None) is not None and args.disable_klist:
-            self.disable_klist = args.disable_klist
-        if getattr(args, 'latest_release', None) is not None and args.latest_release:
-            self.latest_release = args.latest_release
+        self.disable_klist = args.disable_klist
+        self.latest_release = args.latest_release
         if getattr(args, 'output_file', None) is not None and args.output_file:
             self.output_file = args.output_file
-        if getattr(args, 'gitlab', None) is not None and args.gitlab:
-            self.gitlab_usage = args.gitlab
 
         # Image set to build
         if getattr(args, 'image_set', None) is not None and args.image_set:
@@ -453,16 +449,16 @@ class ImageRebuilder:
 
     def list_images(self):
         """Prints list of images that we work with"""
-        for i in self._get_images():
-            self.logger.info(i["component"])
+        for image in self._get_images():
+            self.logger.info(image["component"])
 
     def print_upstream(self):
         """Prints the upstream name and url for images used in config"""
-        for i in self._get_images():
+        for image in self._get_images():
             ups_name = re.search(r".*\/([a-zA-Z0-9-]+).git",
-                                 i["git_url"]).group(1)
-            msg = f"{i.get('component')} {i.get('name')} {ups_name} " \
-                  f"{i.get('git_url')} {i.get('git_path')} {i.get('git_branch')}"
+                                 image["git_url"]).group(1)
+            msg = f"{image.get('component')} {image.get('name')} {ups_name} " \
+                  f"{image.get('git_url')} {image.get('git_path')} {image.get('git_branch')}"
             self.logger.info(msg)
 
     def show_config_contents(self):
@@ -507,13 +503,13 @@ class ImageRebuilder:
         checking its exit value.
         """
         tmp, images = self.preparation()
-        for i in images:
-            self.distgit._clone_downstream(i["component"], i["git_branch"])
+        for image in images:
+            self.distgit._clone_downstream(image["component"], image["git_branch"])
         # If check script is set, run the script provided for each config entry
         if self.check_script:
-            for i in images:
-                self.distgit.check_script(i["component"], self.check_script,
-                                          i["git_branch"])
+            for image in images:
+                self.distgit.check_script(image["component"], self.check_script,
+                                          image["git_branch"])
 
     def pull_upstream(self):
         """
@@ -523,16 +519,16 @@ class ImageRebuilder:
         checking its exit value.
         """
         tmp, images = self.preparation()
-        for i in images:
+        for image in images:
             # Use unversioned name as a path for the repository
-            ups_name = i["name"].split('-')[0]
-            self.git_ops.clone_upstream(i["git_url"], ups_name, commands=i["commands"])
+            ups_name = image["name"].split('-')[0]
+            self.git_ops.clone_upstream(image["git_url"], ups_name, commands=image["commands"])
         # If check script is set, run the script provided for each config entry
         if self.check_script:
-            for i in images:
-                ups_name = i["name"].split('-')[0]
-                self.distgit.check_script(i["component"], self.check_script,
-                                          os.path.join(ups_name, i["git_path"]))
+            for image in images:
+                ups_name = image["name"].split('-')[0]
+                self.distgit.check_script(image["component"], self.check_script,
+                                          os.path.join(ups_name, image["git_path"]))
 
     def preparation(self):
         # Check for kerberos ticket
@@ -599,5 +595,5 @@ class ImageRebuilder:
         tmp, _ = self.preparation()
         if not components:
             images = self._get_images()
-            components = [i["component"] for i in images]
+            components = [image["component"] for image in images]
         self.distgit.show_git_changes(tmp, components)

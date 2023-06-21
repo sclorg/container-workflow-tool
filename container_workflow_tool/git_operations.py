@@ -127,8 +127,6 @@ class GitOperations(object):
         if branch_name != "":
             select = "origin/" + branch_name + ".." + branch
         return bool(list(repo.iter_commits(select)))
-            return False
-        return True
 
     def show_git_changes(self, tmp, components=None, diff=False, branch_name=""):
         """Shows changes made to tracked files in local downstream repositories

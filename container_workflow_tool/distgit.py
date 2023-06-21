@@ -60,6 +60,7 @@ class DistgitAPI(GitOperations):
         Merge is done by copying tracked files from upstream into downstream.
 
         Args:
+            images (list): List of images to sync
             rebase (bool, optional): Specify if a rebase should be done instead
         """
         try:

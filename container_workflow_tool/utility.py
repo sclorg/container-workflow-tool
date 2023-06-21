@@ -77,10 +77,8 @@ def _split_config_path(config: str):
 @contextlib.contextmanager
 def cwd(path):
     """
-    Checks out a git repository into a temporary directory.
     Changes CWD to the temporary directory.
     Yields the temporary directory.
-    On exit, the temporary directory is removed and CWD is restored.
     """
     prev_cwd = Path.cwd()
     os.chdir(path)
