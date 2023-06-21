@@ -552,7 +552,7 @@ class ImageRebuilder:
         Do a rebase against a new base/s2i image.
         Does not pull in upstream changes of layered images.
         """
-        self.dist_git_changes(rebase=True)
+        self.dist_git_merge_changes(rebase=True)
 
     def git_changes_report(self, tmp):
         self.logger.info("\nGit location: " + tmp)
@@ -566,7 +566,7 @@ class ImageRebuilder:
                 "cwt git push && cwt build"
                 "[base/core/s2i] --repo-url link-to-repo-file")
 
-    def dist_git_changes(self, rebase: bool = False):
+    def dist_git_merge_changes(self, rebase: bool = False):
         """Method to merge changes from upstream into downstream
 
         Pulls both downstream and upstream repositories into a temporary directory.
@@ -576,7 +576,7 @@ class ImageRebuilder:
             rebase (bool, optional): Specifies whether a rebase should be done instead.
         """
         tmp, images = self.preparation()
-        self.distgit.dist_git_changes(images, rebase)
+        self.distgit.dist_git_merge_changes(images, rebase)
         self.git_changes_report(tmp=tmp)
 
     def merge_future_branches(self):

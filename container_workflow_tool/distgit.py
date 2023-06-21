@@ -53,7 +53,7 @@ class DistgitAPI(GitOperations):
         else:
             self.logger.info(template.format(name=component, status="OK"))
 
-    def dist_git_changes(self, images, rebase=False):
+    def dist_git_merge_changes(self, images, rebase=False):
         """Method to merge changes from upstream into downstream
 
         Pulls both downstream and upstream repositories into a temporary dir.

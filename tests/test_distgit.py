@@ -62,10 +62,10 @@ class TestDistgit(object):
         assert os.path.isfile(dpath)
 
     @pytest.mark.distgit
-    def test_distgit_changes(self):
+    def test_distgit_merge_changes(self):
         self.ir.conf["from_tag"] = "test"
         tmp = Path(self.ir._get_tmp_workdir())
-        self.ir.dist_git_changes()
+        self.ir.dist_git_merge_changes()
         dpath = tmp / self.component / 'Dockerfile'
         assert os.path.isfile(dpath)
         assert not (tmp / self.component / "test" / "test-openshift.yaml").exists()
@@ -77,7 +77,7 @@ class TestDistgit(object):
         shutil.rmtree(tmp / self.component)
 
     @pytest.mark.distgit
-    def test_distgit_changes_openshift_yaml(self):
+    def test_distgit_merge_changes_openshift_yaml(self):
         # TODO
         # As soon as s2i-base-container will contain file 'test/test-openshift.yaml'
         # Then change it to once
@@ -85,7 +85,7 @@ class TestDistgit(object):
         self.ir.conf["from_tag"] = "test"
         tmp = Path(self.ir._get_tmp_workdir())
         self.ir.distgit._clone_downstream(self.component, "main")
-        self.ir.dist_git_changes()
+        self.ir.dist_git_merge_changes()
         dpath = tmp / self.component / 'Dockerfile'
         assert os.path.isfile(dpath)
         tag_found = False
@@ -99,7 +99,7 @@ class TestDistgit(object):
     def test_tag_dockerfile(self):
         tmp = Path(self.ir._get_tmp_workdir())
         self.ir.conf["from_tag"] = "test"
-        self.ir.dist_git_changes()
+        self.ir.dist_git_merge_changes()
         cpath = tmp / self.component
         dpath = cpath / 'Dockerfile'
         found_tag = False
