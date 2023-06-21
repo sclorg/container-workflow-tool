@@ -117,7 +117,8 @@ class GitOperations(object):
         """
         Get unpushed commits
         :param repo: repo object to check for unpushed commits
-        :param branch_name: In case of gitlab, forked_branch and branch_name has to be defined.
+        :param branch_name: In case of gitlab, branch_name has to be defined.
+        :param branch_name: In case of gitlab, branch_name has to be defined.
                             branch_name is e.g. rhel-8.7.0 and 'repo.active_branch.name' is 'rhel-8.7.0-<ubi_name>'
         :return: List of commits or empty array
         """
@@ -137,7 +138,7 @@ class GitOperations(object):
             tmp (str): Path to the directory that is used to store git repositories
             components (list of str, optional): List of components to show changes for
             diff (boolean, optional): Controls whether the method calls git-show or git-diff
-            branch_name (str, optional): In case of gitlab, forked_branch and branch_name has to be defined.
+            branch_name (str, optional): In case of gitlab, branch_name has to be defined.
                             branch_name is e.g. rhel-8.7.0 and 'repo.active_branch.name' is 'rhel-8.7.0-<ubi_name>'
         """
         # Function to check if a path contains a git repository
