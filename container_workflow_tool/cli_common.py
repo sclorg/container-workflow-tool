@@ -59,10 +59,6 @@ class CliCommon(object):
         parsers['git'].add_argument('--rebuild-reason', help='Use a custom reason for rebuilding')
         parsers['git'].add_argument('--commit-msg', help='Use a custom message instead of the default one')
         parsers['git'].add_argument('--check-script', help='Script/command to be run when checking repositories')
-        parsers['git'].add_argument(
-            '--gitlab', action='store_true', default=False,
-            help='File a merge request to corresponding repository instead of directly to dist-git'
-        )
         parsers['build'].add_argument(
             '--repo-url', help='Set the url of a .repo file to be used when building the image'
         )
@@ -110,7 +106,6 @@ class CliCommon(object):
         --commit-msg     - Use a custom message instead of the default one
         --rebuild-reason - Use a custom reason for rebuilding
         --check-script   - Script/command to be run when checking repositories
-        --gitlab         - Use GitLab for filling merge requests instead of direct pushing to dist-git
     """
         return action_help
 

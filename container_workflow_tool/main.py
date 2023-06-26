@@ -117,8 +117,6 @@ class ImageRebuilder:
             self.set_commit_msg(args.commit_msg)
         if getattr(args, 'rebuild_reason', None) is not None and args.rebuild_reason:
             self.rebuild_reason = args.rebuild_reason
-        if args.command == "git":
-            self.gitlab_usage = args.gitlab
         if getattr(args, 'check_script', None) is not None and args.check_script:
             self.check_script = args.check_script
         self.disable_klist = args.disable_klist
