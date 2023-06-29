@@ -1,6 +1,6 @@
 action_map = {}
 action_map['git'] = {
-    'pullupstream': 'dist_git_changes',
+    'pullupstream': 'dist_git_merge_changes',
     'clonedownstream': 'pull_downstream',
     'cloneupstream': 'pull_upstream',
     'rebase': 'dist_git_rebase',

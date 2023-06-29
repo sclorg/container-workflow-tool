@@ -13,4 +13,5 @@
           - krb5-devel
           - krb5-workstation
           - golang-github-cpuguy83-md2man
+          - python3-gitlab
       become: true

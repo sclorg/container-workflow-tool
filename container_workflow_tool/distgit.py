@@ -5,7 +5,7 @@ import subprocess
 from git import Repo
 from git.exc import GitCommandError
 
-import container_workflow_tool.utility as u
+from container_workflow_tool import utility
 from container_workflow_tool.utility import RebuilderError
 from container_workflow_tool.dockerfile import DockerfileHandler
 from container_workflow_tool.sync import SyncHandler
@@ -49,21 +49,22 @@ class DistgitAPI(GitOperations):
             self.logger.info(template.format(name=component, status="Affected"))
             err = ret.stderr.decode('utf-8').strip()
             if err:
-                self.logger.error(u._2sp(err))
+                self.logger.error(utility._2sp(err))
         else:
             self.logger.info(template.format(name=component, status="OK"))
 
-    def dist_git_changes(self, images, rebase=False):
+    def dist_git_merge_changes(self, images, rebase=False):
         """Method to merge changes from upstream into downstream
 
         Pulls both downstream and upstream repositories into a temporary dir.
         Merge is done by copying tracked files from upstream into downstream.
 
         Args:
+            images (list): List of images to sync
             rebase (bool, optional): Specify if a rebase should be done instead
         """
         try:
-            for image in (images):
+            for image in images:
                 name = image["name"]
                 component = image["component"]
                 branch = image["git_branch"]
@@ -92,18 +93,17 @@ class DistgitAPI(GitOperations):
                     ups_name = name.split('-')[0]
                     # Clone upstream repository
                     ups_path = os.path.join('upstreams/', ups_name)
-                    self._clone_upstream(url, ups_path, commands=commands)
+                    self.clone_upstream(url, ups_path, commands=commands)
                     # Save the upstream commit hash
                     ups_hash = Repo(ups_path).commit().hexsha
-                    self._pull_upstream(component, path, url, repo, ups_name, commands)
+                    self.pull_upstream(component, path, url, repo, ups_name, commands)
                     self.df_handler.update_dockerfile(
                         df_path, from_tag, downstream_from=downstream_from
                     )
                     repo.git.add("Dockerfile")
                     # It is possible for the git repository to have no changes
                     if repo.is_dirty():
-                        commit = self.get_commit_msg(rebase, image, ups_hash
-                        )
+                        commit = self.get_commit_msg(rebase, image, ups_hash)
                         if commit:
                             repo.git.commit("-m", commit)
                         else:
@@ -122,8 +122,8 @@ class DistgitAPI(GitOperations):
             self.logger.info("Using existing downstream repo: " + component)
             repo = Repo(component)
         else:
-            hostname_url = u._get_hostname_url(self.conf)
-            packager = u._get_packager(self.conf)
+            hostname_url = utility._get_hostname_url(self.conf)
+            packager = utility._get_packager(self.conf)
             # if packager is fedpkg then namespace is `container` else `containers`
             namespace = "container" if packager == "fedpkg" else "containers"
             component_path = f"{namespace}/{component}"
@@ -162,7 +162,7 @@ class DistgitAPI(GitOperations):
                     # commit_msg is set so it is always returned
                     commit = self.get_commit_msg(None, image)
                     repo.git.commit("-am", commit)
-                if self._get_unpushed_commits(repo):
+                if self.are_unpushed_commits_available(repo):
                     self.logger.info("Pushing: " + component)
 
                     repo.git.push()
@@ -176,7 +176,7 @@ class DistgitAPI(GitOperations):
         if failed:
             self.logger.error("Failed pushing images:")
             for image in failed:
-                self.logger.error(u._2sp(image["component"]))
+                self.logger.error(utility._2sp(image["component"]))
             self.logger.error("Please check the failures and push the changes manually.")
 
     # TODO: Multiple future branches?
@@ -204,5 +204,5 @@ class DistgitAPI(GitOperations):
         if failed:
             self.logger.error("Failed merging images:")
             for image in failed:
-                self.logger.error(u._2sp(image["component"]))
+                self.logger.error(utility._2sp(image["component"]))
             self.logger.error("Please check the failures and push the changes manually.")
