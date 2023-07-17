@@ -500,7 +500,7 @@ class ImageRebuilder:
         Additionally runs a script against each repository if check_script is set,
         checking its exit value.
         """
-        tmp, images = self.preparation()
+        tmp, images = self.preparation(setup_dir=True)
         for image in images:
             self.distgit._clone_downstream(image["component"], image["git_branch"])
         # If check script is set, run the script provided for each config entry
@@ -516,7 +516,7 @@ class ImageRebuilder:
         Additionally runs a script against each repository if check_script is set,
         checking its exit value.
         """
-        tmp, images = self.preparation()
+        tmp, images = self.preparation(setup_dir=True)
         for image in images:
             # Use unversioned name as a path for the repository
             ups_name = image["name"].split('-')[0]
@@ -528,10 +528,10 @@ class ImageRebuilder:
                 self.distgit.check_script(image["component"], self.check_script,
                                           os.path.join(ups_name, image["git_path"]))
 
-    def preparation(self):
+    def preparation(self, setup_dir=False):
         # Check for kerberos ticket
         self._check_kerb_ticket()
-        tmp = self._get_tmp_workdir(setup_dir=False)
+        tmp = self._get_tmp_workdir(setup_dir=setup_dir)
         if not tmp:
             msg = "Temporary directory structure does not exist. Pull upstream/rebase first."
             raise RebuilderError(msg)
@@ -573,7 +573,7 @@ class ImageRebuilder:
         Args:
             rebase (bool, optional): Specifies whether a rebase should be done instead.
         """
-        tmp, images = self.preparation()
+        tmp, images = self.preparation(setup_dir=True)
         self.distgit.dist_git_merge_changes(images, rebase)
         self.git_changes_report(tmp=tmp)
 
