@@ -48,17 +48,17 @@ class SyncHandler(object):
             src = os.path.join(src_parent, f)
             # First remove the dest
             if os.path.isdir(dest):
-                self.logger.debug("rmtree {}".format(dest))
+                self.logger.debug(f"rmtree {dest}")
                 shutil.rmtree(dest)
             else:
                 _remove_file(dest, self.logger)
 
             # Now copy the src to dest
             if os.path.islink(src) or not os.path.isdir(src):
-                self.logger.debug("cp {} {}".format(src, dest))
+                self.logger.debug(f"cp {src} {dest}")
                 shutil.copy2(src, dest, follow_symlinks=False)
             else:
-                self.logger.debug("cp -r {} {}".format(src, dest))
+                self.logger.debug(f"cp -r {src} {dest}")
                 shutil.copytree(src, dest, symlinks=True)
 
     def handle_dangling_symlinks(self, src_parent, dest_parent):
@@ -95,7 +95,7 @@ class SyncHandler(object):
                         dest_file
                     )
                     src_path_content = os.path.join(src_parent, dest_path_rel)
-                    self.logger.debug("unlink {dest}".format(dest=dest_file))
+                    self.logger.debug(f"unlink {dest_file}")
                     os.unlink(dest_file)
                     src_full = os.path.join(os.path.dirname(src_path_content),
                                             os.readlink(src_path_content))
@@ -103,9 +103,12 @@ class SyncHandler(object):
                         # In this case, when the source directory includes another symlinks outside
                         # of this directory, those wouldn't be fixed, so let's run the same function
                         # to fix dangling symlinks recursively.
-                        self.logger.debug("cp -r {src} {dest}".format(src=src_full, dest=dest_file))
+                        self.logger.debug(f"cp -r {src_full} {dest_file}")
                         shutil.copytree(src_full, dest_file, symlinks=True)
                         self.handle_dangling_symlinks(src_parent, dest_parent)
                     else:
-                        self.logger.debug("cp {src} {dest}".format(src=src_full, dest=dest_file))
-                        shutil.copy2(src_full, dest_file, follow_symlinks=False)
+                        try:
+                            self.logger.debug(f"cp {src_full} {dest_file}")
+                            shutil.copy2(src_full, dest_file, follow_symlinks=False)
+                        except FileNotFoundError:
+                            self.logger.debug(f"Source file {src_full} does not exist")
