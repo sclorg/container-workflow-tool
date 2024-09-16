@@ -77,10 +77,10 @@ class DistgitAPI(GitOperations):
                 downstream_from = self.df_handler.get_from_df(df_path)
                 self.logger.debug(f"Downstream_from: {downstream_from}\n")
                 from_tag = self.conf.get("from_tag", "latest")
-                self.df_handler.update_dockerfile(
-                     df_path, from_tag, downstream_from=downstream_from
-                )
                 if rebase or not pull_upstr:
+                    self.df_handler.update_dockerfile(
+                        df_path, from_tag, downstream_from=downstream_from
+                    )
                     # It is possible for the git repository to have no changes
                     if repo.is_dirty():
                         commit = self.get_commit_msg(rebase, image)
@@ -97,6 +97,9 @@ class DistgitAPI(GitOperations):
                     # Save the upstream commit hash
                     ups_hash = Repo(ups_path).commit().hexsha
                     self.pull_upstream(component, path, url, repo, ups_name, commands)
+                    self.df_handler.update_dockerfile(
+                        df_path, from_tag, downstream_from=downstream_from
+                    )
                     repo.git.add("Dockerfile")
                     # It is possible for the git repository to have no changes
                     if repo.is_dirty():
