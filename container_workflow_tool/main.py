@@ -425,7 +425,8 @@ class ImageRebuilder:
         self.logger.info("Removing cached data and git storage.")
         # Clear ondisk storage for git and the brew cache
         tmp = self._get_tmp_workdir(setup_dir=False)
-        shutil.rmtree(tmp, ignore_errors=True)
+        if tmp is not None and os.path.isdir(tmp):
+            shutil.rmtree(tmp, ignore_errors=True)
         # If the working directory has been set by the user, recreate it
         if self.tmp_workdir:
             os.makedirs(tmp)
