@@ -4,7 +4,7 @@ TEST_IMAGE=cwt-tests
 GENERATOR_IMAGE=quay.io/rhscl/cwt-generator
 UNAME=$(shell uname)
 ifeq ($(UNAME),Darwin)
-	PODMAN := /usr/local/bin/docker
+	PODMAN := /opt/podman/bin/podman
 else
 	PODMAN := /usr/bin/podman
 endif

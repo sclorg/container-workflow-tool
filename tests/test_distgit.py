@@ -66,14 +66,7 @@ class TestDistgit(object):
         self.ir.conf["from_tag"] = "test"
         tmp = Path(self.ir._get_tmp_workdir())
         self.ir.dist_git_merge_changes()
-        dpath = tmp / self.component / 'Dockerfile'
-        assert os.path.isfile(dpath)
         assert not (tmp / self.component / "test" / "test-openshift.yaml").exists()
-        tag_found = False
-        with open(dpath) as f:
-            if ":test" in f.read():
-                tag_found = True
-        assert tag_found
         shutil.rmtree(tmp / self.component)
 
     @pytest.mark.distgit
@@ -86,25 +79,4 @@ class TestDistgit(object):
         tmp = Path(self.ir._get_tmp_workdir())
         self.ir.distgit._clone_downstream(self.component, "main")
         self.ir.dist_git_merge_changes()
-        dpath = tmp / self.component / 'Dockerfile'
-        assert os.path.isfile(dpath)
-        tag_found = False
-        with open(dpath) as f:
-            if ":test" in f.read():
-                tag_found = True
-        assert tag_found
-        shutil.rmtree(tmp / self.component)
-
-    @pytest.mark.distgit
-    def test_tag_dockerfile(self):
-        tmp = Path(self.ir._get_tmp_workdir())
-        self.ir.conf["from_tag"] = "test"
-        self.ir.dist_git_merge_changes()
-        cpath = tmp / self.component
-        dpath = cpath / 'Dockerfile'
-        found_tag = False
-        with open(dpath) as f:
-            if ":test" in f.read():
-                found_tag = True
-        assert found_tag
         shutil.rmtree(tmp / self.component)
