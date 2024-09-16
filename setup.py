@@ -58,7 +58,7 @@ def get_dir(system_path=None, virtual_path=None):
 
 setup(
     name='container-workflow-tool',
-    version="1.5.7",
+    version="1.5.8",
     description='A python3 tool to make rebuilding images easier by automating several steps of the process.',
     long_description=long_description,
     long_description_content_type='text/markdown',
