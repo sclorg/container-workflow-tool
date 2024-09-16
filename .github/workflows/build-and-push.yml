@@ -20,7 +20,7 @@ jobs:
         with:
           dockerfiles: ./Dockerfile.generator
           image: cwt-generator
-          tags: latest 1 ${{ github.sha }}
+          tags: latest 1 ${{ github.sha }} 1.5.7
 
       - name: Push cwt-generator image to Quay.io
         id: push-to-quay
