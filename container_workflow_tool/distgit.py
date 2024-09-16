@@ -74,6 +74,12 @@ class DistgitAPI(GitOperations):
                 pull_upstr = image.get("pull_upstream", True)
                 repo = self._clone_downstream(component, branch)
                 df_path = os.path.join(component, "Dockerfile")
+                downstream_from = self.df_handler.get_from_df(df_path)
+                self.logger.debug(f"Downstream_from: {downstream_from}\n")
+                from_tag = self.conf.get("from_tag", "latest")
+                self.df_handler.update_dockerfile(
+                     df_path, from_tag, downstream_from=downstream_from
+                )
                 if rebase or not pull_upstr:
                     # It is possible for the git repository to have no changes
                     if repo.is_dirty():
