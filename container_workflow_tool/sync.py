@@ -97,8 +97,14 @@ class SyncHandler(object):
                     src_path_content = os.path.join(src_parent, dest_path_rel)
                     self.logger.debug(f"unlink {dest_file}")
                     os.unlink(dest_file)
-                    src_full = os.path.join(os.path.dirname(src_path_content),
-                                            os.readlink(src_path_content))
+                    # Catch exception in case of 'os.readlink(src_path_content)' does not exist.
+                    try:
+                        src_full = os.path.join(os.path.dirname(src_path_content),
+                                                os.readlink(src_path_content))
+                    except FileNotFoundError:
+                        self.logger.debug(f"Source file {src_path_content} does not exist."
+                                          f"It was deleted by upstream PR")
+                        continue
                     if os.path.isdir(src_full):
                         # In this case, when the source directory includes another symlinks outside
                         # of this directory, those wouldn't be fixed, so let's run the same function
