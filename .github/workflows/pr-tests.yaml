@@ -31,7 +31,7 @@ jobs:
           tf_scope: "public"
           tmt_plan_regex: "cwt"
           pull_request_status_name: "Fedora"
-          variables: "REPO_URL=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY;REPO_NAME=$GITHUB_REPOSITORY;PR_NUMBER=${{ github.event.issue.number }}"
+          variables: "REPO_URL=${{ github.server_url }}/${{ github.repository }};REPO_NAME=${{ github.repository }};PR_NUMBER=${{ github.event.issue.number }}"
           compose: "Fedora-latest"
           create_issue_comment: "true"
           create_github_summary: "true"
