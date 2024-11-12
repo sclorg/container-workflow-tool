@@ -98,6 +98,9 @@ class SyncHandler(object):
                     self.logger.debug(f"unlink {dest_file}")
                     os.unlink(dest_file)
                     # Catch exception in case of 'os.readlink(src_path_content)' does not exist.
+                    # This code is used during update upstream -> downstream.
+                    # The row `os.unlink` above delete dest_file in case we delete it in upstream PR
+                    # But `os.readlink(src_path_content)` fail with traceback because of file does not exist
                     try:
                         src_full = os.path.join(os.path.dirname(src_path_content),
                                                 os.readlink(src_path_content))
