@@ -53,11 +53,9 @@ class TestGitOperations:
     @pytest.mark.parametrize(
         "os_name,os_name_expected,version",
         [
-            ("fedora", "fedora", "base"),
             ("RHEL8", "rhel8", "1.14"),
             ("RHEL9", "rhel9", "1.14"),
-            ("RHSCL", "rhel7", "14"),
-            ("FOO", "fedora", "bar")
+            ("RHEL10", "rhel10", "1.14"),
         ]
     )
     def test_update_openshift_yaml(self, os_name, os_name_expected, version):
