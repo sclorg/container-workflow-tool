@@ -194,13 +194,11 @@ class GitOperations(object):
         with open(test_openshift_yaml) as f:
             fdata = f.read()
         fdata = self.update_variable_in_string(fdata, "VERSION", "VERSION_NUMBER", version)
-        os_name = "fedora"
-        if self.conf.image_names == "RHEL8":
-            os_name = "rhel8"
-        elif self.conf.image_names == "RHEL9":
+        os_name = "rhel8"
+        if self.conf.image_names == "RHEL9":
             os_name = "rhel9"
-        elif self.conf.image_names == "RHSCL":
-            os_name = "rhel7"
+        elif self.conf.image_names == "RHEL10":
+            os_name = "rhel10"
         fdata = self.update_variable_in_string(fdata, tag="OS", tag_str="OS_NUMBER", variable=os_name)
         fdata = self.update_variable_in_string(fdata, tag="SHORT_NAME", tag_str="CONTAINER_NAME", variable=short_name)
         with open(test_openshift_yaml, 'w') as f:
