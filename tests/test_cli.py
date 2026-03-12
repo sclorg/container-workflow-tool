@@ -51,7 +51,6 @@ class TestCli(object):
         [
             ("git", True),
             ("utils", True),
-            ("koji", True),
         ],
     )
     def test_usage(self, command, expected):

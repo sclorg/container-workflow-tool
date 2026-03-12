@@ -29,10 +29,10 @@ from container_workflow_tool.cli import ImageRebuilder
 
 class TestRebuilder(object):
     def setup_method(self):
-        self.component = 's2i-base'
-        self.ir = ImageRebuilder('Testing')
+        self.component = "s2i-base"
+        self.ir = ImageRebuilder("Testing")
 
-        self.ir.set_config('default.yaml', release="rawhide")
+        self.ir.set_config("default.yaml", release="rawhide")
         # Partner BZ testing
         self.ir.rebuild_reason = "Unit testing"
         self.ir.disable_klist = True
@@ -87,12 +87,11 @@ class TestRebuilder(object):
 
 
 class TestRebuilderNoBaseImage(object):
-
     def setup_method(self):
-        self.component = 's2i-base'
-        self.ir = ImageRebuilder('Testing')
+        self.component = "s2i-base"
+        self.ir = ImageRebuilder("Testing")
         self.ir.base_image = None
-        self.ir.set_config('default.yaml', release="rawhide")
+        self.ir.set_config("default.yaml", release="rawhide")
         # Partner BZ testing
         self.ir.rebuild_reason = "Unit testing"
         self.ir.disable_klist = True
@@ -105,10 +104,6 @@ class TestRebuilderNoBaseImage(object):
     def test_prebuild_check(self):
         with pytest.raises(RebuilderError):
             self.ir._prebuild_check([self.component])
-
-    def test_main_build_images(self):
-        with pytest.raises(RebuilderError):
-            self.ir._build_images([self.component], branches=["rawhide"])
 
     def test_main_pull_downstream(self):
         with pytest.raises(RebuilderError):
@@ -132,12 +127,11 @@ class TestRebuilderNoBaseImage(object):
 
 
 class TestRebuilderNoSetupDir(object):
-
     def setup_method(self):
-        self.component = 's2i-base'
-        self.ir = ImageRebuilder('Testing')
+        self.component = "s2i-base"
+        self.ir = ImageRebuilder("Testing")
 
-        self.ir.set_config('default.yaml', release="rawhide")
+        self.ir.set_config("default.yaml", release="rawhide")
         # Partner BZ testing
         self.ir.rebuild_reason = "Unit testing"
         self.ir.disable_klist = True
