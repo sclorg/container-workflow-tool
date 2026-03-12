@@ -7,16 +7,16 @@ action_map["git"] = {
     "merge": "merge_future_branches",
     "show": "show_git_changes",
     "push": "push_changes",
+    "diff": "check_downstream_diffs",
 }
 
 action_map["utils"] = {
     "showconfig": "show_config_contents",
     "listimages": "list_images",
     "listupstream": "print_upstream",
+    "setuprepo": "setup_repo_file",
+    "notifymail": "print_email_notification",
 }
-action_map["git"]["diff"] = "check_downstream_diffs"
-action_map["utils"]["setuprepo"] = "setup_repo_file"
-action_map["utils"]["notifymail"] = "print_email_notification"
 
 actions = {}
 actions["git"] = [

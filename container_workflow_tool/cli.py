@@ -16,7 +16,7 @@ class Cli(CliCommon):
     def cli_usage(self):
         return CliCommon.cli_usage(self).format(
             prg=self.prg_name,
-            cmd="koji            - List builds, base images, hash ids",
+            cmd="",
             args="",
         )
 

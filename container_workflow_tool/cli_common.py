@@ -38,11 +38,6 @@ class CliCommon(object):
             help="Clears tmp dir before running the command",
         )
         parser.add_argument(
-            "--latest-release",
-            action="store_true",
-            help="Work with latest brew builds by release value",
-        )
-        parser.add_argument(
             "--do-image",
             help="Use a custom set of images instead of all from the config (use dist-git names)",
             action="append",
@@ -101,7 +96,6 @@ class CliCommon(object):
         -v, --verbosity      - Verbosity level, 1 (Critical only) - 5 (Debug messages), default 4 (Info)
         --base               - Specific base image release, required for some actions
         --clear-cache        - Clears tmp dir before running the command
-        --latest-release     - Work with latest brew builds by release value
         --config             - Overrides default configuration file,
                                expects the name of file a inside the config folder, optionally takes image_set argument
                                example usage: --config default.yaml:fedora27
