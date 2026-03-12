@@ -30,15 +30,15 @@ from container_workflow_tool.cli import Cli, ImageRebuilder
 
 class TestCli(object):
     def setup_method(self):
-        self.component = 's2i-base'
-        self.ir = ImageRebuilder('Testing')
+        self.component = "s2i-base"
+        self.ir = ImageRebuilder("Testing")
 
-        self.ir.set_config('default.yaml', release="rawhide")
+        self.ir.set_config("default.yaml", release="rawhide")
         # Partner BZ testing
         self.ir.rebuild_reason = "Unit testing"
         self.ir.disable_klist = True
         self.ir.set_do_images([self.component])
-        self.component = 'postgresql'
+        self.component = "postgresql"
         self.ir.set_do_images([self.component])
 
     def test_action_map(self):
@@ -52,13 +52,13 @@ class TestCli(object):
             ("git", True),
             ("utils", True),
             ("koji", True),
-        ]
+        ],
     )
     def test_usage(self, command, expected):
         c = Cli(None)
         cli_usage = c.cli_usage()
         # Check if all commands are mentioned in their respective usage texts
-        usage = getattr(c, command + '_usage')()
+        usage = getattr(c, command + "_usage")()
         res = bool(re.search(r"\n\s+" + command, cli_usage))
         assert res == expected
         for action in list(actions[command]):
@@ -79,7 +79,7 @@ class TestCli(object):
         for arg in parser._actions:
             for opt in arg.option_strings:
                 # Ignore help
-                if opt in ['-h', '--help']:
+                if opt in ["-h", "--help"]:
                     continue
                 res = opt in cli_usage
                 assert res
@@ -91,11 +91,11 @@ class TestCli(object):
         # Do the same for command specific arguments
         subparser = parser._subparsers._group_actions[0]
         for sp in subparser.choices:
-            usage = getattr(c, sp + '_usage')()
+            usage = getattr(c, sp + "_usage")()
             for arg in subparser.choices[sp]._actions:
                 for opt in arg.option_strings:
                     # Ignore help
-                    if opt in ['-h', '--help']:
+                    if opt in ["-h", "--help"]:
                         continue
                     res = opt in usage
                     assert res
